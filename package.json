@@ -1,0 +1,20 @@
+{
+  "name": "@rmrk-team/evm-contract-samples",
+  "version": "0.1.0",
+  "description": "Set of sample contracts created using RMRK standard package: @rmrk-team/evm-contracts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "@rmrk-team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@rmrk-team/evm-contracts": "^0.1.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "hardhat": "^2.10.2",
+    "hardhat-contract-sizer": "^2.6.1",
+    "hardhat-gas-reporter": "^1.0.8"
+  }
+}
