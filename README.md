@@ -10,7 +10,7 @@ There are a variety of ways to use these implementations, all ERC721 compatible:
 1. Nesting + Multiresource + Equippable (+Base) 
 
 The first 3 use cases have stand alone versions with both minimal and ready to use implementations. 
-For the latter, due to Solidity contract size limits nesting and ownership are handled by one contract, and multiresource + equippable logic in another one. Base is also a separate contract for practical reasons, since it can be used by many tokens. We are working on a merged version which includes the minimum viable functionality.
+For the latter, due to Solidity contract size limits, nesting and ownership are handled by one contract, and multiresource + equippable logic in another one. Base is also a separate contract for practical reasons, since it can be used by many tokens. We are working on a merged version which includes the minimum viable functionality in a single contract.
 
 ![image Legos](./RMRKLegos.png)
 
