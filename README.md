@@ -1,6 +1,6 @@
 # RMRK Solidity
 
-A set of Solidity contracts for RMRK.app.
+A set of Solidity sample contracts for the RMRK standard implementation on EVM.
 
 # Legos
 There are a variety of ways to use these implementations, all ERC721 compatible:
