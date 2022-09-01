@@ -4,7 +4,6 @@ pragma solidity ^0.8.15;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKEquippable.sol";
 
-//Minimal public implementation of RMRKEquippable for testing.
 contract AdvancedEquippable is RMRKEquippable {
     constructor(
         string memory name,

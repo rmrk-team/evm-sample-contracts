@@ -5,7 +5,6 @@ pragma solidity ^0.8.15;
 import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKNesting.sol";
 
 
-//Minimal public implementation of IRMRKNesting for testing.
 contract AdvancedNesting is RMRKNesting {
     constructor(
         string memory name,

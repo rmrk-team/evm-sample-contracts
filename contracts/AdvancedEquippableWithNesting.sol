@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKEquippableWithNesting.sol";
 
 /* import "hardhat/console.sol"; */
 
-//Minimal public implementation of RMRKEquippableWithNesting for testing.
 contract AdvancedEquippableWithNesting is RMRKEquippableWithNesting {
     constructor(
         address nestingAddress

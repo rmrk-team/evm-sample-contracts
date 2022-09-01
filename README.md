@@ -27,8 +27,13 @@ Then simply follow one of the samples under contracts. The versions starting wit
 
 For each of the lego combinations we have a sample Simple version.
 1. [Multiresource Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleMultiResource.sol)
-1. [Nesting Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNestingMultiResource.sol)
+1. [Nesting Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNesting.sol)
 1. [Nesting + Multiresource](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNestingMultiResource.sol)
 1. [Nesting(WithEquippable)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNestingWithEquippable.sol) + [Multiresource + Equippable(WithNesting)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleEquippableWithNesting.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleBase.sol)
 
-// TODO: Add Advanced version
+For each of the lego combinations we have a sample Advanced version. It includes comments on the expected functionality to be implemented, and the internal functions available to do so. In this case, there's a merged version for equippable, but it will likely exceed the size limitation when fully implemented.
+1. [Multiresource Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedMultiResource.sol)
+1. [Nesting Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNesting.sol)
+1. [Nesting + Multiresource](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNestingMultiResource.sol)
+1. [Nesting(WithEquippable)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNestingWithEquippable.sol) + [Multiresource + Equippable(WithNesting)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedEquippableWithNesting.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedBase.sol)
+1. [Equippable(Merged)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedEquippable.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedBase.sol)
