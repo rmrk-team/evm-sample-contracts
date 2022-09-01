@@ -5,7 +5,7 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.s
 
 contract SimpleBase is RMRKBaseStorageImpl {
     constructor(
-        string symbol,
-        string type_
+        string memory symbol,
+        string memory type_
     ) RMRKBaseStorageImpl(symbol, type_) {}
 }
