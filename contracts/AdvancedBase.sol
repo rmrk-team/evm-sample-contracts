@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKBaseStorage.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
 
 contract AdvancedBase is RMRKBaseStorage {
     constructor(

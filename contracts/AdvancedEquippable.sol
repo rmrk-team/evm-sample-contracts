@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKEquippable.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 
 contract AdvancedEquippable is RMRKEquippable {
     constructor(

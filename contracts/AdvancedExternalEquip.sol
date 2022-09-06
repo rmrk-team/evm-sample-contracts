@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/RMRKEquippableWithNesting.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol";
 
 /* import "hardhat/console.sol"; */
 
-contract AdvancedEquippableWithNesting is RMRKEquippableWithNesting {
+contract AdvancedExternalEquip is RMRKExternalEquip {
     constructor(
         address nestingAddress
         // Custom optional: additional parameters
     )
-        RMRKEquippableWithNesting(nestingAddress)
+        RMRKExternalEquip(nestingAddress)
     {
         // Custom optional: constructor logic
     }
