@@ -7,5 +7,5 @@ contract SimpleMultiResource is RMRKMultiResourceImpl {
     constructor(
         uint256 maxSupply,
         uint256 pricePerMint
-    ) RMRKMultiResourceImpl("SimpleMultiResource", "SMR", maxSupply, pricePerMint) {}
+    ) RMRKMultiResourceImpl("SimpleMultiResource", "SMR", maxSupply, pricePerMint, "ipfs://meta") {}
 }
