@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import { SimpleBase, SimpleEquippable, RMRKEquippableViews } from "../typechain-types";
 import { ContractTransaction } from "ethers";
-import { base } from "../typechain-types/@rmrk-team/evm-contracts/contracts/RMRK";
 
 const pricePerMint = ethers.utils.parseEther("0.0001");
 const totalBirds = 5;
@@ -12,7 +11,7 @@ const deployedViewsAddress = "";
 
 async function main() {
   const [kanaria, gem, base, views] = await deployContracts();
-  // const [kanaria, gem, base] = await retrieveContracts();
+  // const [kanaria, gem, base, views] = await retrieveContracts();
 
   // Notice that most of these steps will happen at different points in time
   // Here we do all in one go to demonstrate how to use it.
