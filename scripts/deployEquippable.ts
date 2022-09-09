@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
-import { SimpleBase, SimpleEquippable, RMRKEquipRenderUtils } from "../typechain-types";
+import {
+  SimpleBase,
+  SimpleEquippable,
+  RMRKEquipRenderUtils,
+} from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 const pricePerMint = ethers.utils.parseEther("0.0001");
@@ -35,7 +39,9 @@ async function retrieveContracts(): Promise<
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
   const base: SimpleBase = baseFactory.attach(deployedBaseAddress);
-  const views: RMRKEquipRenderUtils = await viewsFactory.attach(deployedViewsAddress);
+  const views: RMRKEquipRenderUtils = await viewsFactory.attach(
+    deployedViewsAddress
+  );
 
   return [kanaria, gem, base, views];
 }
@@ -259,7 +265,7 @@ async function addKanariaResources(
   allTx.push(tx);
   // Wait for both resources to be added
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log('Added 2 resource entries');
+  console.log("Added 2 resource entries");
 
   // Add resources to token
   const tokenId = 1;
@@ -268,17 +274,15 @@ async function addKanariaResources(
     await kanaria.addResourceToToken(tokenId, resourceComposedId, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log('Added resources to token 1');
+  console.log("Added resources to token 1");
 
   // Accept both resources:
   tx = await kanaria.acceptResource(tokenId, 0);
   await tx.wait();
   tx = await kanaria.acceptResource(tokenId, 0);
   await tx.wait();
-  console.log('Resources accepted');
+  console.log("Resources accepted");
 }
-
-
 
 async function addGemResources(
   gem: SimpleEquippable,
@@ -296,10 +300,10 @@ async function addGemResources(
   const equippableRefIdMidGem = 2;
   const equippableRefIdRightGem = 3;
 
-
-  // We can do a for loop, but this makes it clearer. 
+  // We can do a for loop, but this makes it clearer.
   let allTx = [
-    await gem.addResourceEntry( // Full version for first type of gem, no need of refId or base
+    await gem.addResourceEntry(
+      // Full version for first type of gem, no need of refId or base
       {
         id: 1,
         equippableRefId: 0,
@@ -307,9 +311,10 @@ async function addGemResources(
         metadataURI: `ipfs://gems/typeA/full.svg`,
       },
       [],
-      [] 
+      []
     ),
-    await gem.addResourceEntry( // Equipped into left slot for first type of gem
+    await gem.addResourceEntry(
+      // Equipped into left slot for first type of gem
       {
         id: 2,
         equippableRefId: equippableRefIdLeftGem,
@@ -319,7 +324,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Equipped into mid slot for first type of gem
+    await gem.addResourceEntry(
+      // Equipped into mid slot for first type of gem
       {
         id: 3,
         equippableRefId: equippableRefIdMidGem,
@@ -329,7 +335,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Equipped into left slot for first type of gem
+    await gem.addResourceEntry(
+      // Equipped into left slot for first type of gem
       {
         id: 4,
         equippableRefId: equippableRefIdRightGem,
@@ -339,7 +346,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Full version for second type of gem, no need of refId or base
+    await gem.addResourceEntry(
+      // Full version for second type of gem, no need of refId or base
       {
         id: 5,
         equippableRefId: 0,
@@ -349,7 +357,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Equipped into left slot for second type of gem
+    await gem.addResourceEntry(
+      // Equipped into left slot for second type of gem
       {
         id: 6,
         equippableRefId: equippableRefIdLeftGem,
@@ -359,7 +368,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Equipped into mid slot for second type of gem
+    await gem.addResourceEntry(
+      // Equipped into mid slot for second type of gem
       {
         id: 7,
         equippableRefId: equippableRefIdMidGem,
@@ -369,7 +379,8 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry( // Equipped into right slot for second type of gem
+    await gem.addResourceEntry(
+      // Equipped into right slot for second type of gem
       {
         id: 8,
         equippableRefId: equippableRefIdRightGem,
@@ -382,7 +393,9 @@ async function addGemResources(
   ];
 
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log('Added 8 gem resources. 2 Types of gems with full, left, mid and right versions.');
+  console.log(
+    "Added 8 gem resources. 2 Types of gems with full, left, mid and right versions."
+  );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
   // e.g. Any resource on gem, which sets its equippableRefId to equippableRefIdLeftGem
@@ -391,7 +404,7 @@ async function addGemResources(
     await gem.setValidParentRefId(equippableRefIdLeftGem, kanariaAddress, 9),
     await gem.setValidParentRefId(equippableRefIdMidGem, kanariaAddress, 10),
     await gem.setValidParentRefId(equippableRefIdRightGem, kanariaAddress, 11),
-  ]
+  ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
   // We add resources of type A to gem 1 and 2, and type Bto gem 3. Both are nested into the first kanaria
@@ -411,7 +424,7 @@ async function addGemResources(
     await gem.addResourceToToken(3, 8, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log('Added 4 resources to each of 3 gems.')
+  console.log("Added 4 resources to each of 3 gems.");
 
   // We accept each resource for both gems
   for (let i = 0; i < gemVersions; i++) {
@@ -419,45 +432,50 @@ async function addGemResources(
       await gem.acceptResource(1, 0),
       await gem.acceptResource(2, 0),
       await gem.acceptResource(3, 0),
-    ]
+    ];
     await Promise.all(allTx.map((tx) => tx.wait()));
   }
-  console.log('Accepted 4 resources to each of 3 gems.')
+  console.log("Accepted 4 resources to each of 3 gems.");
 }
 
-async function equipGems(kanaria: SimpleEquippable): Promise<void>  {
-  const allTx = 
-  [
+async function equipGems(kanaria: SimpleEquippable): Promise<void> {
+  const allTx = [
     await kanaria.equip({
-      tokenId: 1,  // Kanaria 1
+      tokenId: 1, // Kanaria 1
       childIndex: 0, // Gem 1 is on position 0
-      resourceId: 2,  // Resource for the kanaria which is composable
+      resourceId: 2, // Resource for the kanaria which is composable
       slotPartId: 9, // left gem slot
       childResourceId: 2, // Resource id for child meant for the left gem
     }),
     await kanaria.equip({
-      tokenId: 1,  // Kanaria 1
+      tokenId: 1, // Kanaria 1
       childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
-      resourceId: 2,  // Resource for the kanaria which is composable
+      resourceId: 2, // Resource for the kanaria which is composable
       slotPartId: 10, // mid gem slot
       childResourceId: 3, // Resource id for child meant for the mid gem
     }),
     await kanaria.equip({
-      tokenId: 1,  // Kanaria 1
+      tokenId: 1, // Kanaria 1
       childIndex: 1, // Gem 3 is on position 1
-      resourceId: 2,  // Resource for the kanaria which is composable
+      resourceId: 2, // Resource for the kanaria which is composable
       slotPartId: 11, // right gem slot
       childResourceId: 8, // Resource id for child meant for the right gem
     }),
-  ]
+  ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log('Equipped 3 gems into first kanaria');
+  console.log("Equipped 3 gems into first kanaria");
 }
 
-async function composeEquippables(views: RMRKEquipRenderUtils, kanariaAddress: string): Promise<void>  {
+async function composeEquippables(
+  views: RMRKEquipRenderUtils,
+  kanariaAddress: string
+): Promise<void> {
   const tokenId = 1;
   const resourceId = 2;
-  console.log("Composed: ", await views.composeEquippables(kanariaAddress, tokenId, resourceId));
+  console.log(
+    "Composed: ",
+    await views.composeEquippables(kanariaAddress, tokenId, resourceId)
+  );
 }
 
 main().catch((error) => {
