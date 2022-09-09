@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { SimpleBase, SimpleEquippable, RMRKEquippableViews } from "../typechain-types";
+import { SimpleBase, SimpleEquippable, RMRKEquipRenderUtils } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 const pricePerMint = ethers.utils.parseEther("0.0001");
@@ -24,28 +24,28 @@ async function main() {
 }
 
 async function retrieveContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquippableViews]
+  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
-  const viewsFactory = await ethers.getContractFactory("RMRKEquippableViews");
+  const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = contractFactory.attach(
     deployedKanariaAddress
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
   const base: SimpleBase = baseFactory.attach(deployedBaseAddress);
-  const views: RMRKEquippableViews = await viewsFactory.attach(deployedViewsAddress);
+  const views: RMRKEquipRenderUtils = await viewsFactory.attach(deployedViewsAddress);
 
   return [kanaria, gem, base, views];
 }
 
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquippableViews]
+  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
-  const viewsFactory = await ethers.getContractFactory("RMRKEquippableViews");
+  const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
     "Kanaria",
@@ -60,7 +60,7 @@ async function deployContracts(): Promise<
     pricePerMint
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
-  const views: RMRKEquippableViews = await viewsFactory.deploy();
+  const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
   await gem.deployed();
@@ -454,7 +454,7 @@ async function equipGems(kanaria: SimpleEquippable): Promise<void>  {
   console.log('Equipped 3 gems into first kanaria');
 }
 
-async function composeEquippables(views: RMRKEquippableViews, kanariaAddress: string): Promise<void>  {
+async function composeEquippables(views: RMRKEquipRenderUtils, kanariaAddress: string): Promise<void>  {
   const tokenId = 1;
   const resourceId = 2;
   console.log("Composed: ", await views.composeEquippables(kanariaAddress, tokenId, resourceId));
