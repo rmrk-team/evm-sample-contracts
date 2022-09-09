@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { SimpleNestingMultiResource } from "../../typechain-types";
+import { SimpleNestingMultiResource } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 async function main() {

@@ -1,16 +1,17 @@
 import { ethers } from "hardhat";
-import { SimpleBase, SimpleEquippable } from "../../typechain-types";
+import { SimpleBase, SimpleEquippable, RMRKEquippableViews } from "../typechain-types";
 import { ContractTransaction } from "ethers";
-import { base } from "../../typechain-types/@rmrk-team/evm-contracts/contracts/RMRK";
+import { base } from "../typechain-types/@rmrk-team/evm-contracts/contracts/RMRK";
 
 const pricePerMint = ethers.utils.parseEther("0.0001");
 const totalBirds = 5;
-const deployedKanariaAddress = "0xe295E3D4d4D88ea29d35d037c4dA9408Ca911f73";
-const deployedGemAddress = "0x67225d9F81559D10F2db11110b25b09AE97464f3";
-const deployedBaseAddress = "0x4D6882EEE5bbd8d7BdfE400DBB97e09bb915919C";
+const deployedKanariaAddress = "";
+const deployedGemAddress = "";
+const deployedBaseAddress = "";
+const deployedViewsAddress = "";
 
 async function main() {
-  const [kanaria, gem, base] = await deployContracts();
+  const [kanaria, gem, base, views] = await deployContracts();
   // const [kanaria, gem, base] = await retrieveContracts();
 
   // Notice that most of these steps will happen at different points in time
@@ -20,28 +21,33 @@ async function main() {
   await addKanariaResources(kanaria, base.address);
   await addGemResources(gem, kanaria.address, base.address);
   await equipGems(kanaria);
+  await composeEquippables(views, kanaria.address);
 }
 
 async function retrieveContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase]
+  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquippableViews]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const viewsFactory = await ethers.getContractFactory("RMRKEquippableViews");
 
   const kanaria: SimpleEquippable = contractFactory.attach(
     deployedKanariaAddress
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
   const base: SimpleBase = baseFactory.attach(deployedBaseAddress);
+  const views: RMRKEquippableViews = await viewsFactory.attach(deployedViewsAddress);
 
-  return [kanaria, gem, base];
+  return [kanaria, gem, base, views];
 }
 
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase]
+  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquippableViews]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const viewsFactory = await ethers.getContractFactory("RMRKEquippableViews");
+
   const kanaria: SimpleEquippable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
@@ -55,6 +61,7 @@ async function deployContracts(): Promise<
     pricePerMint
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const views: RMRKEquippableViews = await viewsFactory.deploy();
 
   await kanaria.deployed();
   await gem.deployed();
@@ -63,7 +70,7 @@ async function deployContracts(): Promise<
     `Sample contracts deployed to ${kanaria.address}, ${gem.address} and ${base.address}`
   );
 
-  return [kanaria, gem, base];
+  return [kanaria, gem, base, views];
 }
 
 async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
@@ -446,6 +453,12 @@ async function equipGems(kanaria: SimpleEquippable): Promise<void>  {
   ]
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log('Equipped 3 gems into first kanaria');
+}
+
+async function composeEquippables(views: RMRKEquippableViews, kanariaAddress: string): Promise<void>  {
+  const tokenId = 1;
+  const resourceId = 2;
+  console.log("Composed: ", await views.composeEquippables(kanariaAddress, tokenId, resourceId));
 }
 
 main().catch((error) => {
