@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "description": "Set of sample contracts created using RMRK standard package: @rmrk-team/evm-contracts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy-equippable": "hardhat run scripts/deployEquippable.ts",
+    "deploy-multiresource": "hardhat run scripts/deployMultiresource.ts",
+    "deploy-nesting": "hardhat run scripts/deployNesting.ts",
+    "deploy-nesting-multiresource": "hardhat run scripts/deployNestingMultiresource.ts",
+    "deploy-split-equippable": "hardhat run scripts/deploySplitEquippable.ts"
   },
   "keywords": [],
   "author": "@rmrk-team",
@@ -15,6 +20,7 @@
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "hardhat": "^2.10.2",
     "hardhat-contract-sizer": "^2.6.1",
-    "hardhat-gas-reporter": "^1.0.8"
+    "hardhat-gas-reporter": "^1.0.8",
+    "typescript": "^4.8.3"
   }
 }
