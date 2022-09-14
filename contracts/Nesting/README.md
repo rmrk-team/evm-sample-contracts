@@ -444,3 +444,82 @@ Chunky's id 1 rmrk owner is  [
 
 This concludes our work on the [`SimpleNesting.sol`](./SimpleNesting.sol). We can now move on to examining the
 [`AdvancedNesting.sol`](./AdvancedNesting.sol).
+
+## AdvancedNesting
+
+The `AdvancedNesting` smart contract allows for more flexibility when using the nesting lego. It implements minimum
+required implementation in order to be compatible with RMRK nesting, but leaves more business logic implementation
+freedom to the developer. It uses the
+[`RMRKNesting.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/nesting/RMRKNesting.sol) import to gain
+access to the Nesting lego:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/nesting/RMRKNesting.sol";
+````
+
+We only need `name` and `symbol` of the NFT in order to properly initialize it after the `AdvancedNesting` inherits it:
+
+````solidity
+contract AdvancedNesting is RMRKNesting {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKNesting(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required in order to get you started with implementing the Nested RMRK lego.
+
+<details>
+<summary>The minimal <strong><i>AdvancedNesting.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/nesting/RMRKNesting.sol";
+
+
+contract AdvancedNesting is RMRKNesting {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKNesting(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKNesting` requires custom implementation of minting logic. Available internal functions to use when witing it
+are:
+
+- `_mint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId, bytes memory data)`
+- `_nestMint(address to, uint256 tokenId, uint256 destinationId)`
+
+The latter is used to nest mint the NFT directly to the parent NFT. If you intend to support it at the minting stage,
+you should implement it in your smart contract.
+
+In addition to the minting functions, you should also implement the burning and transfer functions if they apply to your
+use case:
+
+- `_burn(uint256 tokenId)`
+- `transferFrom(address from, address to, uint256 tokenId)`
+- `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
+
+Any additional function supporting your NFT use case and utility can also be added. Remember to thoroughly test your
+smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
+
+Happy nesting! 🐣
