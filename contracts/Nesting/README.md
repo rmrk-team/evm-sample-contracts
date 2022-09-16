@@ -47,8 +47,8 @@ contract SimpleNesting is RMRKNestingImpl {
 
 The `RMRKNestingImpl` implements all of the required functionality of the Nested RMRK lego. It implements minting of parent NFTs as well as child NFTs. Transferring and burning the NFTs is also implemented.
 
-**WARNING: The `RMRKNestingImpl` has no access control implemented. If you intend to use it, make sure to define your
-own.**
+**WARNING: The `RMRKNestingImpl` only has minimal access control implemented. If you intend to use it, make sure to
+define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
 The `constructor` to initialize the `RMRKNestingImpl` accepts the following arguments:
 
