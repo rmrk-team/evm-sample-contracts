@@ -414,3 +414,78 @@ Token totalTokens URI:  ipfs://metadata/5.json
 ````
 
 This conclues our work on the [`SimpleMultiResource.sol`](../MultiResource/SimpleMultiResource.sol). We can now move on to examining the [`AdvancedMultiResource.sol`](../MultiResource/AdvancedMultiResource.sol).
+
+## AdvancedMultiResource
+
+The `AdvancedMultiResource` smart contract allows for more flexibility when using the multi resource lego. It implements
+minimum required implementation in order to be compatible with RMRK multi resource, but leaves more business logic
+implementation freedom to the developer. It uses the
+[`RMRKMultiResource.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/multiresource/RMRKMultiResource.sol)
+import to gain access to the Multi resource lego:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/multiresource/RMRKMultiResource.sol";
+````
+
+We only need `name` and `symbol` of the NFT in order to properly initialize it after the `AdvancedMultiResource`
+inherits it:
+
+````solidity
+contract AdvancedMultiResource is RMRKMultiResource {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKMultiResource(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required to get you started with implementing the Multi resource RMRK lego.
+
+<details>
+<summary>The minimal <strong><i>AdvancedMultiresource.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/multiresource/RMRKMultiResource.sol";
+
+contract AdvancedMultiResource is RMRKMultiResource {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKMultiResource(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKMultiResource` requires custom implementation of minting logis. Available internal functions to use when
+writing it are:
+
+- `_mint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId, bytes memory data)`
+
+In addition to the minting functions, you should also implement the burning, transfer and resource management functions if they apply to your use case:
+
+- `_burn(uint256 tokenId)`
+- `_addResourceEntry(uint64 id, string memory metadataURI)`
+- `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
+- `transferFrom(address from, address to, uint256 tokenId)`
+
+Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
+smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
+
+Happy multiresourcing! 🫧
