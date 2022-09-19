@@ -5,3 +5,4 @@ This section contains the examples of using RMRK legos to build your own smart c
 The examples covered are:
 
 1. [Nesting](./Nesting/README.md) examines the Nesting RMRK lego.
+2. [MultiResource](./MultiResource/README.md) examines the MultiResource RMRK lego.

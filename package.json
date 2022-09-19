@@ -5,11 +5,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy-equippable": "hardhat run scripts/deployEquippable.ts",
-    "deploy-multiresource": "hardhat run scripts/deployMultiresource.ts",
+    "deploy-multi-resource": "hardhat run scripts/deployMultiResource.ts",
     "deploy-nesting": "hardhat run scripts/deployNesting.ts",
     "deploy-nesting-multiresource": "hardhat run scripts/deployNestingMultiresource.ts",
     "deploy-split-equippable": "hardhat run scripts/deploySplitEquippable.ts",
-    "user-journey-nesting": "hardhat run scripts/nestingUserJourney.ts"
+    "user-journey-nesting": "hardhat run scripts/nestingUserJourney.ts",
+    "user-journey-multi-resource": "hardhat run scripts/multiResourceUserJourney.ts"
   },
   "keywords": [],
   "author": "@rmrk-team",
