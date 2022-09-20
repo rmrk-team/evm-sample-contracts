@@ -154,9 +154,9 @@ two arguments:
 - `resourceId`: `uint64` type of argument representing the ID of the resource we are setting
 - `state`: `bool` type of argument representing the validity of the resource
 
-#### `addResourceEntry`
+#### `addResourceToToken`
 
-The `addResourceEntry` is used to add a new resource to the token and accepts three arguments:
+The `addResourceToToken` is used to add a new resource to the token and accepts three arguments:
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding resource to
 - `resourceId`: `uint64` type of argument specifying the ID of the resource we are adding to the token
