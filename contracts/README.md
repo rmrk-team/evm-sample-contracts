@@ -6,3 +6,4 @@ The examples covered are:
 
 1. [Nesting](./Nesting/README.md) examines the Nesting RMRK lego.
 2. [MultiResource](./MultiResource/README.md) examines the MultiResource RMRK lego.
+3. [NestingMultiResource](./NestingMultiResource/) examines the Nesting and MultiResource RMRK legos operating together.
