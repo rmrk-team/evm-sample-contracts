@@ -1293,3 +1293,162 @@ Composed:  [
 
 This concludes our work on the simple Merged equippable RMRK lego composite and we can now move on to examining the
 advanced implementation.
+
+## Advanced MergedEquippable
+
+The `Advanced MergedEquippable` implementation uses the [`AdvancedBase`](../AdvancedBase.sol) and [`AdvancedEquippable`]
+./AdvancedEquippable.sol) and allows for more flexibility when implementing the Merged equippable RMRK lego composite.
+It implements the minimum required implementation in order to be compatible with RMRK merged equippable, but leaves more
+business logic implementation freedom to the developer.
+
+### AdvancedBase
+
+The [`AdvancedBase`](../AdvancedBase.sol) smart contract represents the minimum required implementation in order for the
+smart contract to be compatible with the `Base` RMRK lego. It uses the
+[`RMRKBaseStorage.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/base/RMRKBaseStorage.sol) import to
+gain access to the Base lego:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
+````
+
+We only need `symbol` and `type_` of the base in order to properly initialize it after the `AdvancedBase` inherits it:
+
+````solidity
+contract AdvancedBase is RMRKBaseStorage {
+    constructor(
+        string memory symbol,
+        string memory type_
+        // Custom optional: additional parameters
+    )
+        RMRKBaseStorage(symbol, type_)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required to get you started with implementing the Base RMRK lego.
+
+<details>
+<summary>The minimal <strong><i>AdvancedBase.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
+
+contract AdvancedBase is RMRKBaseStorage {
+    constructor(
+        string memory symbol,
+        string memory type_
+        // Custom optional: additional parameters
+    )
+        RMRKBaseStorage(symbol, type_)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKBaseStorage` requires custom implementation of part management. Available internal functions to use when
+writing it are:
+
+- `_addPart(IntakeStruct memory intakeStruct)`
+- `_addPartList(IntakeStruct[] memory intakeStructs)`
+
+In addition to the part management functions, you should also implement the equippable management function with the
+following internal ones available:
+
+- `_addEquippableAddresses(uint64 partId, address[] memory equippableAddresses)`
+- `_setEquippableAddresses( uint64 partId, address[] memory equippableAddresses)`
+- `_setEquippableToAll(uint64 partId)`
+- `_resetEquippableAddresses(uint64 partId)`
+
+Any additional functions supporting your NFT use case and utility related to the Base NFT lego can also be added.
+Remember to thoroughly test your smart contracts with extensive test suites and define strict access control rules for
+the functions that you implement.
+
+### AdvancedEquippable
+
+The [`AdvancedEquippable`](./AdvancedEquippable.sol) smart contract represents the minimum required implementation in
+order for the smart contract to be compatible with the `MergedEquippable` RMRK lego composite. It uses the
+[`RMRKEquippable.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKEquippable.sol) import to
+gain access to the Merged equippable RMRK lego composite:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
+````
+
+We only need `name` and `symbol` of the NFT collection in order to propely initialize it after the `AdvancedEquippable`
+inherits it:
+
+````solidity
+contract AdvancedEquippable is RMRKEquippable {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKEquippable(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required to get you started with implementing the Merged equippable RMRK lego composite.
+
+<details>
+<summary>The minimal <strong><i>AdvancedEquippable.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
+
+contract AdvancedEquippable is RMRKEquippable {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKEquippable(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKEquippable` requires custom implementation of minting logic. Available internal functions to use when writing
+it are:
+
+- `_mint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId, bytes memory data)`
+- `_nestMint(address to, uint256 tokenId, uint256 destinationId)`
+
+The latter is used to mint a child NFT directly into the parent NFT, so implement it if you forsee it applies to your use case. Additionally burning and transfer functions can be implemented using:
+
+- `_burn(uint256 tokenId)`
+- `transferFrom(address from, address to, uint256 tokenId)`
+- `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
+
+Resource and reference management functions should also be implemented using:
+
+- `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
+- `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
+- `_setValidParentRefId(uint64 refId, address parentAddress, uint64 partId)`
+
+Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
+smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
+
+Happy equipping! 🛠
