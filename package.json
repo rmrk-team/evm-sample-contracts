@@ -12,7 +12,8 @@
     "user-journey-nesting": "hardhat run scripts/nestingUserJourney.ts",
     "user-journey-multi-resource": "hardhat run scripts/multiResourceUserJourney.ts",
     "user-journey-nesting-multi-resource": "hardhat run scripts/nestingMultiResourceUserJourney.ts",
-    "user-journey-merged-equippable": "hardhat run scripts/mergedEquippableUserJourney.ts"
+    "user-journey-merged-equippable": "hardhat run scripts/mergedEquippableUserJourney.ts",
+    "user-journey-split-equippable": "hardhat run scripts/splitEquippableUserJourney.ts"
   },
   "keywords": [],
   "author": "@rmrk-team",
