@@ -1191,3 +1191,158 @@ Composed:  [
 
 This concludes our work on the simple Split equippable RMRK lego composite and we can now move on to examining the
 advanced implementation.
+
+## Advanced SplitEqiuppable
+
+The advanced `SplitEquippable` consists of three smart contracts. The
+[`AdvancedBase`](../MergedEquippable/README.md#advancedbase) is already examined in the `MergedEquippable`
+documentation. Let's first examine the `AdvancedExternalEquip` and then move on to the `AdvancedNestingExternalEquip`.
+
+**NOTE: As the `AdvancedBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
+in the root `contracts/` directory.**
+
+### AdvancedExternalEquip
+
+The [`AdvancedExternalEquip.sol`](./AdvancedExternalEquip.sol) smart contract represents the minimum required
+implementation in order for the smart contract to be compatible with the `MultiResource` and `Equippable` part of the
+`ExternalEquip` RMRK lego composite. It uses the
+[`RMRKExternalEquip`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKExternalEquip.sol) import
+to gain access to the `MultiResource` and `Equippable` part of the External equippable RMRK lego composite:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol";
+````
+
+We only need the `nestingAddress`, which is the address of the deployed `AdvancedNestingExternalEquip` smart contract,
+in order to properly initialize it after the `AdvancedExternalEquip` inherits it:
+
+````solidity
+contract AdvancedExternalEquip is RMRKExternalEquip {
+    constructor(
+        address nestingAddress
+        // Custom optional: additional parameters
+    )
+        RMRKExternalEquip(nestingAddress)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required to get you started with implementing the `MultiResource` and `Equippable` parts of the
+external equippable RMRK lego composite.
+
+<details>
+<summary>The minimal <strong><i>AdvancedExternalEquip.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol";
+
+/* import "hardhat/console.sol"; */
+
+contract AdvancedExternalEquip is RMRKExternalEquip {
+    constructor(
+        address nestingAddress
+        // Custom optional: additional parameters
+    )
+        RMRKExternalEquip(nestingAddress)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKExternalEquip` requires custom implementation of resource management logic. Available internal functions when writing it are:
+
+- `_setNestingAddress(address nestingAddress)`
+- `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
+- `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
+- `_setValidParentRefId(uint64 refId, address parentAddress, uint64 partId)`
+
+### AdvancedNestingExternalEquip
+
+The [`AdvancedNestingExternalEquip`](./AdvancedNestingExternalEquip.sol) smart contracts represents the minimum required
+implementation in order for the smart contract to be compatible with the `Nesting` part of the `ExternalEquip` RMRK lego
+composite. It uses the
+[`RMRKNestingExternalEquip`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol)
+import to gain access to the `Nesting` part of the External equippable RMRK lego composite:
+
+````solidity
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol";
+````
+
+We only need the `name` and `symbol` of the NFT collection in order to properly initialize it after the
+`AdvancedNestingExternalEquip` inherits it:
+
+````solidity
+contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKNestingExternalEquip(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+This is all that is required to get you started with implementing the `Nesting` part of the external equippable RMRK lego composite.
+
+<details>
+<summary>The minimal <strong><i>AdvancedNestingExternalEquip.sol</i></strong> should look like this:</summary>
+
+````solidity
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.8.16;
+
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol";
+
+contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
+    constructor(
+        string memory name,
+        string memory symbol
+        // Custom optional: additional parameters
+    )
+        RMRKNestingExternalEquip(name, symbol)
+    {
+        // Custom optional: constructor logic
+    }
+}
+````
+
+</details>
+
+Using `RMRKNestingExternalEquip`requires custom implementation of minting logic. Available internal functions to use when writing it are:
+
+- `_mint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId)`
+- `_safeMint(address to, uint256 tokenId, bytes memory data)`
+- `_nestMint(address to, uint256 tokenId, uint256 destinationId)`
+
+The latter is used to nest mint the NFT directly to the parent NFT. If you intend to support it at the minting stage,
+you should implement it in your smart contract.
+
+In addition to the minting functions, you should also implement the burning and transfer functions if they apply to your
+use case:
+
+- `_burn(uint256 tokenId)`
+- `transferFrom(address from, address to, uint256 tokenId)`
+- `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
+
+It is also important to implement the function for setting the address of the deployed `AdvancedExternalEquip`:
+
+- `_setEquippableAddress(address equippable)`
+
+Any additional function supporting your NFT use case and utility can also be added. Remember to thoroughly test your
+smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
+
+Happy equipping! 🛠
