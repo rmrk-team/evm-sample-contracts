@@ -25,7 +25,7 @@ In this tutorial we will examine the Nesting RMRK block using two examples:
 - [SimpleNesting](./SimpleNesting.sol) is a minimal implementation of the Nesting RMRK block.
 - [AdvancedNesting](./AdvancedNesting.sol) is a more customizable implementation of the Nesting RMRK block.
 
-Let's first examine the simple, minimal, implementation and move on to the advanced one.
+Let's first examine the simple, minimal, implementation and then move on to the advanced one.
 
 ## SimpleNesting
 
@@ -45,7 +45,8 @@ contract SimpleNesting is RMRKNestingImpl {
 }
 ````
 
-The `RMRKNestingImpl` implements all of the required functionality of the Nested RMRK lego. It implements minting of parent NFTs as well as child NFTs. Transferring and burning the NFTs is also implemented.
+The `RMRKNestingImpl` implements all of the required functionality of the Nested RMRK lego. It implements minting of
+parent NFTs as well as child NFTs. Transferring and burning the NFTs is also implemented.
 
 **WARNING: The `RMRKNestingImpl` only has minimal access control implemented. If you intend to use it, make sure to
 define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
@@ -59,7 +60,8 @@ cummulative number of both parent and child NFTs
 - `pricePerMint_`: `uint256` argument that defines the price per the NFT mint. It is expressed in `wei` or minimum
 denomination of the native currency of the EVM to which the smart contract is deployed to
 
-In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned above, in the `constructor` and pass them to `RMRKNestingImpl`:
+In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned
+above, in the `constructor` and pass them to `RMRKNestingImpl`:
 
 ````solidity
     constructor(
@@ -96,7 +98,7 @@ contract SimpleNesting is RMRKNestingImpl {
 Let's take a moment to examine the core of this implementation, the `RMRKNestingImpl`.
 
 It uses the `OwnableLock`, `RMRKMintingUtils` and `RMRKNesting` smart contracts from `RMRK` stack as well as 
-OpenZeppelin's `String` utility. To dive deeper into their operaion, plesase refer to their respective documentation.
+OpenZeppelin's `String` utility. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -501,7 +503,7 @@ contract AdvancedNesting is RMRKNesting {
 
 </details>
 
-Using `RMRKNesting` requires custom implementation of minting logic. Available internal functions to use when witing it
+Using `RMRKNesting` requires custom implementation of minting logic. Available internal functions to use when writing it
 are:
 
 - `_mint(address to, uint256 tokenId)`

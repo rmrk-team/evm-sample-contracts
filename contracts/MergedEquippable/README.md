@@ -29,14 +29,14 @@ Each slot of the NFT can have a predefined collection of allowed NFT collections
 
 In this tutorial we will examine the MergedEquippable composite of RMRK blocks:
 
-- [SimpleEquippable](./SimpleEquippable.sol) and [SimpleBase](./SimpleBase.sol) work together to showcase the minimal
+- [SimpleEquippable](./SimpleEquippable.sol) and [SimpleBase](../SimpleBase.sol) work together to showcase the minimal
 implementation of the MergedEquippable RMRK lego composite.
-- [AdvancedEquippable](./AdvancedEquippable.sol) and [AdvancedBase](./AdvancedBase.sol) work together to showcase a more
+- [AdvancedEquippable](./AdvancedEquippable.sol) and [AdvancedBase](../AdvancedBase.sol) work together to showcase a more
 customizable implementation of the MergedEquippable RMRK lego composite.
 
 Let's first examine the simple, minimal, implementation and then move on to the advanced one.
 
-## MergedEquippable
+## Simple MergedEquippable
 
 The simple `MergedEquippable` consists of two smart contracts. Let's first examine the `SimpleBase` smart contract and
 then move on to the `SimpleEquippable`.
@@ -54,7 +54,7 @@ is used by importing it using the `import` statement below the `pragma` definiti
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.sol";
 ````
 
-Once the `RMRKBaseStorageImpl.sol` is imported into out file, we can set the inheritance of out smart contract:
+Once the `RMRKBaseStorageImpl.sol` is imported into out file, we can set the inheritance of our smart contract:
 
 ````solidity
 contract SimpleBase is RMRKBaseStorageImpl {
@@ -73,7 +73,7 @@ The `constructor` to initialize the `RMRKBaseStorageImpl` accepts the following 
 - `symbol_`: `string` type of argument representing the symbol if the base lego
 - `type_`: `string` type of argument representing the type of the base lego
 
-In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned
+In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments, mentioned
 above, in the `constructor` and pass them to `RMRKBaseStorageImpl`:
 
 ````solidity
@@ -364,9 +364,9 @@ and accepts three arguments:
 - `parentAddress`: `address` type of argument specifying the address into which the resource is equippable
 - `slotPartId`: `uint64` type of argument specifying the ID of the part it can be equipped to
 
-#### Deploy script
+### Deploy script
 
-The deploy script for the simple `MergedEquippable` smart contract resides in the
+The deploy script for the simple `MergedEquippable` resides in the
 [`deployEquippable.ts`](../../scripts/deployEquippable.ts).
 
 The seploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `RMRKEquipRenderUtils` and `ContractTransaction`
@@ -462,11 +462,12 @@ Deploying smart contracts
 Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem) and 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Base)
 ````
 
-#### User journey
+### User journey
 
 With the deploy script ready, we can examine how the journey of a user using merged equippable would look like.
 
-The base of the user jourey script is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
+The base of the user jourey script is the same as the deploy script, as we need to deploy the smart contract in order
+to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
@@ -671,10 +672,10 @@ const totalBirds = 5;
 
 The `mintToken` function should accept two arguments (`Kanaria` and `Gem`). We will prepare a batch of transactions to
 mint the tokens and send them. Once the tokens are minted, we will output the total number of tokens minted. While the
-`Kanaria` tokens will be minted to the `owner` address, the `Gem` tokens will be minted using the [`mintNesting`]
-#mintnesting) method in order to be minted directly to the Kanaria tokens. We will mint three `Gem` tokens to each
-`Kanaria`. Since all of the nested tokens need to be approved, we will also build a batch of transaction to accept a
-single nest-minted `Gem` for each `Kanaria`:
+`Kanaria` tokens will be minted to the `owner` address, the `Gem` tokens will be minted using the
+[`mintNesting`](#mintnesting) method in order to be minted directly to the Kanaria tokens. We will mint three `Gem`
+tokens to each `Kanaria`. Since all of the nested tokens need to be approved, we will also build a batch of transaction
+to accept a single nest-minted `Gem` for each `Kanaria`:
 
 ````typescript
 async function mintTokens(
@@ -790,7 +791,7 @@ and the address of the `Base` smart contract. We will add 4 resources for each g
 match each slot. Reference IDs are specified for easier reference from the child's perspective. The resources will be
 added one by one. Note how the full versions of gems don't have the `equippableRefId`.
 
-Having added the resource entries, we can now add the valid parent reference IDs using the [`setValidParentRefd`
+Having added the resource entries, we can now add the valid parent reference IDs using the [`setValidParentRefd`]
 (#setvalidparentrefid). For example if we want to add a valid reference for the left gem, we need to pass thee value of
 equippable reference ID of the left gem, parent smart contract address (in our case this is `Kanaria` smart contract)
 and ID of the slot which was defined in `Base` (this is ID number 9 in the `Base` for the left gem).

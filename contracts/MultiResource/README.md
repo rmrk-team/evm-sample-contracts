@@ -22,7 +22,7 @@ In this tutorial we will examine the MultiResource RMRK block using two examples
 - [AdvancedMultiResource](./AdvancedMultiResource.sol) is a more customizable implementation of the MultiResource RMRK
 block.
 
-Let's first examine the simple, minimal, implementation and move on to the advanced one.
+Let's first examine the simple, minimal, implementation and then move on to the advanced one.
 
 ## SimpleMultiResource
 
@@ -185,7 +185,7 @@ retrieving the URI
 The deploy script for the `SimpleMultiResource` smart contract resides in the
 [`deployNesting.ts`](../../scripts/deployMultiResource.ts).
 
-The script uses the `ethers`, `SimpleMultiResource` and `ContractTransactio` imports. The empty deploy script should look like
+The script uses the `ethers`, `SimpleMultiResource` and `ContractTransaction` imports. The empty deploy script should look like
 this:
 
 ````typescript
@@ -335,7 +335,7 @@ Once the resources are added to the smart contract we can assign each resource t
   await Promise.all(allTx.map((tx) => tx.wait()));
 ````
 
-After the resources are added to the NFTs, we have ta accept them. We will do this by once again building a batch of
+After the resources are added to the NFTs, we have to accept them. We will do this by once again building a batch of
 transactions for each of the tokens and send them at the end:
 
 ````typescript
@@ -413,7 +413,7 @@ Token 1 URI:  ipfs://metadata/1.json
 Token totalTokens URI:  ipfs://metadata/5.json
 ````
 
-This conclues our work on the [`SimpleMultiResource.sol`](../MultiResource/SimpleMultiResource.sol). We can now move on to examining the [`AdvancedMultiResource.sol`](../MultiResource/AdvancedMultiResource.sol).
+This conclues our work on the [`SimpleMultiResource.sol`](./SimpleMultiResource.sol). We can now move on to examining the [`AdvancedMultiResource.sol`](./AdvancedMultiResource.sol).
 
 ## AdvancedMultiResource
 
@@ -447,7 +447,7 @@ contract AdvancedMultiResource is RMRKMultiResource {
 This is all that is required to get you started with implementing the Multi resource RMRK lego.
 
 <details>
-<summary>The minimal <strong><i>AdvancedMultiresource.sol</i></strong> should look like this:</summary>
+<summary>The minimal <strong><i>AdvancedMultiResource.sol</i></strong> should look like this:</summary>
 
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
@@ -471,7 +471,7 @@ contract AdvancedMultiResource is RMRKMultiResource {
 
 </details>
 
-Using `RMRKMultiResource` requires custom implementation of minting logis. Available internal functions to use when
+Using `RMRKMultiResource` requires custom implementation of minting logic. Available internal functions to use when
 writing it are:
 
 - `_mint(address to, uint256 tokenId)`
