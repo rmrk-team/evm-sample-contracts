@@ -1,44 +1,61 @@
 # RMRK Solidity
 
-A set of Solidity sample contracts for the RMRK standard implementation on EVM.
+A set of Solidity sample contracts using the RMRK standard implementation on EVM.
 
-# Legos
-There are a variety of ways to use these implementations, all ERC721 compatible:
-1. Multiresource Only
-1. Nesting Only
-1. Nesting + Multiresource
-1. Nesting + Multiresource + Equippable (+Base) 
+## RMRK Legos
 
-The first 3 use cases have stand alone versions with both minimal and ready to use implementations. 
-For the latter, due to Solidity contract size limits, nesting and ownership are handled by one contract, and multiresource + equippable logic in another one. Base is also a separate contract for practical reasons, since it can be used by many tokens. We are working on a merged version which includes the minimum viable functionality in a single contract.
+RMRK is a set of NFT standards which compose several "NFT 2.0 lego" primitives. Putting these legos together allows a
+user to create NFT systems of arbitrary complexity.
 
-![image Legos](./RMRKLegos.png)
+There are various possibilities on how to combine these legos, all of which are ERC721 compatible:
+
+1. Multiresource
+    - Only uses the Multiresource RMRK lego
+2. Nesting
+    - Only uses the Nesting RMRK lego
+3. Nesting with Multiresource
+    - Uses both Nesting and Multiresource RMRK legos
+4. Equippable Multiresource with Nesting and Base
+    - Merged equippable is a more compact RMRK lego composite that uses less smart contracts, but has less space for
+    custom logic implementation
+    - Split equippable is a more customizable RMRK lego composite that uses more smart contracts, but has more space for
+    custom logic implementation
+
+The first 3 use cases have stand alone versions with both minimal and ready to use implementations. The latter two, due
+to Solidity contract size constraints, Multiresource and Equippable logic are included in a simgle smart contract, while
+Nesting and ownership are handled by either the same smart contract or a separate one. Base is also a separate smart
+contract for practical reasons, since one Base can be used by multiple tokens.
+
+![RMRK Legos infographic](./RMRKLegoInfographics.png)
 
 
 ## Installation
 
-You can start directly using the contracts by installing the repo:
+You can start using the RMRK EVM implementation smart contracts by installing the dependency to your project:
+
 ```
-$ npm install @rmrk-team/evm-contracts
+npm install @rmrk-team/evm-contracts
 ```
 
-Then simply follow one of the samples under contracts. The versions starting with Simple are ready to use, you can simply extend those for your own contracts and pass fixed or as argument parameters to the constructor. 
-// TODO: Expand on what they have included.
+Once you have installed the `@rmrk-team/evm-contracts` dependency, you can refer to one of the samples residing in this
+repository's [`contracts/`](./contracts/README.md) directory. The versions starting with `Simple` keyword are ready to
+use; you can simply extend those for your own contracts and pass fixed or variable parameters to the constructor. The
+examples starting with `Advanced` keyword showcase the implementation where you have more freedom in implementing custom
+business logic. The available internal functions when building it are outlined within the examples.
 
-For each of the lego combinations we have a sample Simple version.
-1. [Multiresource Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleMultiResource.sol)
-1. [Nesting Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNesting.sol)
-1. [Nesting + Multiresource](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNestingMultiResource.sol)
-1. [Equippable(Merged)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleEquippable.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleBase.sol)
-1. [Nesting(ExternalEquip)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleNestingExternalEquip.sol) + [Multiresource + Equippable(External)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleExternalEquip.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/SimpleBase.sol). If you don't need much custom logic, you will probably want to use the Merged version.
+For each of the lego combinations we have sample versions:
 
-For each of the lego combinations we have a sample Advanced version. It includes comments on the expected functionality to be implemented, and the internal functions available to do so. In this case, there's a merged version for equippable, but it will likely exceed the size limitation when fully implemented.
-1. [Multiresource Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedMultiResource.sol)
-1. [Nesting Only](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNesting.sol)
-1. [Nesting + Multiresource](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNestingMultiResource.sol)
-1. [Equippable(Merged)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedEquippable.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedBase.sol)
-1. [Nesting(ExternalEquip)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedNestingExternalEquip.sol) + [Multiresource + Equippable(External)](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedExternalEquip.sol) + [Base](https://github.com/rmrk-team/evm-sample-contracts/blob/master/contracts/AdvancedBase.sol)
+1. [`Multiresource`](./contracts/MultiResource/README.md)
+2. [`Nesting`](./contracts/Nesting/README.md)
+3. [`Nesting with Multiresource`](./contracts/NestingMultiResource/README.md)
+4. [`MergedEquippable`](./contracts/MergedEquippable/README.md)
+5. [`SplitEquippable`](./contracts/SplitEquippable/README.md)
 
-Additionally we have render util contracts. The reason these are separate is to save contract space. You can have a single deploy of those and use them on every contract or use exising ones (We'll provide them in the future).
-1. @rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKMultiResourceRenderUtils.sol for shorcuts to get resource objects from Ids, and accepted or pending resource objects for a given token. The MR lego provides only Ids for the latter.
-1. @rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol for the same shorcuts on extended resources (with equip information). This contract also has the views to get what a token has equipped and to compose equippables for a token-resource.
+Additionally we have render util contracts. The reason these are separate is to save contract space. You can have a single deploy of those and use them on every contract or even use the exising ones (We'll provide them in the future):
+
+1. [`MultiResource render utils`](@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKMultiResourceRenderUtils.sol)
+provides utilities to get resource objects from IDs, and accepted or pending resource objects for a given token. The
+MultiResource lego provides only IDs for the latter.
+2. [`Equip render utils`](@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol) provides the same
+shorcuts on extended resources (with equip information). This utility smart contract also has views to get information
+about what is currently equipped to a token and to compose equippables for a token resource.
