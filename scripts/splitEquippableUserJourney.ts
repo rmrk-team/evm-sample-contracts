@@ -71,6 +71,7 @@ async function deployContracts(): Promise<
   await gemNesting.deployed();
   await gemEquip.deployed();
   await base.deployed();
+  await views.deployed();
 
   const allTx = [
     await kanariaNesting.setEquippableAddress(kanariaEquip.address),

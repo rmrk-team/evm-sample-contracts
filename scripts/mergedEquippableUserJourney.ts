@@ -71,6 +71,7 @@ async function deployContracts(): Promise<
   await kanaria.deployed();
   await gem.deployed();
   await base.deployed();
+  await views.deployed();
   console.log(
     `Sample contracts deployed to ${kanaria.address}, ${gem.address} and ${base.address}`
   );

@@ -2,9 +2,8 @@
 
 A *resource* is a type of output for an NFT, usually a media file.
 
-A resource can be an image, a movie, a PDF file, or even a BASE (a special entity - see
-[here](https://docs.rmrk.app/lego25-equippable)). A multi-resource NFT is one that can output a different resource based
-on specific contextual information, e.g. load a PDF if loaded into a PDF reader, vs. loading an image in a virtual
+A resource can be an image, a movie, a PDF file,... A multi-resource NFT is one that can output a different resource
+based on specific contextual information, e.g. load a PDF if loaded into a PDF reader, vs. loading an image in a virtual
 gallery.
 
 A resource is NOT an NFT or a standalone entity you can reference. It is part of an NFT - one of several outputs it can
@@ -127,7 +126,7 @@ The `mint` function is used to mint parent NFTs and accepts two arguments:
 There are a few constraints to this function:
 
 - after minting, the total number of tokens should not exceed the maximum allowed supply
-- attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
+- attempting to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 
 #### `getFallbackURI`
@@ -351,8 +350,13 @@ transactions for each of the tokens and send them at the end:
   await Promise.all(allTx.map((tx) => tx.wait()));
 ````
 
-**NOTE: Accepting resources for tokens is done in a FIFO like stack. So if you have 3 pending resources and accept the
-first one using index 0, the remaining indices get updated and the last resource can now be found at index 1.**
+**NOTE: Accepting resources is done in a array that gets elements, new resources, appended to the end of it. Once the resource is accepted, the resource that was added lats, takes its place. For exaple:
+
+We have resources `A`, `B`, `C` and `D` in the pending array organised like this: [`A`, `B`, `C`, `D`].
+
+Accepting the resource `A` updates the array to look like this: [`D`, `B`, `C`].
+
+Accepting the resource `B` updates the array to look like this: [`A`, `D`, `C`].**
 
 Finally we can check wether the URI are assigned as expected and output the values to the console:
 

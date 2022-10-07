@@ -151,7 +151,7 @@ The `totalResources` is used to retrieve a total number of resources defined in 
 The deploy script for the `SimpleNestingMultiResource` smart contract resides in the
 [`deployNestingMultiResource.ts`](../../scripts/deployNestingMultiResource.ts).
 
-The script uses the `ethers`, `SimpleNesting` and `ContractTransactio` imports. The empty deploy script should look like
+The script uses the `ethers`, `SimpleNesting` and `ContractTransaction` imports. The empty deploy script should look like
 this:
 
 ````typescript
@@ -294,7 +294,7 @@ Once the resources are added to the smart contract we can assign each resource t
 ````
 
 After the resources are added to the NFTs, we have to accept them. We will do this by once again building a batch of
-transactions for each of the tokens and send them at the end:
+transactions for each of the tokens and send them out one by one at the end:
 
 ````typescript
   console.log("Accepting resources to tokens");
@@ -309,8 +309,13 @@ transactions for each of the tokens and send them at the end:
   await Promise.all(allTx.map((tx) => tx.wait()));
 ````
 
-**NOTE: Accepting resources for tokens is done in a FIFO like stack. So if you have 3 pending resources and accept the
-first one using index 0, the remaining indices get updated and the last resource can now be found at index 1.**
+**NOTE: Accepting resources is done in a array that gets elements, new resources, appended to the end of it. Once the resource is accepted, the resource that was added lats, takes its place. For exaple:
+
+We have resources `A`, `B`, `C` and `D` in the pending array organised like this: [`A`, `B`, `C`, `D`].
+
+Accepting the resource `A` updates the array to look like this: [`D`, `B`, `C`].
+
+Accepting the resource `B` updates the array to look like this: [`A`, `D`, `C`].**
 
 Having accepted the resources, we can check that the URIs are assigned as expected:
 
@@ -324,7 +329,7 @@ Having accepted the resources, we can check that the URIs are assigned as expect
 ````
 
 With the resources properly assigned to the tokens, we can now nest the token with ID 5 into the token with ID 1 and
-check their ownershipt to verify successful nesting:
+check their ownership to verify successful nesting:
 
 ````typescript
   console.log("Nesting token with ID 5 into token with ID 1");

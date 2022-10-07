@@ -2,7 +2,7 @@
 
 The `ExternalEquippable` composite of RMRK legos uses the [`Nesting`](../Nesting/README.md),
 [`MultiResource`](../MultiResource/README.md), [`Equippable`](../MergedEquippable/README.md#equippable) and
-[`Base`](../MergedEquippable/README.md#base) RMRK legos. Unlike [`SplitEquippable`](../SplitEquippable/README.md) RMRK
+[`Base`](../MergedEquippable/README.md#base) RMRK legos. Unlike [`MergedEquippable`](../MergedEquippable/README.md) RMRK
 lego composite, the external equippable splits `Nesting` apart from `MultiResource` and `Equippable` in order to provide
 more space for custom business logic implementation.
 
@@ -269,7 +269,7 @@ accepts one argument:
 The deploy script for the simple `SplitEquippable` resides in the
 [`deploySplitEquippable.ts`](../../scripts/deploySplitEquippable.ts).
 
-The seploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `SimpleNestingExternalEquip`,
+The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `SimpleNestingExternalEquip`,
 `RMRKEquipRenderUtils` and `ContractTransaction` imports. We will also define the `pricePerMint` constant, which will be
 used to set the minting price of the tokens. The empty deploy script should look like this:
 
@@ -1228,6 +1228,9 @@ contract AdvancedExternalEquip is RMRKExternalEquip {
     }
 }
 ````
+
+**NOTE: Passing `0x0` as the value of `nestingAddress` allows us to initialize the smart contract without having the
+addeess of the deployed `AdvancedExternalEquip` and allows us to add it at a later point in time.**
 
 This is all that is required to get you started with implementing the `MultiResource` and `Equippable` parts of the
 external equippable RMRK lego composite.

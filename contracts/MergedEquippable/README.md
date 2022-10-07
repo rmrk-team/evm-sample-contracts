@@ -10,8 +10,8 @@ one.
 A *Base* can be considered a catalogue of parts from which an NFT can be composed. Parts can be either of the slot type
 or fixed type. Slots are intended for equippables.
 
-**NOTE: A base is referenced in an NFT as a separate resource by specifying the base ID and cherry picking the list of
-parts from the base for that NFT instance.**
+**NOTE: Bases are used through resources. Resources can cherry pick from the list of parts within the base, they can
+also define the slots they are allowed to receive.**
 
 Bases can be of different media types.
 
@@ -22,6 +22,10 @@ are PNG, SVG, audio, video, even mixed.
 
 Equippables are NFTs that can be equipped in the before metioned slots. They have a set format and predefined space in
 the parent NFT.
+
+Resources that can be equipped into a slot each have a reference ID. The reference ID can be used to specify which
+parent NFT the group of resources belonging to a specific reference ID can be equipped to. Additionally slots can
+specify which collection can be used within it or to allow any collection to be equipped into it.
 
 Each slot of the NFT can have a predefined collection of allowed NFT collections to be equipped to this slot.
 
@@ -184,10 +188,11 @@ described above. So an example of two IntakeStructs that would be passed to the 
 
 ##### `addEquippableAddresses`
 
-The `addEqippableAddresses` function is used to add a number of equippable addresses to a single base entry. These
+The `addEquippableAddresses` function is used to add a number of equippable addresses to a single base entry. These
 define the collections that are allowed to be equipped in place of the base entry. It accepts two arguments:
 
-- `partId`: `uint64` type of argument specifying the ID of the part that we are adding the equippable addresses to
+- `partId`: `uint64` type of argument specifying the ID of the part that we are adding the equippable addresses to.
+Only parts of slot type are valid.
 - `equippableAddresses`: `address[]` type of argument specifying the array of addresses of the collections that may
 equip this part
 
@@ -196,7 +201,8 @@ equip this part
 The `setEquippableAddreses` function is used to update the equippable addresses of a single base entry. 
 Using it overwrites the currently set equippable addresses. It accepts two arguments:
 
-- `partId`: `uint64` type of argument specifying the ID of the part that we are setting the equippable addresses for
+- `partId`: `uint64` type of argument specifying the ID of the part that we are setting the equippable addresses for.
+Only parts of slot type are valid.
 - `equippableAddresses`: `address[]` type of argument specifying the array of addresses of the collections that may
 equip this part
 
@@ -212,7 +218,8 @@ argument:
 The `resetEquippableAddresses` function is used to remove all of the entries allowing for the entry to be equipped and
 accepts one argument:
 
-- `partId`: `uint64` type of argument specifying which part we want to remove the equippable addresses from
+- `partId`: `uint64` type of argument specifying which part we want to remove the equippable addresses from. Only
+parts of slot type are valid.
 
 ### SimpleEquippable
 
@@ -224,7 +231,7 @@ is used by importing it using the `import` statement below the `pragma` definiti
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.sol";
 ````
 
-The [`RMRKEquipRednerUtils`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/utils/RMRKEquipRenderUtils.sol) is
+The [`RMRKEquipRenderUtils`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/utils/RMRKEquipRenderUtils.sol) is
 imported in the same manner, but only so that we can use it within the user journey script:
 
 ````solidity
@@ -301,8 +308,8 @@ error RMRKMintUnderpriced();
 error RMRKMintZero();
 ````
 
-`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero` is used
-when attempting to mint 0 tokens.
+`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
+used when attempting to mint 0 tokens.
 
 ##### `mint`
 
@@ -314,7 +321,7 @@ The `mint` function is used to mint parent NFTs and accepts two arguments:
 There are a few constraints to this function:
 
 - after minting, the total number of tokens should not exceed the maximum allowed supply
-- attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
+- attempting to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 - function can only be called while the sale is still open
 
@@ -349,7 +356,9 @@ The `addResourceEntry` is used to add a new resource of the collection and accep
 
 - `resource`: `string` type of argument specifying the `ExtendedResource` structure. It consists of:
     - `id`: `uint64` type of argument specifying the ID of this resource
-    - `equippableRefId`: `uint64` type of argument specifying the ID of the equippable ID object
+    - `equippableRefId`: `uint64` type of argument specifying the ID of the group this resource belongs to. This ID
+    can then be referenced in the `setValidParentRefId` in order to allow every resource with this equippable
+    reference ID to be equipped into an NFT
     - `baseAddress`: `address` type of argument specifying the address of the Base smart contract
     - `metadataURI`: `string` type of argument specifying the URI of the resource
 - `fixedPartIds`: `uint64[]` type of argument specifying the fixed parts IDs for this resource
@@ -357,10 +366,10 @@ The `addResourceEntry` is used to add a new resource of the collection and accep
 
 ##### `setValidParentRefId`
 
-The `setValidParentRefId` is used to declare which resources are equippable into the parent address at the given slot
-and accepts three arguments:
+The `setValidParentRefId` is used to declare which group of resources are equippable into the parent address at the
+given slot and accepts three arguments:
 
-- `referenceId`: `uint64` type of argument specifying the resources that can be equipped
+- `referenceId`: `uint64` type of argument specifying the group of resources that can be equipped
 - `parentAddress`: `address` type of argument specifying the address into which the resource is equippable
 - `slotPartId`: `uint64` type of argument specifying the ID of the part it can be equipped to
 
@@ -369,7 +378,7 @@ and accepts three arguments:
 The deploy script for the simple `MergedEquippable` resides in the
 [`deployEquippable.ts`](../../scripts/deployEquippable.ts).
 
-The seploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `RMRKEquipRenderUtils` and `ContractTransaction`
+The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `RMRKEquipRenderUtils` and `ContractTransaction`
 imports. We will also define the `pricePerMint` constant, which will be used to set the minting price of the tokens.
 The empty deploy script should look like this:
 
@@ -427,6 +436,7 @@ async function deployContracts(): Promise<
   await kanaria.deployed();
   await gem.deployed();
   await base.deployed();
+  await views.deployed();
   console.log(
     `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${base.address} (Base)`
   );
@@ -524,9 +534,12 @@ main().catch((error) => {
 });
 ````
 
+**NOTE: The scripts in these examples are being run in the Hardhat's emulated network. In order to use another, please
+refer to (Hardhat's network documentation)[https://hardhat.org/hardhat-network/docs/overview#hardhat-network].**
+
 Once the smart contracts are deployed, we can setup the Base. We will set it up have two fixed part options for
 background, head, body and wings. Additionally we will add three slot options for gems. All of these will be added 
-sing the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupBase` function should look
+using the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupBase` function should look
 like this:
 
 ````typescript
@@ -650,6 +663,8 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
   console.log("Base is set");
 }
 ````
+
+**NOTE: The `metadataURI` of a slot can be used to retrieve a fallback resource when no resource is equipped into it.**
 
 Notice how the `z` value of the background is `0` and that of the head is `3`. Also note how the `itemType` value of
 the `Slot` type of fixed items is `2` and that of equippable items is `1`. Additionally the `metadataURI` is usually
@@ -792,7 +807,7 @@ match each slot. Reference IDs are specified for easier reference from the child
 added one by one. Note how the full versions of gems don't have the `equippableRefId`.
 
 Having added the resource entries, we can now add the valid parent reference IDs using the [`setValidParentRefd`]
-(#setvalidparentrefid). For example if we want to add a valid reference for the left gem, we need to pass thee value of
+(#setvalidparentrefid). For example if we want to add a valid reference for the left gem, we need to pass the value of
 equippable reference ID of the left gem, parent smart contract address (in our case this is `Kanaria` smart contract)
 and ID of the slot which was defined in `Base` (this is ID number 9 in the `Base` for the left gem).
 
@@ -968,7 +983,7 @@ In order for the `addKanariaResources` and `addGemResources` to be called, we ha
 ````
 
 With `Kanaria`s and `Gem`s ready, we can equip the gems to Kanarias using the `equipGems` function. We will build a
-batch of `equip` transactions and send it all at once:
+batch of `equip` transactions and then send them one after the other:
 
 ````typescript
 async function equipGems(kanaria: SimpleEquippable): Promise<void> {
@@ -1024,6 +1039,9 @@ async function composeEquippables(
   );
 }
 ````
+
+**NOTE: Using `RMRKEquipRenderUtils` is not required for Equippable to work, it just provides a dedicated utility for
+easier viewing of the full composites.**
 
 In order for the `composeEquippables` to be called, we have to add it to the `main` function:
 
