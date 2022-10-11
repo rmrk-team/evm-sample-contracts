@@ -17,6 +17,7 @@ async function deployContracts(): Promise<
 > {
   console.log("Deploying smart contracts");
 
+  const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
@@ -25,13 +26,21 @@ async function deployContracts(): Promise<
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
     3000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();

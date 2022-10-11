@@ -34,6 +34,7 @@ async function deployContracts(): Promise<
     RMRKEquipRenderUtils
   ]
 > {
+  const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
   const nestingFactory = await ethers.getContractFactory(
     "SimpleNestingExternalEquip"
@@ -47,14 +48,22 @@ async function deployContracts(): Promise<
       "KAN",
       1000,
       pricePerMint,
-      ethers.constants.AddressZero
+      ethers.constants.AddressZero,
+      "ipfs://collectionMeta",
+      "ipfs://tokenMeta",
+      await beneficiary.getAddress(),
+      10
     );
   const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
     "Gem",
     "GM",
     3000,
     pricePerMint,
-    ethers.constants.AddressZero
+    ethers.constants.AddressZero,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
@@ -250,7 +259,7 @@ async function addKanariaResources(
   let tx = await kanaria.addResourceEntry(
     {
       id: resourceDefaultId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: ethers.constants.AddressZero, // base is not needed here
       metadataURI: "ipfs://default.png",
     },
@@ -262,7 +271,7 @@ async function addKanariaResources(
   tx = await kanaria.addResourceEntry(
     {
       id: resourceComposedId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: baseAddress, // Since we're using parts, we must define the base
       metadataURI: "ipfs://meta1.json",
     },
@@ -313,7 +322,7 @@ async function addGemResources(
       // Full version for first type of gemNesting, no need of refId or base
       {
         id: 1,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/full.svg`,
       },
@@ -324,7 +333,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gemNesting
       {
         id: 2,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/left.svg`,
       },
@@ -335,7 +344,7 @@ async function addGemResources(
       // Equipped into mid slot for first type of gemNesting
       {
         id: 3,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/mid.svg`,
       },
@@ -346,7 +355,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gemNesting
       {
         id: 4,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/right.svg`,
       },
@@ -357,7 +366,7 @@ async function addGemResources(
       // Full version for second type of gemNesting, no need of refId or base
       {
         id: 5,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: ethers.constants.AddressZero,
         metadataURI: `ipfs://gems/typeB/full.svg`,
       },
@@ -368,7 +377,7 @@ async function addGemResources(
       // Equipped into left slot for second type of gemNesting
       {
         id: 6,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/left.svg`,
       },
@@ -379,7 +388,7 @@ async function addGemResources(
       // Equipped into mid slot for second type of gemNesting
       {
         id: 7,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/mid.svg`,
       },
@@ -390,7 +399,7 @@ async function addGemResources(
       // Equipped into right slot for second type of gemNesting
       {
         id: 8,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/right.svg`,
       },
@@ -405,12 +414,12 @@ async function addGemResources(
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gemNesting, which sets its equippableRefId to equippableRefIdLeftGem
+  // e.g. Any resource on gemNesting, which sets its equippableGroupId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanariaNesting on slot 9 (left gemNesting).
   allTx = [
-    await gem.setValidParentRefId(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentRefId(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentRefId(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
+    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
+    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 

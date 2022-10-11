@@ -12,13 +12,21 @@ async function main() {
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
   const child: SimpleNesting = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
 
   await parent.deployed();
@@ -72,7 +80,7 @@ async function main() {
 
   // Send 1st child to owner:
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, 0, owner.address);
+  tx = await parent.unnestChild(1, 0, owner.address, false);
   await tx.wait();
 
   parentId = await child.ownerOf(1);

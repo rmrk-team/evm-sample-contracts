@@ -8,6 +8,19 @@ contract SimpleNesting is RMRKNestingImpl {
         string memory name,
         string memory symbol,
         uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKNestingImpl(name, symbol, maxSupply, pricePerMint) {}
+        uint256 pricePerMint,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 }

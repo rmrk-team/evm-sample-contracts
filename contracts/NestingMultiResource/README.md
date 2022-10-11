@@ -45,14 +45,28 @@ The `constructor` in this case accepts no arguments as all of the arguments requ
 - `1000`: represents the `maxSupply_` argument and sets the maximum amount of tokens in the collection
 - `100_000_000`: represents the `pricePerMint_` argument and sets the price of minting one token in wei or the lowest
 denomination of the native currency of the EVM to which the smart contract is deployed to
-- `ipfs://meta`: represents the `collectionMetadata_` argument and sets the base URI of the collection metadata
+- `ipfs://meta`: represents the `collectionMetadata_` argument and sets the URI of the collection metadata
+- `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the base URI of the token metadata
+- `msg.sender`: represents the `royaltyRecipient` argument and sets the address of the recipient of royalty fees
+- `10`: represents the `royaltyPercentageBps` argument and sets the value of royalty percentage in basis points
+
+**NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
+To put it another way; 1 basis point equals 0.01%.**
 
 With the arguments passed upon initialization defined, we can add our constructor:
 
 ````solidity
     constructor()
-        RMRKNestingMultiResourceImpl("SimpleNestingMultiResource", "SNMR", 1000, 100_000_000, "ipfs://meta")
-    {}
+    RMRKNestingMultiResourceImpl(
+        "SimpleNestingMultiResource",
+        "SNMR",
+        1000,
+        100_000_000,
+        "ipfs://meta",
+        "ipfs://tokenMeta",
+        msg.sender,
+        10
+    ) {}
 ````
 
 <details>
@@ -66,8 +80,16 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestingMultiResou
 
 contract SimpleNestingMultiResource is RMRKNestingMultiResourceImpl {
     constructor()
-        RMRKNestingMultiResourceImpl("SimpleNestingMultiResource", "SNMR", 1000, 100_000_000, "ipfs://meta")
-    {}
+    RMRKNestingMultiResourceImpl(
+        "SimpleNestingMultiResource",
+        "SNMR",
+        1000,
+        100_000_000,
+        "ipfs://meta",
+        "ipfs://tokenMeta",
+        msg.sender,
+        10
+    ) {}
 }
 ````
 
@@ -77,9 +99,8 @@ contract SimpleNestingMultiResource is RMRKNestingMultiResourceImpl {
 
 Let's take a moment to examine the core of this implementation, the `RMRKNestingMultiResourceImpl`.
 
-It uses `RMRKMintingUtils`, `RMRKCollectionMetadata` and `RMRKMultiResource` smart contracts from `RMRK` stack as well
-as OpenZeppelin's `Strings` utility. To dive deeper into their operation, please refer to their respective
-documentation.
+It uses `RMRKRoyalties`, `RMRKNestingMultiResource`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts
+from `RMRK` stack. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -88,8 +109,8 @@ error RMRKMintUnderpriced();
 error RMRKMintZero();
 ````
 
-`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero` is used
-when attempting to mint 0 tokens.
+`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
+used when attempting to mint 0 tokens.
 
 #### `mint`
 
@@ -104,29 +125,15 @@ There are a few constraints to this function:
 - attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 
-#### `getFallbackURI`
+#### `mintNesting`
 
-The `getFallbackURI` is used to retrieve the fallback URI of the collection.
+The `mintNesting` function is used to mint child NFTs to be owned by the parent NFT and accepts three arguments:
 
-#### `setFallbackURI`
+- `to`: `address` type of argument specifying the address of the smart contract to which the parent NFT belongs to
+- `numToMint`: `uint256` type of argument specifying the amount of tokens to be minted
+- `destinationId`: `uint256` type of argument specifying the ID of the parent NFT to which to mint the child NFT
 
-The `setFallbackURI` is used to set the fallback URI of the collection and accepts one argument:
-
-- `fallbackURI`: `string` type of argument specifying the URI to be used as the fallback URI of the collection
-
-#### `isTokenEnumeratedResource`
-
-The `isTokenEnumeratedResource` is used to check wether the resource ID passed to it represents an enumerated resource:
-
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are validating
-
-#### `setTokenEnumeratedResource`
-
-The `setTokenEnumeratedResource` is used to set a token enumerated resource ID to the passed boolean value and accepts
-two arguments:
-
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are setting
-- `state`: `bool` type of argument representing the validity of the resource
+The constraints of `mintNesting` are similar to the ones set out for `mint` function.
 
 #### `addResourceToToken`
 
@@ -138,13 +145,42 @@ The `addResourceToToken` is used to add a new resource to the token and accepts 
 
 #### `addResourceEntry`
 
-The `addResourceEntry` is used to add a new URI for the new resource of the token and accepts one argument:
+The `addResourceEntry` function is used to add a new URI for the new resource of the token and accepts one argument:
 
 - `metadataURI`: `string` type of argument specifying the metadata URI of a new resource
 
 #### `totalResources`
 
-The `totalResources` is used to retrieve a total number of resources defined in the collection.
+The `totalResources` function is used to retrieve a total number of resources defined in the collection.
+
+#### `transfer`
+
+The `transfer` function is used to transfet one token from one accout to another and accepts two arguments:
+
+- `to`: `address` type of argument specifying the address of the account to which the token should be transferred to
+- `tokenId`: `uint256` type of argument specifying the token ID of the token to be transferred
+
+#### `nestTransfer`
+
+The `nestTransfer` is used to transfer the NFT to another NFT residing in a specified contract. It can only be called by
+a direct owner or a parent NFT's smart contract or a caller that was given the allowance. This will nest the given NFT
+into the specified one. It accepts three arguments:
+
+- `to`: `address` type of argument specifying the address of the intended parent NFT's smart contract
+- `tokenId`: `uint256` type of argument specifying the ID of the token we want to send to be nested
+- `destinationId`: `uint256` type of argument specifying the ID of the intended parent token NFT
+
+#### `tokenURI`
+
+The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
+
+- `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
+
+#### `updateRoyaltyRecipient`
+
+The `updateRoyaltyRecipient` function is used to update the royalty recipient and accepts one argument:
+
+- `newRoyaltyRecipient`: `address` type of argument specifying the address of the new beneficiary recipient
 
 ### Deploy script
 

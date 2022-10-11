@@ -24,6 +24,7 @@ async function deployContracts(): Promise<
     RMRKEquipRenderUtils
   ]
 > {
+  const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
   const nestingFactory = await ethers.getContractFactory(
     "SimpleNestingExternalEquip"
@@ -37,14 +38,22 @@ async function deployContracts(): Promise<
       "KAN",
       1000,
       pricePerMint,
-      ethers.constants.AddressZero
+      ethers.constants.AddressZero,
+      "ipfs://collectionMeta",
+      "ipfs://tokenMeta",
+      await beneficiary.getAddress(),
+      10
     );
   const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
     "Gem",
     "GM",
     3000,
     pricePerMint,
-    ethers.constants.AddressZero
+    ethers.constants.AddressZero,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(

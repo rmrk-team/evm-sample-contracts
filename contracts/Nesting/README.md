@@ -59,6 +59,13 @@ The `constructor` to initialize the `RMRKNestingImpl` accepts the following argu
 cummulative number of both parent and child NFTs
 - `pricePerMint_`: `uint256` argument that defines the price per the NFT mint. It is expressed in `wei` or minimum
 denomination of the native currency of the EVM to which the smart contract is deployed to
+- `collectionMetadata_`: `string` argument that defines the metadata URI of the whole collection
+- `tokenURI_`: `string` argument that defines the base URI of the token metadata
+- `royaltyRecipient`: `address` argument that defines the address of the beneficiary of royalties
+- `royaltyPercentageBps`: `uint256` argument that defines the royalty percentage in basis points
+
+**NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
+To put it another way; 1 basis point equals 0.01%.**
 
 In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned
 above, in the `constructor` and pass them to `RMRKNestingImpl`:
@@ -68,8 +75,21 @@ above, in the `constructor` and pass them to `RMRKNestingImpl`:
         string memory name,
         string memory symbol,
         uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKNestingImpl(name, symbol, maxSupply, pricePerMint) {}
+        uint256 pricePerMint,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 ````
 
 <details>
@@ -86,8 +106,21 @@ contract SimpleNesting is RMRKNestingImpl {
         string memory name,
         string memory symbol,
         uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKNestingImpl(name, symbol, maxSupply, pricePerMint) {}
+        uint256 pricePerMint,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 }
 ````
 
@@ -97,8 +130,8 @@ contract SimpleNesting is RMRKNestingImpl {
 
 Let's take a moment to examine the core of this implementation, the `RMRKNestingImpl`.
 
-It uses the `OwnableLock`, `RMRKMintingUtils` and `RMRKNesting` smart contracts from `RMRK` stack as well as 
-OpenZeppelin's `String` utility. To dive deeper into their operation, please refer to their respective documentation.
+It uses the `RMRKRoyalties`, `RMRKNesting`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts from `RMRK`
+stack. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -107,8 +140,8 @@ error RMRKMintUnderpriced();
 error RMRKMintZero();
 ````
 
-`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero` is used
-when attempting to mint 0 tokens.
+`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
+used when attempting to mint 0 tokens.
 
 #### `mint`
 
@@ -133,11 +166,6 @@ The `mintNesting` function is used to mint child NFTs to be owned by the parent 
 
 The constraints of `mintNesting` are similar to the ones set out for `mint` function.
 
-#### `burn`
-
-Can only be called by a direct owner or a parent NFT's smart contract or a caller that was given the allowance and is
-used to burn the NFT.
-
 #### `transfer`
 
 Can only be called by a direct owner or a parent NFT's smart contract or a caller that was given the allowance and is
@@ -148,6 +176,18 @@ used to transfer the NFT to the specified address.
 Can only be called by a direct owner or a parent NFT's smart contract or a caller that was given the allowance and is
 used to transfer the NFT to another NFT residing in a specified contract. This will nest the given NFT into the
 specified one.
+
+#### `tokenURI`
+
+The `tokenURI` function is used to get the metadata URI of the given token and accepts one argument:
+
+- `uint256` type of argument specifying the ID of the token
+
+#### `updateRoyaltyRecipient`
+
+The `updateRoyaltyRecipient` function is used to update the royalty recipient and accepts one argument:
+
+- `newRoyaltyRecipient`: `address` type of argument specifying the address of the new beneficiary recipient
 
 ### Deploy script
 
@@ -190,13 +230,21 @@ console:
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
   const child: SimpleNesting = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
 
   await parent.deployed();
@@ -249,13 +297,21 @@ async function main() {
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
   const child: SimpleNesting = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
 
   await parent.deployed();
@@ -349,7 +405,8 @@ NFTs in the pending stack, and accepting the one with the ID of 0 will move the 
 second NFT from the stack, after the first one was already accepted, should then be done by accepting the pending NFT
 with ID of 0. So two identical calls in succession should accept both pending NFTs.**
 
-The parent NFT with ID 1 now has one accepted and one pending child NFTs. We can examine both using the `childrenOf` and `pendingChildren` methods:
+The parent NFT with ID 1 now has one accepted and one pending child NFTs. We can examine both using the `childrenOf` and
+`pendingChildren` methods:
 
 ````typescript
   console.log("Exaimning accepted and pending children of parent NFT with ID 1");
@@ -357,16 +414,21 @@ The parent NFT with ID 1 now has one accepted and one pending child NFTs. We can
   console.log("Pending: ", await parent.pendingChildrenOf(1));
 ````
 
-Both of these methods return the array of tokens contained in the list, be it for child NFTs or for pending NFTs. The array contains two values:
+Both of these methods return the array of tokens contained in the list, be it for child NFTs or for pending NFTs. The
+array contains two values:
 
 - `contractAddress` is the address of the child NFT's smart contract
 - `tokenId` is the ID of the child NFT in its smart contract
 
-Once the NFT is nested, it can also be unnested. When doing so, the owner of the token should be specified, as they will be the ones owning the token from that point on (or until they nest or sell it). We will remove the nested NFT with nesting ID of 0 from the parent NFT with ID 1:
+Once the NFT is nested, it can also be unnested. When doing so, the owner of the token should be specified, as they will
+be the ones owning the token from that point on (or until they nest or sell it). Additionally pending status has to be
+passed, as the procedure to unnest differs for the NFTs that have already been accepted from those that are still
+pending (passing `flase` indicates that the child NFT has already been nested). We will remove the nested NFT with
+nesting ID of 0 from the parent NFT with ID 1:
 
 ````typescript
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, 0, owner.address);
+  tx = await parent.unnestChild(1, 0, owner.address, false);
   await tx.wait();
 ````
 
