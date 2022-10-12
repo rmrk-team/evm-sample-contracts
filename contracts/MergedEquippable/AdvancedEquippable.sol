@@ -44,5 +44,5 @@ contract AdvancedEquippable is RMRKEquippable {
 
     // Custom expected: external, optionally gated, function to add set valid parent reference Id.
     // Available internal functions:
-    //  _setValidParentRefId(uint64 refId, address parentAddress, uint64 partId)
+    //  _setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)
 }

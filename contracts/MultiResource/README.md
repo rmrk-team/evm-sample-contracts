@@ -50,10 +50,19 @@ currency of the EVM to which the smart contract is deployed to
 
 The parameters that we will hardcode to the initialization of `RMRKMultiResourceImpl` are:
 
-- `name`: string type of argument representing the name of te collection will be set to `SimpleMultiResource`
-- `symbol`: string type od argument representing the symbol of the collection will be set to `SMR`
-- `collectionMetadata`: string type of argument representing the metadata URI of the collection will be set to
+- `name`: `string` type of argument representing the name of te collection will be set to `SimpleMultiResource`
+- `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMR`
+- `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
+- `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
+- `royaltyRecipient`: `address` type of argument representing the recipient of the royalty fees will be assigned
+`msg.sender` value
+- `royaltyPercentageBps`: `uint256` type of argument representing the royalty percentage in basis points will be set to
+`10`
+
+**NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 So the constructor of the `SimpleMultiResource` should look like this:
 
@@ -61,7 +70,16 @@ So the constructor of the `SimpleMultiResource` should look like this:
     constructor(
         uint256 maxSupply,
         uint256 pricePerMint
-    ) RMRKMultiResourceImpl("SimpleMultiResource", "SMR", maxSupply, pricePerMint, "ipfs://meta") {}
+    ) RMRKMultiResourceImpl(
+        "SimpleMultiResource",
+        "SMR",
+        maxSupply,
+        pricePerMint,
+        "ipfs://meta",
+        "ipfs://tokenMeta",
+        msg.sender,
+        10
+    ) {}
 ````
 
 <details>
@@ -77,7 +95,16 @@ contract SimpleMultiResource is RMRKMultiResourceImpl {
     constructor(
         uint256 maxSupply,
         uint256 pricePerMint
-    ) RMRKMultiResourceImpl("SimpleMultiResource", "SMR", maxSupply, pricePerMint, "ipfs://meta") {}
+    ) RMRKMultiResourceImpl(
+        "SimpleMultiResource",
+        "SMR",
+        maxSupply,
+        pricePerMint,
+        "ipfs://meta",
+        "ipfs://tokenMeta",
+        msg.sender,
+        10
+    ) {}
 }
 ````
 
@@ -87,8 +114,8 @@ contract SimpleMultiResource is RMRKMultiResourceImpl {
 
 Let's take a moment to examine the core of this implementation, the `RMRKMultiResourceImpl`.
 
-It uses the `RMRKMintingUtils`, `RMRKCollectionMetadata` and `RMRKMultiResource` smart contracts from RMRK stack as well
-as OpenZeppelin's `String` utility. To dive deeper into their operation, please refer to their respective documentation.
+It uses the `RMRKRoyalties`, `RMRKMultiResource`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts from
+RMRK stack. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -97,21 +124,18 @@ error RMRKMintUnderpriced();
 error RMRKMintZero();
 ````
 
-`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero` is used
-when attempting to mint 0 tokens.
+`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
+used when attempting to mint 0 tokens.
 
 The `RMRKMultiResourceImpl` implements all of the required functionality of the MultiResource lego. It implements
 standard NFT methods like `mint`, `transfer`, `approve`, `burn`,... In addition to these methods it also implements the
 methods specific to MultiResource RMRK lego:
 
-- `setFallbackURI`
-- `getFallbackURI`
-- `isTokenEnumeratedResource`
-- `setTokenEnumeratedResource`
 - `addResourceToToken`
 - `addResourceEntry`
 - `totalResources`
-- `tokenURIAtIndex`
+- `tokenURI`
+- `updateRoyaltyRecipient`
 
 **WARNING: The `RMRKMultiResourceImpl` only has minimal access control implemented. If you intend to use it, make sure
 to define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
@@ -128,30 +152,6 @@ There are a few constraints to this function:
 - after minting, the total number of tokens should not exceed the maximum allowed supply
 - attempting to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
-
-#### `getFallbackURI`
-
-The `getFallbackURI` is used to retrieve the fallback URI of the collection.
-
-#### `setFallbackURI`
-
-The `setFallbackURI` is used to set the fallback URI of the collection and accepts one argument:
-
-- `fallbackURI`: `string` type of argument specifying the URI to be used as the fallback URI of the collection
-
-#### `isTokenEnumeratedResource`
-
-The `isTokenEnumeratedResource` is used to check wether the resource ID passed to it represents an enumerated resource:
-
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are validating
-
-#### `setTokenEnumeratedResource`
-
-The `setTokenEnumeratedResource` is used to set a token enumerated resource ID to the passed boolean value and accepts
-two arguments:
-
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are setting
-- `state`: `bool` type of argument representing the validity of the resource
 
 #### `addResourceToToken`
 
@@ -171,13 +171,17 @@ The `addResourceEntry` is used to add a new URI for the new resource of the toke
 
 The `totalResources` is used to retrieve a total number of resources defined in the collection.
 
-#### `tokenURIAtIndex`
+#### `tokenURI`
 
-The `tokenURIAtIndex` is used to retreive the URI of the given resource and accepts two arguments:
+The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
 
 - `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
-- `index`: `uint256` type of argument representing the index of the resource within the token for which we are
-retrieving the URI
+
+#### `updateRoyaltyRecipient`
+
+The `updateRoyaltyRecipient` function is used to update the royalty recipient and accepts one argument:
+
+- `newRoyaltyRecipient`: `address` type of argument specifying the address of the new beneficiary recipient
 
 ### Deploy script
 

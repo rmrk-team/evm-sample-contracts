@@ -170,7 +170,15 @@ The `constructor` to initialize the `RMRKNestingExternalEquipImpl` accepts the f
 - `maxSupploy_`: `uint256` type of argument specifying the maximum amount of tokens in the collection
 - `pricePerMint_`: `uint256` type of argument representing the price per mint in wei or the lowest denomination of a
 native currency of the EVM to which the smart contract is deployed to
-- `equippableAddress`: `address` type of argument specifying the address of the `SimpleExternalEquip` smart contract
+- `equippableAddress_`: `address` type of argument specifying the address of the `SimpleExternalEquip` smart contract
+- `collectionMetadata_`: `string` type of argument specifying the metadata URI of the whole collection
+- `tokenURI_`: `string` type of argument specifying the base URI of the token metadata
+- `royaltyRecipient`: `address` type of argument specifying the address of the beneficiary of royalties
+- `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
+
+**NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments,
 mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalEquipImpl`:
@@ -181,8 +189,22 @@ mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalE
         string memory symbol,
         uint256 maxSupply,
         uint256 pricePerMint,
-        address equippableAddress
-    ) RMRKNestingExternalEquipImpl(name, symbol, maxSupply, pricePerMint, equippableAddress) {}
+        address equippableAddress,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingExternalEquipImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        equippableAddress,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 ````
 
 <details>
@@ -200,8 +222,22 @@ contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
         string memory symbol,
         uint256 maxSupply,
         uint256 pricePerMint,
-        address equippableAddress
-    ) RMRKNestingExternalEquipImpl(name, symbol, maxSupply, pricePerMint, equippableAddress) {}
+        address equippableAddress,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingExternalEquipImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        equippableAddress,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 }
 ````
 
@@ -211,8 +247,8 @@ contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
 
 Let's take a moment to examine the core of this implementation, the `RMRKNestingExternalEquipImpl`.
 
-It uses the `RMRKMintingUtils` and `RMRKNestingExternalEquip` smart contracts from RMRK stack. To dive deeper into their
-operation, please refer to their respective documentation.
+It uses the `RMRKNestingExternalEquip`, `RMRKRoyalties`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts
+from RMRK stack. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -221,8 +257,8 @@ error RMRKMintUnderpriced();
 error RMRKMintZero();
 ````
 
-`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero` is used
-when attempting to mint 0 tokens.
+`RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
+used when attempting to mint 0 tokens.
 
 **WARNING: The `RMRKMultiResourceImpl` only has minimal access control implemented. If you intend to use it, make sure
 to define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
@@ -252,17 +288,24 @@ The `mintNesting` function is used to mint child NFTs to be owned by the parent 
 
 The constraints of `mintNesting` are similar to the ones set out for `mint` function.
 
-##### `burn`
-
-Can only be called by a direct owner or a parent NFT's smart contract or a caller that was given the allowance and is
-used to burn the NFT.
-
 ##### `setEquippableAddress`
 
 The `setEquippableAddress` function is used to set the address of a deployed `SimpleExternalEquip` smart contract and
 accepts one argument:
 
 - `equippable`: `address` type of argument specifying the address of a deployed `SimpleExternalEquip` smart contract
+
+#### `tokenURI`
+
+The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
+
+- `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
+
+#### `updateRoyaltyRecipient`
+
+The `updateRoyaltyRecipient` function is used to update the royalty recipient and accepts one argument:
+
+- `newRoyaltyRecipient`: `address` type of argument specifying the address of the new beneficiary recipient
 
 ### Deploy script
 
@@ -312,6 +355,7 @@ async function deployContracts(): Promise<
     RMRKEquipRenderUtils
   ]
 > {
+  const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
   const nestingFactory = await ethers.getContractFactory(
     "SimpleNestingExternalEquip"
@@ -325,14 +369,22 @@ async function deployContracts(): Promise<
       "KAN",
       1000,
       pricePerMint,
-      ethers.constants.AddressZero
+      ethers.constants.AddressZero,
+      "ipfs://collectionMeta",
+      "ipfs://tokenMeta",
+      await beneficiary.getAddress(),
+      10
     );
   const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
     "Gem",
     "GM",
     3000,
     pricePerMint,
-    ethers.constants.AddressZero
+    ethers.constants.AddressZero,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
@@ -424,6 +476,7 @@ async function deployContracts(): Promise<
     RMRKEquipRenderUtils
   ]
 > {
+  const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
   const nestingFactory = await ethers.getContractFactory(
     "SimpleNestingExternalEquip"
@@ -437,14 +490,22 @@ async function deployContracts(): Promise<
       "KAN",
       1000,
       pricePerMint,
-      ethers.constants.AddressZero
+      ethers.constants.AddressZero,
+      "ipfs://collectionMeta",
+      "ipfs://tokenMeta",
+      await beneficiary.getAddress(),
+      10
     );
   const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
     "Gem",
     "GM",
     3000,
     pricePerMint,
-    ethers.constants.AddressZero
+    ethers.constants.AddressZero,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
@@ -697,7 +758,7 @@ async function addKanariaResources(
   let tx = await kanaria.addResourceEntry(
     {
       id: resourceDefaultId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: ethers.constants.AddressZero, // base is not needed here
       metadataURI: "ipfs://default.png",
     },
@@ -709,7 +770,7 @@ async function addKanariaResources(
   tx = await kanaria.addResourceEntry(
     {
       id: resourceComposedId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: baseAddress, // Since we're using parts, we must define the base
       metadataURI: "ipfs://meta1.json",
     },
@@ -746,8 +807,8 @@ reference from the child's perspective. The resources will be added one by one. 
 don't have the `equippableRefId`.
 
 Having added the resource entries, we can now add the valid parent reference IDs using the
-[`setValidParentRefd`](#setvalidparentrefid). For example if we want to add a valid reference for the left gem, we need
-to pass thee value of equippable reference ID of the left gem, parent smart contract address (in our case this is
+`setValidParentForEquippableGroup`. For example if we want to add a valid reference for the left gem, we need to pass
+the value of equippable reference ID of the left gem, parent smart contract address (in our case this is
 `SimpleExternalEquip` of `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9
 in the `Base` for the left gem).
 
@@ -778,7 +839,7 @@ async function addGemResources(
       // Full version for first type of gemNesting, no need of refId or base
       {
         id: 1,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/full.svg`,
       },
@@ -789,7 +850,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gemNesting
       {
         id: 2,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/left.svg`,
       },
@@ -800,7 +861,7 @@ async function addGemResources(
       // Equipped into mid slot for first type of gemNesting
       {
         id: 3,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/mid.svg`,
       },
@@ -811,7 +872,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gemNesting
       {
         id: 4,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/right.svg`,
       },
@@ -822,7 +883,7 @@ async function addGemResources(
       // Full version for second type of gemNesting, no need of refId or base
       {
         id: 5,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: ethers.constants.AddressZero,
         metadataURI: `ipfs://gems/typeB/full.svg`,
       },
@@ -833,7 +894,7 @@ async function addGemResources(
       // Equipped into left slot for second type of gemNesting
       {
         id: 6,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/left.svg`,
       },
@@ -844,7 +905,7 @@ async function addGemResources(
       // Equipped into mid slot for second type of gemNesting
       {
         id: 7,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/mid.svg`,
       },
@@ -855,7 +916,7 @@ async function addGemResources(
       // Equipped into right slot for second type of gemNesting
       {
         id: 8,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/right.svg`,
       },
@@ -870,12 +931,12 @@ async function addGemResources(
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gemNesting, which sets its equippableRefId to equippableRefIdLeftGem
+  // e.g. Any resource on gemNesting, which sets its equippableGroupId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanariaNesting on slot 9 (left gemNesting).
   allTx = [
-    await gem.setValidParentRefId(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentRefId(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentRefId(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
+    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
+    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
@@ -1016,7 +1077,7 @@ Composed:  [
     '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
-    equippableRefId: BigNumber { value: "0" },
+    equippableGroupId: BigNumber { value: "0" },
     baseAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     metadataURI: 'ipfs://meta1.json'
   ],
@@ -1104,7 +1165,7 @@ Composed:  [
     '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
-    equippableRefId: BigNumber { value: "0" },
+    equippableGroupId: BigNumber { value: "0" },
     baseAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     metadataURI: 'ipfs://meta1.json'
   ],
@@ -1266,7 +1327,7 @@ Using `RMRKExternalEquip` requires custom implementation of resource management 
 - `_setNestingAddress(address nestingAddress)`
 - `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
 - `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
-- `_setValidParentRefId(uint64 refId, address parentAddress, uint64 partId)`
+- `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
 ### AdvancedNestingExternalEquip
 

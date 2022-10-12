@@ -5,6 +5,14 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestingMultiResou
 
 contract SimpleNestingMultiResource is RMRKNestingMultiResourceImpl {
     constructor()
-        RMRKNestingMultiResourceImpl("SimpleNestingMultiResource", "SNMR", 1000, 100_000_000, "ipfs://meta")
-    {}
+    RMRKNestingMultiResourceImpl(
+        "SimpleNestingMultiResource",
+        "SNMR",
+        1000,
+        100_000_000,
+        "ipfs://meta",
+        "ipfs://tokenMeta",
+        msg.sender,
+        10
+    ) {}
 }

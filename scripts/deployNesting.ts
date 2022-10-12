@@ -12,13 +12,21 @@ async function main() {
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
   const child: SimpleNesting = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await owner.getAddress(),
+    10
   );
 
   await parent.deployed();

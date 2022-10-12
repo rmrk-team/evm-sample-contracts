@@ -9,6 +9,20 @@ contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
         string memory symbol,
         uint256 maxSupply,
         uint256 pricePerMint,
-        address equippableAddress
-    ) RMRKNestingExternalEquipImpl(name, symbol, maxSupply, pricePerMint, equippableAddress) {}
+        address equippableAddress,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKNestingExternalEquipImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        equippableAddress,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 }

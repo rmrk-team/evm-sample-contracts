@@ -259,6 +259,14 @@ The `constructor` to initialize the `RMRKEquippableImpl` accepts the following a
 - `maxSupply`: `uint256` type of argument specifying the maximum amount of tokens in the collection
 - `pricePerMint`: `uint256` type of argument specifying the price per the NFT mint. It is expressed in `wei` or minimum
 denomination of the native currency of the EVM to which the smart contract is deployed to
+- `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
+- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
+- `royaltyRecipient`: `address` type of argument specifying the address of the beneficiary of royalties
+- `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
+
+**NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned
 above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
@@ -268,8 +276,21 @@ above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
         string memory name,
         string memory symbol,
         uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKEquippableImpl(name, symbol, maxSupply, pricePerMint) {}
+        uint256 pricePerMint,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKEquippableImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 ````
 
 <details>
@@ -287,8 +308,21 @@ contract SimpleEquippable is RMRKEquippableImpl {
         string memory name,
         string memory symbol,
         uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKEquippableImpl(name, symbol, maxSupply, pricePerMint) {}
+        uint256 pricePerMint,
+        string memory collectionMetadata,
+        string memory tokenURI,
+        address royaltyRecipient,
+        uint256 royaltyPercentageBps
+    ) RMRKEquippableImpl(
+        name,
+        symbol,
+        maxSupply,
+        pricePerMint,
+        collectionMetadata,
+        tokenURI,
+        royaltyRecipient,
+        royaltyPercentageBps
+    ) {}
 }
 ````
 
@@ -298,8 +332,8 @@ contract SimpleEquippable is RMRKEquippableImpl {
 
 Let's take a moment to examine the core of this implementation, the `RMRKEquippableImpl`.
 
-It uses the `RMRKMintingUtils`, `RMRKEquippable` and `OwnableLock` smart contracts from `RMRK` stack. to dive deeper
-into their operation, please refer to their respective documentation.
+It uses the `RMRKEquippable`, `RMRKRoyalties`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts from
+`RMRK` stack. to dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
 
@@ -335,13 +369,6 @@ The `mintNesting` function is used to mint child NFTs to be owned by the parent 
 
 The constraints of `mintNesting` are similar to the ones set out for `mint` function.
 
-##### `burn`
-
-Can only be called by a direct owner or a parent NFT's smart contract or a caller that was given the allowance and is
-used to burn the NFT. It accepts one argument:
-
-- `tokenId`: `uint256` type of argument specifying the ID of the token we want to burn
-
 ##### `addResourceToToken`
 
 The `addResourceToToken` is used to add a new resource to the token and accepts three arguments:
@@ -356,7 +383,7 @@ The `addResourceEntry` is used to add a new resource of the collection and accep
 
 - `resource`: `string` type of argument specifying the `ExtendedResource` structure. It consists of:
     - `id`: `uint64` type of argument specifying the ID of this resource
-    - `equippableRefId`: `uint64` type of argument specifying the ID of the group this resource belongs to. This ID
+    - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this resource belongs to. This ID
     can then be referenced in the `setValidParentRefId` in order to allow every resource with this equippable
     reference ID to be equipped into an NFT
     - `baseAddress`: `address` type of argument specifying the address of the Base smart contract
@@ -364,14 +391,30 @@ The `addResourceEntry` is used to add a new resource of the collection and accep
 - `fixedPartIds`: `uint64[]` type of argument specifying the fixed parts IDs for this resource
 - `slotPartIds`: `uint64[]` type of argument specifying the slot parts IDs for this resource
 
-##### `setValidParentRefId`
+##### `setValidParentForEquippableGroup`
 
-The `setValidParentRefId` is used to declare which group of resources are equippable into the parent address at the
-given slot and accepts three arguments:
+The `setValidParentForEquippableGroup` is used to declare which group of resources are equippable into the parent
+address at the given slot and accepts three arguments:
 
-- `referenceId`: `uint64` type of argument specifying the group of resources that can be equipped
+- `equippableGroupId`: `uint64` type of argument specifying the group of resources that can be equipped
 - `parentAddress`: `address` type of argument specifying the address into which the resource is equippable
-- `slotPartId`: `uint64` type of argument specifying the ID of the part it can be equipped to
+- `partId`: `uint64` type of argument specifying the ID of the part it can be equipped to
+
+#### `totalResources`
+
+The `totalResources` is used to retrieve a total number of resources defined in the collection.
+
+#### `tokenURI`
+
+The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
+
+- `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
+
+#### `updateRoyaltyRecipient`
+
+The `updateRoyaltyRecipient` function is used to update the royalty recipient and accepts one argument:
+
+- `newRoyaltyRecipient`: `address` type of argument specifying the address of the new beneficiary recipient
 
 ### Deploy script
 
@@ -414,6 +457,7 @@ async function deployContracts(): Promise<
 > {
   console.log("Deploying smart contracts");
 
+  const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
@@ -422,13 +466,21 @@ async function deployContracts(): Promise<
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
     3000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
@@ -499,6 +551,7 @@ async function deployContracts(): Promise<
 > {
   console.log("Deploying smart contracts");
 
+  const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
@@ -507,13 +560,21 @@ async function deployContracts(): Promise<
     "Kanaria",
     "KAN",
     1000,
-    pricePerMint
+    pricePerMint,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
     3000,
-    pricePerMint
+    ,
+    "ipfs://collectionMeta",
+    "ipfs://tokenMeta",
+    await beneficiary.getAddress(),
+    10
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
@@ -759,7 +820,7 @@ async function addKanariaResources(
   let tx = await kanaria.addResourceEntry(
     {
       id: resourceDefaultId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: ethers.constants.AddressZero, // base is not needed here
       metadataURI: "ipfs://default.png",
     },
@@ -771,7 +832,7 @@ async function addKanariaResources(
   tx = await kanaria.addResourceEntry(
     {
       id: resourceComposedId,
-      equippableRefId: 0, // Only used for resources meant to equip into others
+      equippableGroupId: 0, // Only used for resources meant to equip into others
       baseAddress: baseAddress, // Since we're using parts, we must define the base
       metadataURI: "ipfs://meta1.json",
     },
@@ -804,12 +865,13 @@ async function addKanariaResources(
 Adding resources to `Gem`s is done in the `addGemResources`. It accepts `Gem`, address of the `Kanaria` smart contract
 and the address of the `Base` smart contract. We will add 4 resources for each gem; one full version and three that
 match each slot. Reference IDs are specified for easier reference from the child's perspective. The resources will be
-added one by one. Note how the full versions of gems don't have the `equippableRefId`.
+added one by one. Note how the full versions of gems don't have the `equippableGroupId`.
 
-Having added the resource entries, we can now add the valid parent reference IDs using the [`setValidParentRefd`]
-(#setvalidparentrefid). For example if we want to add a valid reference for the left gem, we need to pass the value of
-equippable reference ID of the left gem, parent smart contract address (in our case this is `Kanaria` smart contract)
-and ID of the slot which was defined in `Base` (this is ID number 9 in the `Base` for the left gem).
+Having added the resource entries, we can now add the valid parent reference IDs using the
+[`setValidParentForEquippableGroup`](#setvalidparentforequippablegroup). For example if we want to add a valid reference
+for the left gem, we need to pass the value ofequippable reference ID of the left gem, parent smart contract address (in
+our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9 in the
+`Base` for the left gem).
 
 Last thing to do is to add resources to the tokens using [`addResourceToToken`](#addresourcetotoken). Resource of type
 A will be added to the gems 1 and 2, and the type B of the resource is added to gem 3. All of these should be accepted
@@ -840,7 +902,7 @@ async function addGemResources(
       // Full version for first type of gem, no need of refId or base
       {
         id: 1,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/full.svg`,
       },
@@ -851,7 +913,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gem
       {
         id: 2,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/left.svg`,
       },
@@ -862,7 +924,7 @@ async function addGemResources(
       // Equipped into mid slot for first type of gem
       {
         id: 3,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/mid.svg`,
       },
@@ -873,7 +935,7 @@ async function addGemResources(
       // Equipped into left slot for first type of gem
       {
         id: 4,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeA/right.svg`,
       },
@@ -884,7 +946,7 @@ async function addGemResources(
       // Full version for second type of gem, no need of refId or base
       {
         id: 5,
-        equippableRefId: 0,
+        equippableGroupId: 0,
         baseAddress: ethers.constants.AddressZero,
         metadataURI: `ipfs://gems/typeB/full.svg`,
       },
@@ -895,7 +957,7 @@ async function addGemResources(
       // Equipped into left slot for second type of gem
       {
         id: 6,
-        equippableRefId: equippableRefIdLeftGem,
+        equippableGroupId: equippableRefIdLeftGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/left.svg`,
       },
@@ -906,7 +968,7 @@ async function addGemResources(
       // Equipped into mid slot for second type of gem
       {
         id: 7,
-        equippableRefId: equippableRefIdMidGem,
+        equippableGroupId: equippableRefIdMidGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/mid.svg`,
       },
@@ -917,7 +979,7 @@ async function addGemResources(
       // Equipped into right slot for second type of gem
       {
         id: 8,
-        equippableRefId: equippableRefIdRightGem,
+        equippableGroupId: equippableRefIdRightGem,
         baseAddress: baseAddress,
         metadataURI: `ipfs://gems/typeB/right.svg`,
       },
@@ -936,9 +998,9 @@ async function addGemResources(
   //      will be considered a valid equip into any kanaria on slot 9 (left gem).
   console.log("Setting valid parent reference IDs");
   allTx = [
-    await gem.setValidParentRefId(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentRefId(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentRefId(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
+    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
+    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
@@ -1137,7 +1199,7 @@ Composed:  [
     '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
-    equippableRefId: BigNumber { value: "0" },
+    equippableGroupId: BigNumber { value: "0" },
     baseAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     metadataURI: 'ipfs://meta1.json'
   ],
@@ -1225,7 +1287,7 @@ Composed:  [
     '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
-    equippableRefId: BigNumber { value: "0" },
+    equippableGroupId: BigNumber { value: "0" },
     baseAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     metadataURI: 'ipfs://meta1.json'
   ],
@@ -1465,7 +1527,7 @@ Resource and reference management functions should also be implemented using:
 
 - `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
 - `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
-- `_setValidParentRefId(uint64 refId, address parentAddress, uint64 partId)`
+- `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
