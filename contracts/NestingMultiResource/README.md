@@ -51,7 +51,8 @@ denomination of the native currency of the EVM to which the smart contract is de
 - `10`: represents the `royaltyPercentageBps` argument and sets the value of royalty percentage in basis points
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
-To put it another way; 1 basis point equals 0.01%.**
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 With the arguments passed upon initialization defined, we can add our constructor:
 

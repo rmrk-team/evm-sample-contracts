@@ -265,7 +265,8 @@ denomination of the native currency of the EVM to which the smart contract is de
 - `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
-To put it another way; 1 basis point equals 0.01%.**
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 In order to properly initiate the inherited smart contract, our smart contract needs to accept the arguments, mentioned
 above, in the `constructor` and pass them to the `RMRKEquippableImpl`:

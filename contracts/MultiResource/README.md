@@ -61,7 +61,8 @@ The parameters that we will hardcode to the initialization of `RMRKMultiResource
 `10`
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
-To put it another way; 1 basis point equals 0.01%.**
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 So the constructor of the `SimpleMultiResource` should look like this:
 

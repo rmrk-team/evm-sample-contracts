@@ -177,7 +177,8 @@ native currency of the EVM to which the smart contract is deployed to
 - `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
-To put it another way; 1 basis point equals 0.01%.**
+This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
+percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments,
 mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalEquipImpl`:
@@ -807,7 +808,7 @@ don't have the `equippableRefId`.
 
 Having added the resource entries, we can now add the valid parent reference IDs using the
 `setValidParentForEquippableGroup`. For example if we want to add a valid reference for the left gem, we need to pass
-thee value of equippable reference ID of the left gem, parent smart contract address (in our case this is
+the value of equippable reference ID of the left gem, parent smart contract address (in our case this is
 `SimpleExternalEquip` of `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9
 in the `Base` for the left gem).
 
