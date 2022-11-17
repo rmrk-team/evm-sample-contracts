@@ -5,11 +5,8 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 
 contract AdvancedEquippable is RMRKEquippable {
-    constructor(
-        string memory name,
-        string memory symbol
+    constructor(string memory name, string memory symbol)
         // Custom optional: additional parameters
-    )
         RMRKEquippable(name, symbol)
     {
         // Custom optional: constructor logic
@@ -19,11 +16,11 @@ contract AdvancedEquippable is RMRKEquippable {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId) 
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
@@ -34,13 +31,13 @@ contract AdvancedEquippable is RMRKEquippable {
     //  transferFrom(address from, address to, uint256 tokenId)
     //  nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)
 
-    // Custom expected: external, optionally gated, function to add resources.
+    // Custom expected: external, optionally gated, function to add assets.
     // Available internal functions:
-    //  _addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)
+    //  _addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)
 
-    // Custom expected: external, optionally gated, function to add resources to tokens.
+    // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
 
     // Custom expected: external, optionally gated, function to add set valid parent reference Id.
     // Available internal functions:

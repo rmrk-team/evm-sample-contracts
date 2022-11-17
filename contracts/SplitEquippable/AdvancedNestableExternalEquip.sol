@@ -2,15 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/nesting/RMRKNestingMultiResource.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol";
 
-contract AdvancedNestingMultiResource is RMRKNestingMultiResource {
-    constructor(
-        string memory name,
-        string memory symbol
+contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
+    constructor(string memory name, string memory symbol)
         // Custom optional: additional parameters
-    )
-        RMRKNestingMultiResource(name, symbol)
+        RMRKNestableExternalEquip(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -19,26 +16,22 @@ contract AdvancedNestingMultiResource is RMRKNestingMultiResource {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId) 
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
     //  _burn(uint256 tokenId)
 
+    // Custom optional: external gated function to set equippableAddress
+    // Available internal functions:
+    //  _setEquippableAddress(address equippable)
+
     // Custom optional: utility functions to transfer and nest transfer from caller
     // Available public functions:
     //  transferFrom(address from, address to, uint256 tokenId)
     //  nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)
-
-    // Custom expected: external, optionally gated, function to add resources.
-    // Available internal functions:
-    //  _addResourceEntry(uint64 id, string memory metadataURI)
-
-    // Custom expected: external, optionally gated, function to add resources to tokens.
-    // Available internal functions:
-    //  _addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)
 }

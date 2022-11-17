@@ -2,15 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/multiresource/RMRKMultiResource.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/multiasset/RMRKMultiAsset.sol";
 
-contract AdvancedMultiResource is RMRKMultiResource {
-    constructor(
-        string memory name,
-        string memory symbol
+contract AdvancedMultiAsset is RMRKMultiAsset {
+    constructor(string memory name, string memory symbol)
         // Custom optional: additional parameters
-    )
-        RMRKMultiResource(name, symbol)
+        RMRKMultiAsset(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -19,19 +16,19 @@ contract AdvancedMultiResource is RMRKMultiResource {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
     //  _burn(uint256 tokenId)
 
-    // Custom expected: external, optionally gated, function to add resources.
+    // Custom expected: external, optionally gated, function to add assets.
     // Available internal functions:
-    //  _addResourceEntry(uint64 id, string memory metadataURI)
+    //  _addAssetEntry(uint64 id, string memory metadataURI)
 
-    // Custom expected: external, optionally gated, function to add resources to tokens.
+    // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
 
     // Custom optional: utility functions to transfer from caller
     // Available public functions:

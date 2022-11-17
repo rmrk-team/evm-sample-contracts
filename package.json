@@ -5,13 +5,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy-equippable": "hardhat run scripts/deployEquippable.ts",
-    "deploy-multi-resource": "hardhat run scripts/deployMultiResource.ts",
-    "deploy-nesting": "hardhat run scripts/deployNesting.ts",
-    "deploy-nesting-multi-resource": "hardhat run scripts/deployNestingMultiResource.ts",
+    "deploy-multi-asset": "hardhat run scripts/deployMultiAsset.ts",
+    "deploy-nestable": "hardhat run scripts/deployNestable.ts",
+    "deploy-nestable-multi-asset": "hardhat run scripts/deployNestableMultiAsset.ts",
     "deploy-split-equippable": "hardhat run scripts/deploySplitEquippable.ts",
-    "user-journey-nesting": "hardhat run scripts/nestingUserJourney.ts",
-    "user-journey-multi-resource": "hardhat run scripts/multiResourceUserJourney.ts",
-    "user-journey-nesting-multi-resource": "hardhat run scripts/nestingMultiResourceUserJourney.ts",
+    "user-journey-nestable": "hardhat run scripts/nestableUserJourney.ts",
+    "user-journey-multi-asset": "hardhat run scripts/multiAssetUserJourney.ts",
+    "user-journey-nestable-multi-asset": "hardhat run scripts/nestableMultiAssetUserJourney.ts",
     "user-journey-merged-equippable": "hardhat run scripts/mergedEquippableUserJourney.ts",
     "user-journey-split-equippable": "hardhat run scripts/splitEquippableUserJourney.ts"
   },
@@ -19,7 +19,7 @@
   "author": "@rmrk-team",
   "license": "Apache-2.0",
   "dependencies": {
-    "@rmrk-team/evm-contracts": "^0.12.0"
+    "@rmrk-team/evm-contracts": "^0.16.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",

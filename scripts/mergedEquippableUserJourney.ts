@@ -21,8 +21,8 @@ async function main() {
   // Here we do all in one go to demonstrate how to use it.
   await setupBase(base, gem.address);
   await mintTokens(kanaria, gem);
-  await addKanariaResources(kanaria, base.address);
-  await addGemResources(gem, kanaria.address, base.address);
+  await addKanariaAssets(kanaria, base.address);
+  await addGemAssets(gem, kanaria.address, base.address);
   await equipGems(kanaria);
   await composeEquippables(views, kanaria.address);
 }
@@ -227,7 +227,7 @@ async function mintTokens(
   console.log("Nest-minting Gem tokens");
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalBirds; i++) {
-    let tx = await gem.mintNesting(kanaria.address, 3, i, {
+    let tx = await gem.nestMint(kanaria.address, 3, i, {
       value: pricePerMint.mul(3),
     });
     allTx.push(tx);
@@ -248,18 +248,18 @@ async function mintTokens(
   }
 }
 
-async function addKanariaResources(
+async function addKanariaAssets(
   kanaria: SimpleEquippable,
   baseAddress: string
 ): Promise<void> {
-  console.log("Adding Kanaria resources");
-  const resourceDefaultId = 1;
-  const resourceComposedId = 2;
+  console.log("Adding Kanaria assets");
+  const assetDefaultId = 1;
+  const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
-  let tx = await kanaria.addResourceEntry(
+  let tx = await kanaria.addAssetEntry(
     {
-      id: resourceDefaultId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
+      id: assetDefaultId,
+      equippableGroupId: 0, // Only used for assets meant to equip into others
       baseAddress: ethers.constants.AddressZero, // base is not needed here
       metadataURI: "ipfs://default.png",
     },
@@ -268,10 +268,10 @@ async function addKanariaResources(
   );
   allTx.push(tx);
 
-  tx = await kanaria.addResourceEntry(
+  tx = await kanaria.addAssetEntry(
     {
-      id: resourceComposedId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
+      id: assetComposedId,
+      equippableGroupId: 0, // Only used for assets meant to equip into others
       baseAddress: baseAddress, // Since we're using parts, we must define the base
       metadataURI: "ipfs://meta1.json",
     },
@@ -279,48 +279,48 @@ async function addKanariaResources(
     [9, 10, 11] // We state that this can receive the 3 slot parts for gems
   );
   allTx.push(tx);
-  // Wait for both resources to be added
+  // Wait for both assets to be added
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 2 resource entries");
+  console.log("Added 2 asset entries");
 
-  // Add resources to token
+  // Add assets to token
   const tokenId = 1;
   allTx = [
-    await kanaria.addResourceToToken(tokenId, resourceDefaultId, 0),
-    await kanaria.addResourceToToken(tokenId, resourceComposedId, 0),
+    await kanaria.addAssetToToken(tokenId, assetDefaultId, 0),
+    await kanaria.addAssetToToken(tokenId, assetComposedId, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added resources to token 1");
+  console.log("Added assets to token 1");
 
-  // Accept both resources:
-  tx = await kanaria.acceptResource(tokenId, 0);
+  // Accept both assets:
+  tx = await kanaria.acceptAsset(tokenId, 0);
   await tx.wait();
-  tx = await kanaria.acceptResource(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0);
   await tx.wait();
-  console.log("Resources accepted");
+  console.log("Assets accepted");
 }
 
-async function addGemResources(
+async function addGemAssets(
   gem: SimpleEquippable,
   kanariaAddress: string,
   baseAddress: string
 ): Promise<void> {
-  console.log("Adding Gem resources");
-  // We'll add 4 resources for each gem, a full version and 3 versions matching each slot.
-  // We will have only 2 types of gems -> 4x2: 8 resources.
+  console.log("Adding Gem assets");
+  // We'll add 4 assets for each gem, a full version and 3 versions matching each slot.
+  // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
   const gemVersions = 4;
 
-  // These refIds are used from the child's perspective, to group resources that can be equipped into a parent
-  // With it, we avoid the need to do set it resource by resource
+  // These refIds are used from the child's perspective, to group assets that can be equipped into a parent
+  // With it, we avoid the need to do set it asset by asset
   const equippableRefIdLeftGem = 1;
   const equippableRefIdMidGem = 2;
   const equippableRefIdRightGem = 3;
 
   // We can do a for loop, but this makes it clearer.
-  console.log("Adding resource entries");
+  console.log("Adding asset entries");
   let allTx = [
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Full version for first type of gem, no need of refId or base
       {
         id: 1,
@@ -331,7 +331,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
       {
         id: 2,
@@ -342,7 +342,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into mid slot for first type of gem
       {
         id: 3,
@@ -353,7 +353,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
       {
         id: 4,
@@ -364,7 +364,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Full version for second type of gem, no need of refId or base
       {
         id: 5,
@@ -375,7 +375,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for second type of gem
       {
         id: 6,
@@ -386,7 +386,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into mid slot for second type of gem
       {
         id: 7,
@@ -397,7 +397,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into right slot for second type of gem
       {
         id: 8,
@@ -412,11 +412,11 @@ async function addGemResources(
 
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    "Added 8 gem resources. 2 Types of gems with full, left, mid and right versions."
+    "Added 8 gem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gem, which sets its equippableGroupId to equippableRefIdLeftGem
+  // e.g. Any asset on gem, which sets its equippableGroupId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanaria on slot 9 (left gem).
   console.log("Setting valid parent reference IDs");
   allTx = [
@@ -426,36 +426,36 @@ async function addGemResources(
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  // We add resources of type A to gem 1 and 2, and type Bto gem 3. Both are nested into the first kanaria
-  // This means gems 1 and 2 will have the same resource, which is totally valid.
-  console.log("Add resources to tokens");
+  // We add assets of type A to gem 1 and 2, and type Bto gem 3. Both are nested into the first kanaria
+  // This means gems 1 and 2 will have the same asset, which is totally valid.
+  console.log("Add assets to tokens");
   allTx = [
-    await gem.addResourceToToken(1, 1, 0),
-    await gem.addResourceToToken(1, 2, 0),
-    await gem.addResourceToToken(1, 3, 0),
-    await gem.addResourceToToken(1, 4, 0),
-    await gem.addResourceToToken(2, 1, 0),
-    await gem.addResourceToToken(2, 2, 0),
-    await gem.addResourceToToken(2, 3, 0),
-    await gem.addResourceToToken(2, 4, 0),
-    await gem.addResourceToToken(3, 5, 0),
-    await gem.addResourceToToken(3, 6, 0),
-    await gem.addResourceToToken(3, 7, 0),
-    await gem.addResourceToToken(3, 8, 0),
+    await gem.addAssetToToken(1, 1, 0),
+    await gem.addAssetToToken(1, 2, 0),
+    await gem.addAssetToToken(1, 3, 0),
+    await gem.addAssetToToken(1, 4, 0),
+    await gem.addAssetToToken(2, 1, 0),
+    await gem.addAssetToToken(2, 2, 0),
+    await gem.addAssetToToken(2, 3, 0),
+    await gem.addAssetToToken(2, 4, 0),
+    await gem.addAssetToToken(3, 5, 0),
+    await gem.addAssetToToken(3, 6, 0),
+    await gem.addAssetToToken(3, 7, 0),
+    await gem.addAssetToToken(3, 8, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 4 resources to each of 3 gems.");
+  console.log("Added 4 assets to each of 3 gems.");
 
-  // We accept each resource for both gems
+  // We accept each asset for both gems
   for (let i = 0; i < gemVersions; i++) {
     allTx = [
-      await gem.acceptResource(1, 0),
-      await gem.acceptResource(2, 0),
-      await gem.acceptResource(3, 0),
+      await gem.acceptAsset(1, 0),
+      await gem.acceptAsset(2, 0),
+      await gem.acceptAsset(3, 0),
     ];
     await Promise.all(allTx.map((tx) => tx.wait()));
   }
-  console.log("Accepted 4 resources to each of 3 gems.");
+  console.log("Accepted 4 assets to each of 3 gems.");
 }
 
 async function equipGems(kanaria: SimpleEquippable): Promise<void> {
@@ -464,23 +464,23 @@ async function equipGems(kanaria: SimpleEquippable): Promise<void> {
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 0, // Gem 1 is on position 0
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 9, // left gem slot
-      childResourceId: 2, // Resource id for child meant for the left gem
+      childAssetId: 2, // Asset id for child meant for the left gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 10, // mid gem slot
-      childResourceId: 3, // Resource id for child meant for the mid gem
+      childAssetId: 3, // Asset id for child meant for the mid gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 1, // Gem 3 is on position 1
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 11, // right gem slot
-      childResourceId: 8, // Resource id for child meant for the right gem
+      childAssetId: 8, // Asset id for child meant for the right gem
     }),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
@@ -493,10 +493,10 @@ async function composeEquippables(
 ): Promise<void> {
   console.log("Composing equippables");
   const tokenId = 1;
-  const resourceId = 2;
+  const assetId = 2;
   console.log(
     "Composed: ",
-    await views.composeEquippables(kanariaAddress, tokenId, resourceId)
+    await views.composeEquippables(kanariaAddress, tokenId, assetId)
   );
 }
 

@@ -1,7 +1,7 @@
 # MergedEquippable
 
-The `MergedEquippable` composite of RMRK legos uses both the [`Nesting`](../Nesting/README.md) and
-[`MultiResource`](../MultiResource/README.md) RMRK legos as well as the `Equippable` lego. In addition to these three
+The `MergedEquippable` composite of RMRK legos uses both the [`Nestable`](../Nestable/README.md) and
+[`MultiAsset`](../MultiAsset/README.md) RMRK legos as well as the `Equippable` lego. In addition to these three
 RMRK legos, it also requires the `Base` RMRK lego. Let's first examine the `Base` RMRK lego and then the `Equippable`
 one.
 
@@ -10,12 +10,12 @@ one.
 A *Base* can be considered a catalogue of parts from which an NFT can be composed. Parts can be either of the slot type
 or fixed type. Slots are intended for equippables.
 
-**NOTE: Bases are used through resources. Resources can cherry pick from the list of parts within the base, they can
+**NOTE: Bases are used through assets. Assets can cherry pick from the list of parts within the base, they can
 also define the slots they are allowed to receive.**
 
 Bases can be of different media types.
 
-The base's type indicates what the final output of an NFT will be when this resource is being rendered. Supported types
+The base's type indicates what the final output of an NFT will be when this asset is being rendered. Supported types
 are PNG, SVG, audio, video, even mixed.
 
 #### Equippable
@@ -23,8 +23,8 @@ are PNG, SVG, audio, video, even mixed.
 Equippables are NFTs that can be equipped in the before metioned slots. They have a set format and predefined space in
 the parent NFT.
 
-Resources that can be equipped into a slot each have a reference ID. The reference ID can be used to specify which
-parent NFT the group of resources belonging to a specific reference ID can be equipped to. Additionally slots can
+Assets that can be equipped into a slot each have a reference ID. The reference ID can be used to specify which
+parent NFT the group of assets belonging to a specific reference ID can be equipped to. Additionally slots can
 specify which collection can be used within it or to allow any collection to be equipped into it.
 
 Each slot of the NFT can have a predefined collection of allowed NFT collections to be equipped to this slot.
@@ -247,7 +247,7 @@ contract SimpleEquippable is RMRKEquippableImpl {
 ````
 
 The `RMRKEquippableImpl` implements all of the required functionality of the MergedEquippable RMRK lego composite. It
-implements minting, burning and resource management.
+implements minting, burning and asset management.
 
 **WARNING: The `RMRKEquippableImpl` only has minimal access control implemented. If you intend to use it, make sure to
 define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
@@ -359,50 +359,50 @@ There are a few constraints to this function:
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 - function can only be called while the sale is still open
 
-##### `mintNesting`
+##### `nestMint`
 
-The `mintNesting` function is used to mint child NFTs to be owned by the parent NFT and accepts three arguments:
+The `nestMint` function is used to mint child NFTs to be owned by the parent NFT and accepts three arguments:
 
 - `to`: `address` type of argument specifying the address of the smart contract to which the parent NFT belongs to
 - `numToMint`: `uint256` type of argument specifying the amount of tokens to be minted
 - `destinationId`: `uint256` type of argument specifying the ID of the parent NFT to which to mint the child NFT
 
-The constraints of `mintNesting` are similar to the ones set out for `mint` function.
+The constraints of `nestMint` are similar to the ones set out for `mint` function.
 
-##### `addResourceToToken`
+##### `addAssetToToken`
 
-The `addResourceToToken` is used to add a new resource to the token and accepts three arguments:
+The `addAssetToToken` is used to add a new asset to the token and accepts three arguments:
 
-- `tokenId`: `uint256` type of argument specifying the ID of the token we are adding resource to
-- `resourceId`: `uint64` type of argument specifying the ID of the resource we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the resource we are owerwriting with the desired resource
+- `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
+- `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
+- `overwrites`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
 
-##### `addResourceEntry`
+##### `addAssetEntry`
 
-The `addResourceEntry` is used to add a new resource of the collection and accepts three arguments:
+The `addAssetEntry` is used to add a new asset of the collection and accepts three arguments:
 
-- `resource`: `string` type of argument specifying the `ExtendedResource` structure. It consists of:
-    - `id`: `uint64` type of argument specifying the ID of this resource
-    - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this resource belongs to. This ID
-    can then be referenced in the `setValidParentRefId` in order to allow every resource with this equippable
+- `asset`: `string` type of argument specifying the `ExtendedAsset` structure. It consists of:
+    - `id`: `uint64` type of argument specifying the ID of this asset
+    - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
+    can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
     reference ID to be equipped into an NFT
     - `baseAddress`: `address` type of argument specifying the address of the Base smart contract
-    - `metadataURI`: `string` type of argument specifying the URI of the resource
-- `fixedPartIds`: `uint64[]` type of argument specifying the fixed parts IDs for this resource
-- `slotPartIds`: `uint64[]` type of argument specifying the slot parts IDs for this resource
+    - `metadataURI`: `string` type of argument specifying the URI of the asset
+- `fixedPartIds`: `uint64[]` type of argument specifying the fixed parts IDs for this asset
+- `slotPartIds`: `uint64[]` type of argument specifying the slot parts IDs for this asset
 
 ##### `setValidParentForEquippableGroup`
 
-The `setValidParentForEquippableGroup` is used to declare which group of resources are equippable into the parent
+The `setValidParentForEquippableGroup` is used to declare which group of assets are equippable into the parent
 address at the given slot and accepts three arguments:
 
-- `equippableGroupId`: `uint64` type of argument specifying the group of resources that can be equipped
-- `parentAddress`: `address` type of argument specifying the address into which the resource is equippable
+- `equippableGroupId`: `uint64` type of argument specifying the group of assets that can be equipped
+- `parentAddress`: `address` type of argument specifying the address into which the asset is equippable
 - `partId`: `uint64` type of argument specifying the ID of the part it can be equipped to
 
-#### `totalResources`
+#### `totalAssets`
 
-The `totalResources` is used to retrieve a total number of resources defined in the collection.
+The `totalAssets` is used to retrieve a total number of assets defined in the collection.
 
 #### `tokenURI`
 
@@ -725,7 +725,7 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
 }
 ````
 
-**NOTE: The `metadataURI` of a slot can be used to retrieve a fallback resource when no resource is equipped into it.**
+**NOTE: The `metadataURI` of a slot can be used to retrieve a fallback asset when no asset is equipped into it.**
 
 Notice how the `z` value of the background is `0` and that of the head is `3`. Also note how the `itemType` value of
 the `Slot` type of fixed items is `2` and that of equippable items is `1`. Additionally the `metadataURI` is usually
@@ -749,7 +749,7 @@ const totalBirds = 5;
 The `mintToken` function should accept two arguments (`Kanaria` and `Gem`). We will prepare a batch of transactions to
 mint the tokens and send them. Once the tokens are minted, we will output the total number of tokens minted. While the
 `Kanaria` tokens will be minted to the `owner` address, the `Gem` tokens will be minted using the
-[`mintNesting`](#mintnesting) method in order to be minted directly to the Kanaria tokens. We will mint three `Gem`
+[`nestMint`](#nestMint) method in order to be minted directly to the Kanaria tokens. We will mint three `Gem`
 tokens to each `Kanaria`. Since all of the nested tokens need to be approved, we will also build a batch of transaction
 to accept a single nest-minted `Gem` for each `Kanaria`:
 
@@ -773,7 +773,7 @@ async function mintTokens(
   console.log("Nest-minting Gem tokens");
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalBirds; i++) {
-    let tx = await gem.mintNesting(kanaria.address, 3, i, {
+    let tx = await gem.nestMint(kanaria.address, 3, i, {
       value: pricePerMint.mul(3),
     });
     allTx.push(tx);
@@ -801,26 +801,26 @@ In order for the `mintTokens` to be called, we have to add it to the `main` func
   await mintTokens(kanaria, gem);
 ````
 
-Having minted both `Kanaria`s and `Gem`s, we can now add resources to them. We will add resources to the `Kanaria`
-using the `addKanariaResources` function. It accepts `Kanaria` and address of the `Base` smart contract. Resources will
-be added using the [`addResourceEntry`](#addresourceentry) method. We will add a default resource, which doesn't need a
-`baseAddress` value. The composed resource needs to have the `baseAddress`. We also specify the fixed parts IDs for
+Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. We will add assets to the `Kanaria`
+using the `addKanariaAssets` function. It accepts `Kanaria` and address of the `Base` smart contract. Assets will
+be added using the [`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a
+`baseAddress` value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for
 background, head, body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the
-resource entires added, we can add them to a token and then accept them as well:
+asset entires added, we can add them to a token and then accept them as well:
 
 ````typescript
-async function addKanariaResources(
+async function addKanariaAssets(
   kanaria: SimpleEquippable,
   baseAddress: string
 ): Promise<void> {
-  console.log("Adding Kanaria resources");
-  const resourceDefaultId = 1;
-  const resourceComposedId = 2;
+  console.log("Adding Kanaria assets");
+  const assetDefaultId = 1;
+  const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
-  let tx = await kanaria.addResourceEntry(
+  let tx = await kanaria.addAssetEntry(
     {
-      id: resourceDefaultId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
+      id: assetDefaultId,
+      equippableGroupId: 0, // Only used for assets meant to equip into others
       baseAddress: ethers.constants.AddressZero, // base is not needed here
       metadataURI: "ipfs://default.png",
     },
@@ -829,10 +829,10 @@ async function addKanariaResources(
   );
   allTx.push(tx);
 
-  tx = await kanaria.addResourceEntry(
+  tx = await kanaria.addAssetEntry(
     {
-      id: resourceComposedId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
+      id: assetComposedId,
+      equippableGroupId: 0, // Only used for assets meant to equip into others
       baseAddress: baseAddress, // Since we're using parts, we must define the base
       metadataURI: "ipfs://meta1.json",
     },
@@ -840,65 +840,65 @@ async function addKanariaResources(
     [9, 10, 11] // We state that this can receive the 3 slot parts for gems
   );
   allTx.push(tx);
-  // Wait for both resources to be added
+  // Wait for both assets to be added
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 2 resource entries");
+  console.log("Added 2 asset entries");
 
-  // Add resources to token
+  // Add assets to token
   const tokenId = 1;
   allTx = [
-    await kanaria.addResourceToToken(tokenId, resourceDefaultId, 0),
-    await kanaria.addResourceToToken(tokenId, resourceComposedId, 0),
+    await kanaria.addAssetToToken(tokenId, assetDefaultId, 0),
+    await kanaria.addAssetToToken(tokenId, assetComposedId, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added resources to token 1");
+  console.log("Added assets to token 1");
 
-  // Accept both resources:
-  tx = await kanaria.acceptResource(tokenId, 0);
+  // Accept both assets:
+  tx = await kanaria.acceptAsset(tokenId, 0);
   await tx.wait();
-  tx = await kanaria.acceptResource(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0);
   await tx.wait();
-  console.log("Resources accepted");
+  console.log("Assets accepted");
 }
 ````
 
-Adding resources to `Gem`s is done in the `addGemResources`. It accepts `Gem`, address of the `Kanaria` smart contract
-and the address of the `Base` smart contract. We will add 4 resources for each gem; one full version and three that
-match each slot. Reference IDs are specified for easier reference from the child's perspective. The resources will be
+Adding assets to `Gem`s is done in the `addGemAssets`. It accepts `Gem`, address of the `Kanaria` smart contract
+and the address of the `Base` smart contract. We will add 4 assets for each gem; one full version and three that
+match each slot. Reference IDs are specified for easier reference from the child's perspective. The assets will be
 added one by one. Note how the full versions of gems don't have the `equippableGroupId`.
 
-Having added the resource entries, we can now add the valid parent reference IDs using the
+Having added the asset entries, we can now add the valid parent reference IDs using the
 [`setValidParentForEquippableGroup`](#setvalidparentforequippablegroup). For example if we want to add a valid reference
 for the left gem, we need to pass the value ofequippable reference ID of the left gem, parent smart contract address (in
 our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9 in the
 `Base` for the left gem).
 
-Last thing to do is to add resources to the tokens using [`addResourceToToken`](#addresourcetotoken). Resource of type
-A will be added to the gems 1 and 2, and the type B of the resource is added to gem 3. All of these should be accepted
-using `acceptResource`:
+Last thing to do is to add assets to the tokens using [`addAssetToToken`](#addassettotoken). Asset of type
+A will be added to the gems 1 and 2, and the type B of the asset is added to gem 3. All of these should be accepted
+using `acceptAsset`:
 
 ````typescript
-async function addGemResources(
+async function addGemAssets(
   gem: SimpleEquippable,
   kanariaAddress: string,
   baseAddress: string
 ): Promise<void> {
-  console.log("Adding Gem resources");
-  // We'll add 4 resources for each gem, a full version and 3 versions matching each slot.
-  // We will have only 2 types of gems -> 4x2: 8 resources.
+  console.log("Adding Gem assets");
+  // We'll add 4 assets for each gem, a full version and 3 versions matching each slot.
+  // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
   const gemVersions = 4;
 
-  // These refIds are used from the child's perspective, to group resources that can be equipped into a parent
-  // With it, we avoid the need to do set it resource by resource
+  // These refIds are used from the child's perspective, to group assets that can be equipped into a parent
+  // With it, we avoid the need to do set it asset by asset
   const equippableRefIdLeftGem = 1;
   const equippableRefIdMidGem = 2;
   const equippableRefIdRightGem = 3;
 
   // We can do a for loop, but this makes it clearer.
-  console.log("Adding resource entries");
+  console.log("Adding asset entries");
   let allTx = [
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Full version for first type of gem, no need of refId or base
       {
         id: 1,
@@ -909,7 +909,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
       {
         id: 2,
@@ -920,7 +920,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into mid slot for first type of gem
       {
         id: 3,
@@ -931,7 +931,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
       {
         id: 4,
@@ -942,7 +942,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Full version for second type of gem, no need of refId or base
       {
         id: 5,
@@ -953,7 +953,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into left slot for second type of gem
       {
         id: 6,
@@ -964,7 +964,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into mid slot for second type of gem
       {
         id: 7,
@@ -975,7 +975,7 @@ async function addGemResources(
       [],
       []
     ),
-    await gem.addResourceEntry(
+    await gem.addAssetEntry(
       // Equipped into right slot for second type of gem
       {
         id: 8,
@@ -990,11 +990,11 @@ async function addGemResources(
 
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    "Added 8 gem resources. 2 Types of gems with full, left, mid and right versions."
+    "Added 8 gem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gem, which sets its equippableRefId to equippableRefIdLeftGem
+  // e.g. Any asset on gem, which sets its equippableRefId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanaria on slot 9 (left gem).
   console.log("Setting valid parent reference IDs");
   allTx = [
@@ -1004,44 +1004,44 @@ async function addGemResources(
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  // We add resources of type A to gem 1 and 2, and type Bto gem 3. Both are nested into the first kanaria
-  // This means gems 1 and 2 will have the same resource, which is totally valid.
-  console.log("Add resources to tokens");
+  // We add assets of type A to gem 1 and 2, and type Bto gem 3. Both are nested into the first kanaria
+  // This means gems 1 and 2 will have the same asset, which is totally valid.
+  console.log("Add assets to tokens");
   allTx = [
-    await gem.addResourceToToken(1, 1, 0),
-    await gem.addResourceToToken(1, 2, 0),
-    await gem.addResourceToToken(1, 3, 0),
-    await gem.addResourceToToken(1, 4, 0),
-    await gem.addResourceToToken(2, 1, 0),
-    await gem.addResourceToToken(2, 2, 0),
-    await gem.addResourceToToken(2, 3, 0),
-    await gem.addResourceToToken(2, 4, 0),
-    await gem.addResourceToToken(3, 5, 0),
-    await gem.addResourceToToken(3, 6, 0),
-    await gem.addResourceToToken(3, 7, 0),
-    await gem.addResourceToToken(3, 8, 0),
+    await gem.addAssetToToken(1, 1, 0),
+    await gem.addAssetToToken(1, 2, 0),
+    await gem.addAssetToToken(1, 3, 0),
+    await gem.addAssetToToken(1, 4, 0),
+    await gem.addAssetToToken(2, 1, 0),
+    await gem.addAssetToToken(2, 2, 0),
+    await gem.addAssetToToken(2, 3, 0),
+    await gem.addAssetToToken(2, 4, 0),
+    await gem.addAssetToToken(3, 5, 0),
+    await gem.addAssetToToken(3, 6, 0),
+    await gem.addAssetToToken(3, 7, 0),
+    await gem.addAssetToToken(3, 8, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 4 resources to each of 3 gems.");
+  console.log("Added 4 assets to each of 3 gems.");
 
-  // We accept each resource for both gems
+  // We accept each asset for both gems
   for (let i = 0; i < gemVersions; i++) {
     allTx = [
-      await gem.acceptResource(1, 0),
-      await gem.acceptResource(2, 0),
-      await gem.acceptResource(3, 0),
+      await gem.acceptAsset(1, 0),
+      await gem.acceptAsset(2, 0),
+      await gem.acceptAsset(3, 0),
     ];
     await Promise.all(allTx.map((tx) => tx.wait()));
   }
-  console.log("Accepted 4 resources to each of 3 gems.");
+  console.log("Accepted 4 assets to each of 3 gems.");
 }
 ````
 
-In order for the `addKanariaResources` and `addGemResources` to be called, we have to add them to the `main` function:
+In order for the `addKanariaAssets` and `addGemAssets` to be called, we have to add them to the `main` function:
 
 ````typescript
-  await addKanariaResources(kanaria, base.address);
-  await addGemResources(gem, kanaria.address, base.address);
+  await addKanariaAssets(kanaria, base.address);
+  await addGemAssets(gem, kanaria.address, base.address);
 ````
 
 With `Kanaria`s and `Gem`s ready, we can equip the gems to Kanarias using the `equipGems` function. We will build a
@@ -1054,23 +1054,23 @@ async function equipGems(kanaria: SimpleEquippable): Promise<void> {
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 0, // Gem 1 is on position 0
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 9, // left gem slot
-      childResourceId: 2, // Resource id for child meant for the left gem
+      childAssetId: 2, // Asset id for child meant for the left gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 10, // mid gem slot
-      childResourceId: 3, // Resource id for child meant for the mid gem
+      childAssetId: 3, // Asset id for child meant for the mid gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
       childIndex: 1, // Gem 3 is on position 1
-      resourceId: 2, // Resource for the kanaria which is composable
+      assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 11, // right gem slot
-      childResourceId: 8, // Resource id for child meant for the right gem
+      childAssetId: 8, // Asset id for child meant for the right gem
     }),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
@@ -1094,10 +1094,10 @@ async function composeEquippables(
 ): Promise<void> {
   console.log("Composing equippables");
   const tokenId = 1;
-  const resourceId = 2;
+  const assetId = 2;
   console.log(
     "Composed: ",
-    await views.composeEquippables(kanariaAddress, tokenId, resourceId)
+    await views.composeEquippables(kanariaAddress, tokenId, assetId)
   );
 }
 ````
@@ -1178,17 +1178,17 @@ Accepting Gems
 Accepted 1 gem for each kanaria
 Accepted 1 gem for each kanaria
 Accepted 1 gem for each kanaria
-Adding Kanaria resources
-Added 2 resource entries
-Added resources to token 1
-Resources accepted
-Adding Gem resources
-Adding resource entries
-Added 8 gem resources. 2 Types of gems with full, left, mid and right versions.
+Adding Kanaria assets
+Added 2 asset entries
+Added assets to token 1
+Assets accepted
+Adding Gem assets
+Adding asset entries
+Added 8 gem assets. 2 Types of gems with full, left, mid and right versions.
 Setting valid parent reference IDs
-Add resources to tokens
-Added 4 resources to each of 3 gems.
-Accepted 4 resources to each of 3 gems.
+Add assets to tokens
+Added 4 assets to each of 3 gems.
+Accepted 4 assets to each of 3 gems.
 Equipping gems
 Equipped 3 gems into first kanaria
 Composing equippables
@@ -1246,7 +1246,7 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "9" },
-      childResourceId: BigNumber { value: "2" },
+      childAssetId: BigNumber { value: "2" },
       z: 4,
       childTokenId: BigNumber { value: "1" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
@@ -1260,7 +1260,7 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "10" },
-      childResourceId: BigNumber { value: "3" },
+      childAssetId: BigNumber { value: "3" },
       z: 4,
       childTokenId: BigNumber { value: "2" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
@@ -1274,14 +1274,14 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "11" },
-      childResourceId: BigNumber { value: "8" },
+      childAssetId: BigNumber { value: "8" },
       z: 4,
       childTokenId: BigNumber { value: "3" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       metadataURI: ''
     ]
   ],
-  resource: [
+  asset: [
     BigNumber { value: "2" },
     BigNumber { value: "0" },
     '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
@@ -1334,7 +1334,7 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "9" },
-      childResourceId: BigNumber { value: "2" },
+      childAssetId: BigNumber { value: "2" },
       z: 4,
       childTokenId: BigNumber { value: "1" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
@@ -1348,7 +1348,7 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "10" },
-      childResourceId: BigNumber { value: "3" },
+      childAssetId: BigNumber { value: "3" },
       z: 4,
       childTokenId: BigNumber { value: "2" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
@@ -1362,7 +1362,7 @@ Composed:  [
       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
       '',
       partId: BigNumber { value: "11" },
-      childResourceId: BigNumber { value: "8" },
+      childAssetId: BigNumber { value: "8" },
       z: 4,
       childTokenId: BigNumber { value: "3" },
       childAddress: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
@@ -1523,10 +1523,10 @@ The latter is used to mint a child NFT directly into the parent NFT, so implemen
 - `transferFrom(address from, address to, uint256 tokenId)`
 - `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
 
-Resource and reference management functions should also be implemented using:
+Asset and reference management functions should also be implemented using:
 
-- `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
-- `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
+- `_addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
 - `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your

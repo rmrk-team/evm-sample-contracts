@@ -6,9 +6,9 @@ your own smart contracts.
 
 The examples included are:
 
-1. [Nesting](./Nesting/README.md) examines the Nesting RMRK lego.
-2. [MultiResource](./MultiResource/README.md) examines the MultiResource RMRK lego.
-3. [NestingMultiResource](./NestingMultiResource/) examines the Nesting and MultiResource RMRK legos operating together.
+1. [Nestable](./Nestable/README.md) examines the Nestable RMRK lego.
+2. [MultiAsset](./MultiAsset/README.md) examines the MultiAsset RMRK lego.
+3. [NestableMultiAsset](./NestableMultiAsset/) examines the Nestable and MultiAsset RMRK legos operating together.
 4. [MegredEquippable](./MergedEquippable/README.md) examines the Merged equippable RMRK lego composite.
 5. [SplitEquippable](./SplitEquippable/README.md) examines the Split equippable RMRK lego composite.
 

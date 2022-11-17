@@ -2,15 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestable.sol";
 
-contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
-    constructor(
-        string memory name,
-        string memory symbol
+contract AdvancedNestable is RMRKNestable {
+    constructor(string memory name, string memory symbol)
         // Custom optional: additional parameters
-    )
-        RMRKNestingExternalEquip(name, symbol)
+        RMRKNestable(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -19,19 +16,15 @@ contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId) 
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
     //  _burn(uint256 tokenId)
-
-    // Custom optional: external gated function to set equippableAddress
-    // Available internal functions:
-    //  _setEquippableAddress(address equippable)
 
     // Custom optional: utility functions to transfer and nest transfer from caller
     // Available public functions:

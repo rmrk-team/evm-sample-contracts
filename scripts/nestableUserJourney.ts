@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { SimpleNesting } from "../typechain-types";
+import { SimpleNestable } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 async function main() {
@@ -7,8 +7,8 @@ async function main() {
   const totalTokens = 5;
   const [owner] = await ethers.getSigners();
 
-  const contractFactory = await ethers.getContractFactory("SimpleNesting");
-  const parent: SimpleNesting = await contractFactory.deploy(
+  const contractFactory = await ethers.getContractFactory("SimpleNestable");
+  const parent: SimpleNestable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
     1000,
@@ -18,7 +18,7 @@ async function main() {
     await owner.getAddress(),
     10
   );
-  const child: SimpleNesting = await contractFactory.deploy(
+  const child: SimpleNestable = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
@@ -49,7 +49,7 @@ async function main() {
   console.log("Minting child NFTs");
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalTokens; i++) {
-    let tx = await child.mintNesting(parent.address, 2, i, {
+    let tx = await child.nestMint(parent.address, 2, i, {
       value: pricePerMint.mul(2),
     });
     allTx.push(tx);
@@ -63,13 +63,13 @@ async function main() {
 
   console.log("Inspecting child NFT with the ID of 1");
   let parentId = await child.ownerOf(1);
-  let rmrkParent = await child.rmrkOwnerOf(1);
+  let rmrkParent = await child.directOwnerOf(1);
   console.log("Chunky's id 1 owner  is ", parentId);
   console.log("Chunky's id 1 rmrk owner is ", rmrkParent);
   console.log("Parent address: ", parent.address);
 
   // Accept the first child for kanaria id 1:
-  console.log("Accepthing the fist child NFT for the parent NFT with ID 1");
+  console.log("Accepting the fist child NFT for the parent NFT with ID 1");
   tx = await parent.acceptChild(1, 0);
   await tx.wait();
 
@@ -84,7 +84,7 @@ async function main() {
   await tx.wait();
 
   parentId = await child.ownerOf(1);
-  rmrkParent = await child.rmrkOwnerOf(1);
+  rmrkParent = await child.directOwnerOf(1);
   console.log("Chunky's id 1 parent is ", parentId);
   console.log("Chunky's id 1 rmrk owner is ", rmrkParent);
 }

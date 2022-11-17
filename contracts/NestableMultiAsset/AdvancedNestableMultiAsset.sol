@@ -2,16 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/nesting/RMRKNesting.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestableMultiAsset.sol";
 
-
-contract AdvancedNesting is RMRKNesting {
-    constructor(
-        string memory name,
-        string memory symbol
+contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
+    constructor(string memory name, string memory symbol)
         // Custom optional: additional parameters
-    )
-        RMRKNesting(name, symbol)
+        RMRKNestableMultiAsset(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -20,11 +16,11 @@ contract AdvancedNesting is RMRKNesting {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId) 
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
@@ -34,4 +30,12 @@ contract AdvancedNesting is RMRKNesting {
     // Available public functions:
     //  transferFrom(address from, address to, uint256 tokenId)
     //  nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)
+
+    // Custom expected: external, optionally gated, function to add assets.
+    // Available internal functions:
+    //  _addAssetEntry(uint64 id, string memory metadataURI)
+
+    // Custom expected: external, optionally gated, function to add assets to tokens.
+    // Available internal functions:
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
 }

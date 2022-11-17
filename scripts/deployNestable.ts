@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { SimpleNesting } from "../typechain-types";
+import { SimpleNestable } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 async function main() {
@@ -7,8 +7,8 @@ async function main() {
   const totalTokens = 5;
   const [owner] = await ethers.getSigners();
 
-  const contractFactory = await ethers.getContractFactory("SimpleNesting");
-  const parent: SimpleNesting = await contractFactory.deploy(
+  const contractFactory = await ethers.getContractFactory("SimpleNestable");
+  const parent: SimpleNestable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
     1000,
@@ -18,7 +18,7 @@ async function main() {
     await owner.getAddress(),
     10
   );
-  const child: SimpleNesting = await contractFactory.deploy(
+  const child: SimpleNestable = await contractFactory.deploy(
     "Chunky",
     "CHN",
     1000,
