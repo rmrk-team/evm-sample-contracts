@@ -316,12 +316,7 @@ will send them and get all of the assets to output to the console:
 
   console.log("Awaiting for all tx to finish...");
   await Promise.all(allTx.map((tx) => tx.wait()));
-
-  const assetIds = await token.getAllAssets();
-  console.log("All assets: %s", assetIds);
 ````
-
-Getting assets using `getAllAssets` returns the array of the asset IDs.
 
 Once the assets are added to the smart contract we can assign each asset to one of the tokens:
 
@@ -346,7 +341,7 @@ transactions for each of the tokens and send them at the end:
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
     // Accept pending asset for each token (on index 0)
-    let tx = await token.acceptAsset(i, 0);
+    let tx = await token.acceptAsset(i, 0, i);
     allTx.push(tx);
     console.log(`Accepted first pending asset for token ${i}.`);
   }

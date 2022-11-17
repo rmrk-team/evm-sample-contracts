@@ -40,9 +40,6 @@ async function main() {
   console.log("Awaiting for all tx to finish...");
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  const assetIds = await token.getAllAssets();
-  console.log("All assets: %s", assetIds);
-
   console.log("Adding assets to tokens");
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
@@ -58,7 +55,7 @@ async function main() {
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
     // Accept pending asset for each token (on index 0)
-    let tx = await token.acceptAsset(i, 0);
+    let tx = await token.acceptAsset(i, 0, i);
     allTx.push(tx);
     console.log(`Accepted first pending asset for token ${i}.`);
   }

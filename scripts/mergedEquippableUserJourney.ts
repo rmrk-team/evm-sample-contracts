@@ -235,17 +235,17 @@ async function mintTokens(
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(`Minted 3 gems into each kanaria`);
 
-  // Accept 1 gem for each kanaria
+  // Accept 3 gems for each kanaria
   console.log("Accepting Gems");
-  for (let i = 0; i < 3; i++) {
-    allTx = [];
-    for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
-      let tx = await kanaria.acceptChild(tokenId, 0);
-      allTx.push(tx);
-    }
-    await Promise.all(allTx.map((tx) => tx.wait()));
-    console.log(`Accepted 1 gem for each kanaria`);
+  for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
+    allTx = [
+      await kanaria.acceptChild(tokenId, 2, gem.address, 3 * tokenId),
+      await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
+      await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
+    ];
   }
+  await Promise.all(allTx.map((tx) => tx.wait()));
+  console.log(`Accepted gems for each kanaria`);
 }
 
 async function addKanariaAssets(
@@ -257,24 +257,18 @@ async function addKanariaAssets(
   const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
   let tx = await kanaria.addAssetEntry(
-    {
-      id: assetDefaultId,
-      equippableGroupId: 0, // Only used for assets meant to equip into others
-      baseAddress: ethers.constants.AddressZero, // base is not needed here
-      metadataURI: "ipfs://default.png",
-    },
+    0, // Only used for assets meant to equip into others
+    ethers.constants.AddressZero, // base is not needed here
+    "ipfs://default.png",
     [],
     []
   );
   allTx.push(tx);
 
   tx = await kanaria.addAssetEntry(
-    {
-      id: assetComposedId,
-      equippableGroupId: 0, // Only used for assets meant to equip into others
-      baseAddress: baseAddress, // Since we're using parts, we must define the base
-      metadataURI: "ipfs://meta1.json",
-    },
+    0, // Only used for assets meant to equip into others
+    baseAddress, // Since we're using parts, we must define the base
+    "ipfs://meta1.json",
     [1, 3, 5, 7], // We're using first background, head, body and wings
     [9, 10, 11] // We state that this can receive the 3 slot parts for gems
   );
@@ -293,9 +287,9 @@ async function addKanariaAssets(
   console.log("Added assets to token 1");
 
   // Accept both assets:
-  tx = await kanaria.acceptAsset(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0, assetDefaultId);
   await tx.wait();
-  tx = await kanaria.acceptAsset(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0, assetComposedId);
   await tx.wait();
   console.log("Assets accepted");
 }
@@ -322,89 +316,65 @@ async function addGemAssets(
   let allTx = [
     await gem.addAssetEntry(
       // Full version for first type of gem, no need of refId or base
-      {
-        id: 1,
-        equippableGroupId: 0,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/full.svg`,
-      },
+      0,
+      baseAddress,
+      `ipfs://gems/typeA/full.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
-      {
-        id: 2,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/left.svg`,
-      },
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeA/left.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into mid slot for first type of gem
-      {
-        id: 3,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/mid.svg`,
-      },
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeA/mid.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into left slot for first type of gem
-      {
-        id: 4,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/right.svg`,
-      },
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeA/right.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Full version for second type of gem, no need of refId or base
-      {
-        id: 5,
-        equippableGroupId: 0,
-        baseAddress: ethers.constants.AddressZero,
-        metadataURI: `ipfs://gems/typeB/full.svg`,
-      },
+      0,
+      ethers.constants.AddressZero,
+      `ipfs://gems/typeB/full.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into left slot for second type of gem
-      {
-        id: 6,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/left.svg`,
-      },
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeB/left.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into mid slot for second type of gem
-      {
-        id: 7,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/mid.svg`,
-      },
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeB/mid.svg`,
       [],
       []
     ),
     await gem.addAssetEntry(
       // Equipped into right slot for second type of gem
-      {
-        id: 8,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/right.svg`,
-      },
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeB/right.svg`,
       [],
       []
     ),
@@ -446,15 +416,22 @@ async function addGemAssets(
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log("Added 4 assets to each of 3 gems.");
 
-  // We accept each asset for both gems
-  for (let i = 0; i < gemVersions; i++) {
-    allTx = [
-      await gem.acceptAsset(1, 0),
-      await gem.acceptAsset(2, 0),
-      await gem.acceptAsset(3, 0),
-    ];
-    await Promise.all(allTx.map((tx) => tx.wait()));
-  }
+  // We accept each asset for all gems
+  allTx = [
+    await gem.acceptAsset(1, 3, 4),
+    await gem.acceptAsset(1, 2, 3),
+    await gem.acceptAsset(1, 1, 2),
+    await gem.acceptAsset(1, 0, 1),
+    await gem.acceptAsset(2, 3, 4),
+    await gem.acceptAsset(2, 2, 3),
+    await gem.acceptAsset(2, 1, 2),
+    await gem.acceptAsset(2, 0, 1),
+    await gem.acceptAsset(3, 3, 8),
+    await gem.acceptAsset(3, 2, 7),
+    await gem.acceptAsset(3, 1, 6),
+    await gem.acceptAsset(3, 0, 5),
+  ];
+  await Promise.all(allTx.map((tx) => tx.wait()));
   console.log("Accepted 4 assets to each of 3 gems.");
 }
 
@@ -463,21 +440,21 @@ async function equipGems(kanaria: SimpleEquippable): Promise<void> {
   const allTx = [
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 0, // Gem 1 is on position 0
+      childIndex: 2, // Gem 1 is on position 2
       assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 9, // left gem slot
       childAssetId: 2, // Asset id for child meant for the left gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
+      childIndex: 1, // Gem 2 is on position 1
       assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 10, // mid gem slot
       childAssetId: 3, // Asset id for child meant for the mid gem
     }),
     await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 1, // Gem 3 is on position 1
+      childIndex: 0, // Gem 3 is on position 0
       assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 11, // right gem slot
       childAssetId: 8, // Asset id for child meant for the right gem

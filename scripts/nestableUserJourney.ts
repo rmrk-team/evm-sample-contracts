@@ -70,7 +70,7 @@ async function main() {
 
   // Accept the first child for kanaria id 1:
   console.log("Accepting the fist child NFT for the parent NFT with ID 1");
-  tx = await parent.acceptChild(1, 0);
+  tx = await parent.acceptChild(1, 0, child.address, 1);
   await tx.wait();
 
   // Show accepted and pending children
@@ -80,7 +80,7 @@ async function main() {
 
   // Send 1st child to owner:
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, 0, owner.address, false);
+  tx = await parent.unnestChild(1, owner.address, 0, child.address, 1, false);
   await tx.wait();
 
   parentId = await child.ownerOf(1);

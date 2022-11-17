@@ -394,17 +394,17 @@ For the nestable process to be completed, the `acceptChild` method should be cal
 
 ````typescript
   console.log("Accepting the fist child NFT for the parent NFT with ID 1");
-  tx = await parent.acceptChild(1, 0);
+  tx = await parent.acceptChild(1, 0, child.address, 1);
   await tx.wait();
 ````
 
-The section of the script above accepted the child NFT with the nestable ID of `0` for the parent NFT with the ID of `1`
+The section of the script above accepted the child NFT with the ID of `1` at the index `0` for the parent NFT with the ID of `1`
 in the parent NFT's smart contract.
 
-**NOTE: When accepting the nested NFTs, the ID of the pending NFT represents its ID in a FIFO like stack. So having 2
-NFTs in the pending stack, and accepting the one with the ID of 0 will move the next one to this spot. Accepting the
+**NOTE: When accepting the nested NFTs, the index of the pending NFT represents its index in a FIFO like stack. So having 2
+NFTs in the pending stack, and accepting the one with the index of 0 will move the next one to this spot. Accepting the
 second NFT from the stack, after the first one was already accepted, should then be done by accepting the pending NFT
-with ID of 0. So two identical calls in succession should accept both pending NFTs.**
+with index of 0. So two identical calls in succession should accept both pending NFTs.**
 
 The parent NFT with ID 1 now has one accepted and one pending child NFTs. We can examine both using the `childrenOf` and
 `pendingChildren` methods:
@@ -429,7 +429,7 @@ nestable ID of 0 from the parent NFT with ID 1:
 
 ````typescript
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, 0, owner.address, false);
+  tx = await parent.unnestChild(1, owner.address, 0, child.address, 1, false);
   await tx.wait();
 ````
 
