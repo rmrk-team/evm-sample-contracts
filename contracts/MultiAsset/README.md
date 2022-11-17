@@ -1,6 +1,6 @@
 # MultiAsset
 
-A *asset* is a type of output for an NFT, usually a media file.
+An *asset* is a type of output for an NFT, usually a media file.
 
 A asset can be an image, a movie, a PDF file,... A multi-asset NFT is one that can output a different asset
 based on specific contextual information, e.g. load a PDF if loaded into a PDF reader, vs. loading an image in a virtual
