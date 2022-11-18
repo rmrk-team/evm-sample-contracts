@@ -10,7 +10,7 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [kanariaNestable, kanariaEquip, gemNestable, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
     await deployContracts();
 }
 
@@ -32,7 +32,7 @@ async function deployContracts(): Promise<
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNestable: SimpleNestableExternalEquip =
+  const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
       "Kanaria",
       "KAN",
@@ -44,7 +44,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNestable: SimpleNestableExternalEquip = await nestableFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -57,31 +57,31 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNestable.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNestable.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNestable.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNestable.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
   await views.deployed();
 
   const allTx = [
-    await kanariaNestable.setEquippableAddress(kanariaEquip.address),
-    await gemNestable.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNestable.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${gemNestable.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNestable, kanariaEquip, gemNestable, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
 main().catch((error) => {

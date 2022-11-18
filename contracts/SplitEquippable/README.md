@@ -363,7 +363,7 @@ async function deployContracts(): Promise<
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNestable: SimpleNestableExternalEquip =
+  const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
       "Kanaria",
       "KAN",
@@ -375,7 +375,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNestable: SimpleNestableExternalEquip = await nestableFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -388,30 +388,30 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNestable.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNestable.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNestable.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNestable.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
 
   const allTx = [
-    await kanariaNestable.setEquippableAddress(kanariaEquip.address),
-    await gemNestable.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNestable.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${gemNestable.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNestable, kanariaEquip, gemNestable, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 ````
 
@@ -462,7 +462,7 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [kanariaNestable, kanariaEquip, gemNestable, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
     await deployContracts();
 }
 
@@ -484,7 +484,7 @@ async function deployContracts(): Promise<
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNestable: SimpleNestableExternalEquip =
+  const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
       "Kanaria",
       "KAN",
@@ -496,7 +496,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNestable: SimpleNestableExternalEquip = await nestableFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -509,30 +509,30 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNestable.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNestable.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNestable.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNestable.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
 
   const allTx = [
-    await kanariaNestable.setEquippableAddress(kanariaEquip.address),
-    await gemNestable.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNestable.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${gemNestable.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNestable, kanariaEquip, gemNestable, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
 main().catch((error) => {
@@ -709,7 +709,7 @@ async function mintTokens(
   await tx.wait();
   console.log(`Minted ${totalBirds} kanarias`);
 
-  // Mint 3 gems into each kanariaNestable
+  // Mint 3 gems into each nestableKanaria
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalBirds; i++) {
     let tx = await gem.nestMint(kanaria.address, 3, i, {
@@ -718,7 +718,7 @@ async function mintTokens(
     allTx.push(tx);
   }
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log(`Minted 3 gems into each kanariaNestable`);
+  console.log(`Minted 3 gems into each nestableKanaria`);
 
   // Accept 3 gems for each kanaria
   console.log("Accepting Gems");
@@ -737,7 +737,7 @@ async function mintTokens(
 In order for the `mintTokens` to be called, we have to add it to the `main` function:
 
 ````typescript
-  await mintTokens(kanariaNestable, gemNestable);
+  await mintTokens(nestableKanaria, nestableGem);
 ````
 
 Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. The assets are added to the
@@ -818,7 +818,7 @@ async function addGemAssets(
   kanariaAddress: string,
   baseAddress: string
 ): Promise<void> {
-  // We'll add 4 assets for each gemNestable, a full version and 3 versions matching each slot.
+  // We'll add 4 assets for each nestableGem, a full version and 3 versions matching each slot.
   // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
   const gemVersions = 4;
@@ -899,12 +899,12 @@ async function addGemAssets(
 
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    "Added 8 gemNestable assets. 2 Types of gems with full, left, mid and right versions."
+    "Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any asset on gemNestable, which sets its equippableGroupId to equippableRefIdLeftGem
-  //      will be considered a valid equip into any kanariaNestable on slot 9 (left gemNestable).
+  // e.g. Any asset on nestableGem, which sets its equippableGroupId to equippableRefIdLeftGem
+  //      will be considered a valid equip into any nestableKanaria on slot 9 (left nestableGem).
   allTx = [
     await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
     await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
@@ -912,7 +912,7 @@ async function addGemAssets(
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  // We add assets of type A to gemNestable 1 and 2, and type Bto gemNestable 3. Both are nested into the first kanariaNestable
+  // We add assets of type A to nestableGem 1 and 2, and type Bto nestableGem 3. Both are nested into the first nestableKanaria
   // This means gems 1 and 2 will have the same asset, which is totally valid.
   allTx = [
     await gem.addAssetToToken(1, 1, 0),
@@ -987,7 +987,7 @@ async function equipGems(kanariaEquip: SimpleExternalEquip): Promise<void> {
     }),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Equipped 3 gems into first kanariaNestable");
+  console.log("Equipped 3 gems into first nestableKanaria");
 }
 ````
 
@@ -1038,17 +1038,17 @@ npm run user-journey-split-equippable
 Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0, 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 Base is set
 Minted 5 kanarias
-Minted 3 gems into each kanariaNestable
-Accepted 1 gemNestable for each kanariaNestable
-Accepted 1 gemNestable for each kanariaNestable
-Accepted 1 gemNestable for each kanariaNestable
+Minted 3 gems into each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
 Added 2 asset entries
 Added assets to token 1
 Assets accepted
-Added 8 gemNestable assets. 2 Types of gems with full, left, mid and right versions.
+Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions.
 Added 4 assets to each of 3 gems.
 Accepted 4 assets to each of 3 gems.
-Equipped 3 gems into first kanariaNestable
+Equipped 3 gems into first nestableKanaria
 Composed:  [
   [
     BigNumber { value: "2" },
