@@ -390,9 +390,21 @@ async function addGemAssets(
   //      will be considered a valid equip into any kanaria on slot 9 (left gem).
   console.log("Setting valid parent reference IDs");
   allTx = [
-    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdLeftGem,
+      kanariaAddress,
+      9
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdMidGem,
+      kanariaAddress,
+      10
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdRightGem,
+      kanariaAddress,
+      11
+    ),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 

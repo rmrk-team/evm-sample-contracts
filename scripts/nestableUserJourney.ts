@@ -74,7 +74,9 @@ async function main() {
   await tx.wait();
 
   // Show accepted and pending children
-  console.log("Exaimning accepted and pending children of parent NFT with ID 1");
+  console.log(
+    "Exaimning accepted and pending children of parent NFT with ID 1"
+  );
   console.log("Children: ", await parent.childrenOf(1));
   console.log("Pending: ", await parent.pendingChildrenOf(1));
 

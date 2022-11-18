@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers";
 import {
   SimpleBase,
   SimpleExternalEquip,
@@ -213,6 +214,22 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
   console.log("Base is set");
 }
 
+interface AcceptChild {
+  parentId: number;
+  childIndex: number;
+  childAddress: string;
+  childId: number;
+}
+
+function namedAcceptChild(args: AcceptChild): [number, number, string, number] {
+  return [
+    args.parentId,
+    args.childIndex,
+    args.childAddress,
+    args.childId,
+  ];
+}
+
 async function mintTokens(
   kanaria: SimpleNestableExternalEquip,
   gem: SimpleNestableExternalEquip
@@ -239,9 +256,17 @@ async function mintTokens(
 
   // Accept 3 gems for each kanaria
   console.log("Accepting Gems");
+
   for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
     allTx = [
-      await kanaria.acceptChild(tokenId, 2, gem.address, 3 * tokenId),
+      await kanaria.acceptChild(
+        ...namedAcceptChild({
+          parentId: tokenId,
+          childIndex: 2,
+          childAddress: gem.address,
+          childId: 3 * tokenId,
+        })
+      ),
       await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
       await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
     ];
@@ -388,9 +413,21 @@ async function addGemAssets(
   // e.g. Any asset on gemNestable, which sets its equippableGroupId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanariaNestable on slot 9 (left gemNestable).
   allTx = [
-    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdLeftGem,
+      kanariaAddress,
+      9
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdMidGem,
+      kanariaAddress,
+      10
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdRightGem,
+      kanariaAddress,
+      11
+    ),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 

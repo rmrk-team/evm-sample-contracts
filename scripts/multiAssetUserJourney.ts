@@ -7,9 +7,7 @@ async function main() {
   const totalTokens = 5;
   const [owner] = await ethers.getSigners();
 
-  const contractFactory = await ethers.getContractFactory(
-    "SimpleMultiAsset"
-  );
+  const contractFactory = await ethers.getContractFactory("SimpleMultiAsset");
   const token: SimpleMultiAsset = await contractFactory.deploy(
     1000,
     pricePerMint
