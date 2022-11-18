@@ -9,9 +9,9 @@ user to create NFT systems of arbitrary complexity.
 
 There are various possibilities on how to combine these legos, all of which are ERC721 compatible:
 
-1. MultiAsset
+1. MultiAsset (Context-Dependent Multi-Asset Tokens)
     - Only uses the MultiAsset RMRK lego
-2. Nestable
+2. Nestable (Parent-Governed Nestable Non-Fungible Tokens)
     - Only uses the Nestable RMRK lego
 3. Nestable with MultiAsset
     - Uses both Nestable and MultiAsset RMRK legos
