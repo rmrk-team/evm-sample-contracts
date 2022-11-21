@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/multiasset/RMRKMultiAsset.sol";
 
 contract AdvancedMultiAsset is RMRKMultiAsset {
     constructor(string memory name, string memory symbol)
-        // Custom optional: additional parameters
         RMRKMultiAsset(name, symbol)
     {
         // Custom optional: constructor logic

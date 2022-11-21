@@ -51,7 +51,7 @@ currency of the EVM to which the smart contract is deployed to
 The parameters that we will hardcode to the initialization of `RMRKMultiAssetImpl` are:
 
 - `name`: `string` type of argument representing the name of te collection will be set to `SimpleMultiAsset`
-- `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMR`
+- `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMA`
 - `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
 - `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
@@ -72,7 +72,7 @@ So the constructor of the `SimpleMultiAsset` should look like this:
         uint256 pricePerMint
     ) RMRKMultiAssetImpl(
         "SimpleMultiAsset",
-        "SMR",
+        "SMA",
         maxSupply,
         pricePerMint,
         "ipfs://meta",
@@ -97,7 +97,7 @@ contract SimpleMultiAsset is RMRKMultiAssetImpl {
         uint256 pricePerMint
     ) RMRKMultiAssetImpl(
         "SimpleMultiAsset",
-        "SMR",
+        "SMA",
         maxSupply,
         pricePerMint,
         "ipfs://meta",
@@ -438,7 +438,6 @@ contract AdvancedMultiAsset is RMRKMultiAsset {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKMultiAsset(name, symbol)
     {
@@ -463,7 +462,6 @@ contract AdvancedMultiAsset is RMRKMultiAsset {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKMultiAsset(name, symbol)
     {

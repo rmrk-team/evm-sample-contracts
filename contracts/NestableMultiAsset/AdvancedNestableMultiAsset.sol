@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestableMultiAsset.
 
 contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
     constructor(string memory name, string memory symbol)
-        // Custom optional: additional parameters
         RMRKNestableMultiAsset(name, symbol)
     {
         // Custom optional: constructor logic

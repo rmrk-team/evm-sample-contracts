@@ -1260,7 +1260,6 @@ in order to properly initialize it after the `AdvancedExternalEquip` inherits it
 contract AdvancedExternalEquip is RMRKExternalEquip {
     constructor(
         address nestableAddress
-        // Custom optional: additional parameters
     )
         RMRKExternalEquip(nestableAddress)
     {
@@ -1290,7 +1289,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol
 contract AdvancedExternalEquip is RMRKExternalEquip {
     constructor(
         address nestableAddress
-        // Custom optional: additional parameters
     )
         RMRKExternalEquip(nestableAddress)
     {
@@ -1328,7 +1326,6 @@ contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestableExternalEquip(name, symbol)
     {
@@ -1353,7 +1350,6 @@ contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestableExternalEquip(name, symbol)
     {

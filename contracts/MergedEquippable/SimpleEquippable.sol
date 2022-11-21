@@ -15,14 +15,16 @@ contract SimpleEquippable is RMRKEquippableImpl {
         string memory tokenURI,
         address royaltyRecipient,
         uint256 royaltyPercentageBps
-    ) RMRKEquippableImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+    )
+        RMRKEquippableImpl(
+            name,
+            symbol,
+            maxSupply,
+            pricePerMint,
+            collectionMetadata,
+            tokenURI,
+            royaltyRecipient,
+            royaltyPercentageBps
+        )
+    {}
 }

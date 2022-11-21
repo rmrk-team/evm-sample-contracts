@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestable.sol";
 
 contract AdvancedNestable is RMRKNestable {
     constructor(string memory name, string memory symbol)
-        // Custom optional: additional parameters
         RMRKNestable(name, symbol)
     {
         // Custom optional: constructor logic

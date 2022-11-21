@@ -68,7 +68,7 @@ async function main() {
   console.log("Token totalTokens URI: ", uriToken5);
 
   // Transfer token 5 into token 1
-  console.log("Nestable token with ID 5 into token with ID 1");
+  console.log("Nesting token with ID 5 into token with ID 1");
   await token.nestTransfer(token.address, 5, 1);
   const parentId = await token.ownerOf(5);
   const rmrkParent = await token.directOwnerOf(5);

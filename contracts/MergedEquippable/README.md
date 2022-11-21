@@ -1377,7 +1377,6 @@ contract AdvancedBase is RMRKBaseStorage {
     constructor(
         string memory symbol,
         string memory type_
-        // Custom optional: additional parameters
     )
         RMRKBaseStorage(symbol, type_)
     {
@@ -1402,7 +1401,6 @@ contract AdvancedBase is RMRKBaseStorage {
     constructor(
         string memory symbol,
         string memory type_
-        // Custom optional: additional parameters
     )
         RMRKBaseStorage(symbol, type_)
     {
@@ -1450,7 +1448,6 @@ contract AdvancedEquippable is RMRKEquippable {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKEquippable(name, symbol)
     {
@@ -1475,7 +1472,6 @@ contract AdvancedEquippable is RMRKEquippable {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKEquippable(name, symbol)
     {

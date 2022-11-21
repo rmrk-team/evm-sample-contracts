@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalE
 
 contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
     constructor(string memory name, string memory symbol)
-        // Custom optional: additional parameters
         RMRKNestableExternalEquip(name, symbol)
     {
         // Custom optional: constructor logic

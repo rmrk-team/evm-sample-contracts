@@ -7,7 +7,7 @@ contract SimpleNestableMultiAsset is RMRKNestableMultiAssetImpl {
     constructor()
         RMRKNestableMultiAssetImpl(
             "SimpleNestableMultiAsset",
-            "SNMR",
+            "SNMA",
             1000,
             100_000_000,
             "ipfs://meta",

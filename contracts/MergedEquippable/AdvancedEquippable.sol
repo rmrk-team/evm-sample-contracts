@@ -6,7 +6,6 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 
 contract AdvancedEquippable is RMRKEquippable {
     constructor(string memory name, string memory symbol)
-        // Custom optional: additional parameters
         RMRKEquippable(name, symbol)
     {
         // Custom optional: constructor logic

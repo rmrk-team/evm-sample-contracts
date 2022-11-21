@@ -5,11 +5,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
 
 contract AdvancedBase is RMRKBaseStorage {
-    constructor(
-        string memory symbol,
-        string memory type_
-        // Custom optional: additional parameters
-    )
+    constructor(string memory symbol, string memory type_)
         RMRKBaseStorage(symbol, type_)
     {
         // Custom optional: constructor logic

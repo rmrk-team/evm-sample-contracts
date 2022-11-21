@@ -41,7 +41,7 @@ The `constructor` in this case accepts no arguments as all of the arguments requ
 `RMRKNestableMultiAssetImpl` are hardcoded:
 
 - `RMRKNestableMultiAssetImpl`: represents the `name` argument and sets the name of the collection
-- `SNMR`: represents the `symbol` argument and sets the symbol of the collection
+- `SNMA`: represents the `symbol` argument and sets the symbol of the collection
 - `1000`: represents the `maxSupply_` argument and sets the maximum amount of tokens in the collection
 - `100_000_000`: represents the `pricePerMint_` argument and sets the price of minting one token in wei or the lowest
 denomination of the native currency of the EVM to which the smart contract is deployed to
@@ -60,7 +60,7 @@ With the arguments passed upon initialization defined, we can add our constructo
     constructor()
     RMRKNestableMultiAssetImpl(
         "SimpleNestableMultiAsset",
-        "SNMR",
+        "SNMA",
         1000,
         100_000_000,
         "ipfs://meta",
@@ -83,7 +83,7 @@ contract SimpleNestableMultiAsset is RMRKNestableMultiAssetImpl {
     constructor()
     RMRKNestableMultiAssetImpl(
         "SimpleNestableMultiAsset",
-        "SNMR",
+        "SNMA",
         1000,
         100_000_000,
         "ipfs://meta",
@@ -361,10 +361,10 @@ Having accepted the assets, we can check that the URIs are assigned as expected:
 ````
 
 With the assets properly assigned to the tokens, we can now nest the token with ID 5 into the token with ID 1 and
-check their ownership to verify successful nestable:
+check their ownership to verify successful nesting:
 
 ````typescript
-  console.log("Nestable token with ID 5 into token with ID 1");
+  console.log("Nesting token with ID 5 into token with ID 1");
   await token.nestTransfer(token.address, 5, 1);
   const parentId = await token.ownerOf(5);
   const rmrkParent = await token.directOwnerOf(5);
@@ -417,7 +417,7 @@ Awaiting for all tx to finish...
 Getting URIs
 Token 1 URI:  ipfs://metadata/1.json
 Token totalTokens URI:  ipfs://metadata/5.json
-Nestable token with ID 5 into token with ID 1
+Nesting token with ID 5 into token with ID 1
 Token's id 5 owner  is  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 Token's id 5 rmrk owner is  [
   '0x5FbDB2315678afecb367f032d93F642f64180aa3',
@@ -449,7 +449,6 @@ contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestableMultiAsset(name, symbol)
     {
@@ -474,7 +473,6 @@ contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestableMultiAsset(name, symbol)
     {
@@ -506,4 +504,4 @@ In addition to the minting functions, you should also implement the burning, tra
 Any additional function supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
 
-Happy multiassetful nestable! 🐣🫧🐣
+Happy multiassetful nesting! 🐣🫧🐣

@@ -7,7 +7,7 @@ contract SimpleMultiAsset is RMRKMultiAssetImpl {
     constructor(uint256 maxSupply, uint256 pricePerMint)
         RMRKMultiAssetImpl(
             "SimpleMultiAsset",
-            "SMR",
+            "SMA",
             maxSupply,
             pricePerMint,
             "ipfs://meta",

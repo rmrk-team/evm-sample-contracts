@@ -529,7 +529,6 @@ contract AdvancedNestable is RMRKNestable {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestable(name, symbol)
     {
@@ -555,7 +554,6 @@ contract AdvancedNestable is RMRKNestable {
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
         RMRKNestable(name, symbol)
     {
@@ -587,4 +585,4 @@ use case:
 Any additional function supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
 
-Happy nestable! 🐣
+Happy nesting! 🐣
