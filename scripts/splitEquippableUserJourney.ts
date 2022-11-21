@@ -214,22 +214,6 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
   console.log("Base is set");
 }
 
-interface AcceptChild {
-  parentId: number;
-  childIndex: number;
-  childAddress: string;
-  childId: number;
-}
-
-function namedAcceptChild(args: AcceptChild): [number, number, string, number] {
-  return [
-    args.parentId,
-    args.childIndex,
-    args.childAddress,
-    args.childId,
-  ];
-}
-
 async function mintTokens(
   kanaria: SimpleNestableExternalEquip,
   gem: SimpleNestableExternalEquip
@@ -260,12 +244,10 @@ async function mintTokens(
   for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
     allTx = [
       await kanaria.acceptChild(
-        ...namedAcceptChild({
-          parentId: tokenId,
-          childIndex: 2,
-          childAddress: gem.address,
-          childId: 3 * tokenId,
-        })
+        tokenId,
+        2,
+        gem.address,
+        3 * tokenId,
       ),
       await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
       await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
