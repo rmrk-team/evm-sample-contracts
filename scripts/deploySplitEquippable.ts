@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import {
   SimpleBase,
   SimpleExternalEquip,
-  SimpleNestingExternalEquip,
+  SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
 import { ContractTransaction } from "ethers";
@@ -10,15 +10,15 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
     await deployContracts();
 }
 
 async function deployContracts(): Promise<
   [
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
     SimpleBase,
     RMRKEquipRenderUtils
@@ -26,14 +26,14 @@ async function deployContracts(): Promise<
 > {
   const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
-  const nestingFactory = await ethers.getContractFactory(
-    "SimpleNestingExternalEquip"
+  const nestableFactory = await ethers.getContractFactory(
+    "SimpleNestableExternalEquip"
   );
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNesting: SimpleNestingExternalEquip =
-    await nestingFactory.deploy(
+  const nestableKanaria: SimpleNestableExternalEquip =
+    await nestableFactory.deploy(
       "Kanaria",
       "KAN",
       1000,
@@ -44,7 +44,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -57,31 +57,31 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNesting.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNesting.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNesting.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNesting.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
   await views.deployed();
 
   const allTx = [
-    await kanariaNesting.setEquippableAddress(kanariaEquip.address),
-    await gemNesting.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNesting.address} (Kanaria Nesting) | ${kanariaEquip.address} (Kanaria Equip), ${gemNesting.address} (Gem Nesting) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
 main().catch((error) => {

@@ -1,19 +1,19 @@
 # SplitEquippable
 
-The `ExternalEquippable` composite of RMRK legos uses the [`Nesting`](../Nesting/README.md),
-[`MultiResource`](../MultiResource/README.md), [`Equippable`](../MergedEquippable/README.md#equippable) and
+The `ExternalEquippable` composite of RMRK legos uses the [`Nestable`](../Nestable/README.md),
+[`MultiAsset`](../MultiAsset/README.md), [`Equippable`](../MergedEquippable/README.md#equippable) and
 [`Base`](../MergedEquippable/README.md#base) RMRK legos. Unlike [`MergedEquippable`](../MergedEquippable/README.md) RMRK
-lego composite, the external equippable splits `Nesting` apart from `MultiResource` and `Equippable` in order to provide
+lego composite, the external equippable splits `Nestable` apart from `MultiAsset` and `Equippable` in order to provide
 more space for custom business logic implementation.
 
 ## Abstract
 
 In this tutorial we will examine the SplitEquippable composite of RMRK blocks:
 
-- [`SimpleNestingExternalEquip`](./SimpleNestingExternalEquip.sol), [`SimpleExternalEquip`](./SimpleExternalEquip.sol)
+- [`SimpleNestableExternalEquip`](./SimpleNestableExternalEquip.sol), [`SimpleExternalEquip`](./SimpleExternalEquip.sol)
 and [SimpleBase](../SimpleBase.sol) work together to showcase the minimal implementation of SplitEquippable RMRK lego
 composite.
-- [`AdvancedNestingExternalEquip`](./AdvancedNestingExternalEquip.sol),
+- [`AdvancedNestableExternalEquip`](./AdvancedNestableExternalEquip.sol),
 [`AdvancedExternalEquip`](./AdvancedExternalEquip.sol) and [`AdvancedBase`](../AdvancedBase.sol) work together to
 showcase a more customizable implementation of the SplitEquippable RMRK lego composite.
 
@@ -23,7 +23,7 @@ Let's first examine the simple, minimal, implementation and then move on to the 
 
 The simple `SplitEquippable` consists of three smart contracts. The [`SimpleBase`](../MergedEquippable/README.md#base)
 is already examined in the `MergedEquippable` documentation. Let's first examine the `SimpleExternalEquip` and then move
-on to the `SimpleNestingExternalEquip`.
+on to the `SimpleNestableExternalEquip`.
 
 **NOTE: As the `SimpleBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
 in the root `contracts/` directory.**
@@ -46,23 +46,23 @@ contract SimpleExternalEquip is RMRKExternalEquipImpl {
 }
 ````
 
-The `RMRKExternalEquipImpl` implements all of the required functionality of the `Equippable` and `MultiResource` RMRK
-legos. It implements resource and equippable management.
+The `RMRKExternalEquipImpl` implements all of the required functionality of the `Equippable` and `MultiAsset` RMRK
+legos. It implements asset and equippable management.
 
 **WARNING: The `RMRKExternalEquipImpl` only has minimal access control implemented. If you intend to use it, make sure to
 define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
 The constructor to initialize the `RMRKExternalEquipImpl` accepts the following arguments:
 
-- `nestingAddress`: `address` type of argument specifying the address of the deployed `SimpleNestingExternalEquip` smart
+- `nestableAddress`: `address` type of argument specifying the address of the deployed `SimpleNestableExternalEquip` smart
 contract
 
 In order to properly initiate the inherited smart contract, our smart contract needs to accept the before mentioned argument in the `constructor` and pass it to the `RMRKExternalEquipImpl`:
 
 ````solidity
     constructor(
-        address nestingAddress
-    ) RMRKExternalEquipImpl(nestingAddress) {}
+        address nestableAddress
+    ) RMRKExternalEquipImpl(nestableAddress) {}
 ````
 
 <details>
@@ -75,9 +75,10 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKExternalEquipImpl.sol";
 
 contract SimpleExternalEquip is RMRKExternalEquipImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
-        address nestingAddress
-    ) RMRKExternalEquipImpl(nestingAddress) {}
+        address nestableAddress
+    ) RMRKExternalEquipImpl(nestableAddress) {}
 }
 ````
 
@@ -102,68 +103,68 @@ The `setFallbackURI` is used to set the fallback URI of the collection and accep
 
 - `fallbackURI`: `string` type of argument specifying the URI to be used as the fallback URI of the collection
 
-##### `isTokenEnumeratedResource`
+##### `isTokenEnumeratedAsset`
 
-The `isTokenEnumeratedResource` is used to check wether the resource ID passed to it represents an enumerated resource:
+The `isTokenEnumeratedAsset` is used to check wether the asset ID passed to it represents an enumerated asset:
 
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are validating
+- `assetId`: `uint64` type of argument representing the ID of the asset we are validating
 
-##### `setTokenEnumeratedResource`
+##### `setTokenEnumeratedAsset`
 
-The `setTokenEnumeratedResource` is used to set a token enumerated resource ID to the passed boolean value and accepts
+The `setTokenEnumeratedAsset` is used to set a token enumerated asset ID to the passed boolean value and accepts
 two arguments:
 
-- `resourceId`: `uint64` type of argument representing the ID of the resource we are setting
-- `state`: `bool` type of argument representing the validity of the resource
+- `assetId`: `uint64` type of argument representing the ID of the asset we are setting
+- `state`: `bool` type of argument representing the validity of the asset
 
-##### `addResourceToToken`
+##### `addAssetToToken`
 
-The `addResourceToToken` is used to add a new resource to the token and accepts three arguments:
+The `addAssetToToken` is used to add a new asset to the token and accepts three arguments:
 
-- `tokenId`: `uint256` type of argument specifying the ID of the token we are adding resource to
-- `resourceId`: `uint64` type of argument specifying the ID of the resource we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the resource we are owerwriting with the desired resource
+- `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
+- `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
+- `overwrites`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
 
-##### `addResourceEntry`
+##### `addAssetEntry`
 
-The `addResourceEntry` is used to add a new URI for the new resource of the token and accepts one argument:
+The `addAssetEntry` is used to add a new URI for the new asset of the token and accepts one argument:
 
-- `metadataURI`: `string` type of argument specifying the metadata URI of a new resource
+- `metadataURI`: `string` type of argument specifying the metadata URI of a new asset
 
 ##### `setValidParentRefId`
 
-The `setValidParentRefId` is used to declare which resources are equippable into the parent address at the given slot
+The `setValidParentRefId` is used to declare which assets are equippable into the parent address at the given slot
 and accepts three arguments:
 
-- `referenceId`: `uint64` type of argument specifying the resources that can be equipped
-- `parentAddress`: `address` type of argument specifying the address into which the resource is equippable
+- `referenceId`: `uint64` type of argument specifying the assets that can be equipped
+- `parentAddress`: `address` type of argument specifying the address into which the asset is equippable
 - `slotPartId`: `uint64` type of argument specifying the ID of the part it can be equipped to
 
-### SimpleNestingExternalEquip
+### SimpleNestableExternalEquip
 
-The `SimpleNestingExternalEquip` example uses the
-[`RMRKNestingExternalEquipImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestingExternalEquipImpl.sol).
+The `SimpleNestableExternalEquip` example uses the
+[`RMRKNestableExternalEquipImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestableExternalEquipImpl.sol).
 It is used by importing it using the `import` statement below the `pragma` definition:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestingExternalEquipImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalEquipImpl.sol";
 ````
 
-Once the `RMRKNestingExternalEquipImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
+Once the `RMRKNestableExternalEquipImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
 
 ````solidity
-contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
+contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
     
 }
 ````
 
-The `RMRKNestingExternalEquipImpl` implements all of the functionality of the `Nesting` RMRK lego block. It implements
+The `RMRKNestableExternalEquipImpl` implements all of the functionality of the `Nestable` RMRK lego block. It implements
 minting and burning of the NFTs as well as setting the equippable address.
 
-**WARNING: The `RMRKNestingExternalEquipImpl` only has minimal access control implemented. If you intend to use it, make
+**WARNING: The `RMRKNestableExternalEquipImpl` only has minimal access control implemented. If you intend to use it, make
 sure to define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
-The `constructor` to initialize the `RMRKNestingExternalEquipImpl` accepts the following arguments:
+The `constructor` to initialize the `RMRKNestableExternalEquipImpl` accepts the following arguments:
 
 - `name_`: `string` type of argument specifying the name of the collection
 - `symbol_`: `string` type of argument specifying the symbol of the collection
@@ -181,7 +182,7 @@ This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So
 percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 
 In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments,
-mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalEquipImpl`:
+mentioned above, in the `constructor` and pass them to the `RMRKNestableExternalEquipImpl`:
 
 ````solidity
     constructor(
@@ -194,7 +195,7 @@ mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalE
         string memory tokenURI,
         address royaltyRecipient,
         uint256 royaltyPercentageBps
-    ) RMRKNestingExternalEquipImpl(
+    ) RMRKNestableExternalEquipImpl(
         name,
         symbol,
         maxSupply,
@@ -208,15 +209,16 @@ mentioned above, in the `constructor` and pass them to the `RMRKNestingExternalE
 ````
 
 <details>
-<summary>The <strong><i>SimpleNestingExternalEquip.sol</i></strong> should look like this:</summary>
+<summary>The <strong><i>SimpleNestableExternalEquip.sol</i></strong> should look like this:</summary>
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestingExternalEquipImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalEquipImpl.sol";
 
-contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
+contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,
@@ -227,7 +229,7 @@ contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
         string memory tokenURI,
         address royaltyRecipient,
         uint256 royaltyPercentageBps
-    ) RMRKNestingExternalEquipImpl(
+    ) RMRKNestableExternalEquipImpl(
         name,
         symbol,
         maxSupply,
@@ -243,11 +245,11 @@ contract SimpleNestingExternalEquip is RMRKNestingExternalEquipImpl {
 
 </details>
 
-#### RMRKNestingExternalEquipImpl
+#### RMRKNestableExternalEquipImpl
 
-Let's take a moment to examine the core of this implementation, the `RMRKNestingExternalEquipImpl`.
+Let's take a moment to examine the core of this implementation, the `RMRKNestableExternalEquipImpl`.
 
-It uses the `RMRKNestingExternalEquip`, `RMRKRoyalties`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts
+It uses the `RMRKNestableExternalEquip`, `RMRKRoyalties`, `RMRKCollectionMetadata` and `RMRKMintingUtils` smart contracts
 from RMRK stack. To dive deeper into their operation, please refer to their respective documentation.
 
 Two errors are defined:
@@ -260,7 +262,7 @@ error RMRKMintZero();
 `RMRKMintUnderpriced()` is used when not enough value is used when attempting to mint a token and `RMRKMintZero()` is
 used when attempting to mint 0 tokens.
 
-**WARNING: The `RMRKMultiResourceImpl` only has minimal access control implemented. If you intend to use it, make sure
+**WARNING: The `RMRKMultiAssetImpl` only has minimal access control implemented. If you intend to use it, make sure
 to define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
 Let's examine the available methods:
@@ -278,15 +280,15 @@ There are a few constraints to this function:
 - attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 
-##### `mintNesting`
+##### `nestMint`
 
-The `mintNesting` function is used to mint child NFTs to be owned by the parent NFT and accepts three arguments:
+The `nestMint` function is used to mint child NFTs to be owned by the parent NFT and accepts three arguments:
 
 - `to`: `address` type of argument specifying the address of the smart contract to which the parent NFT belongs to
 - `numToMint`: `uint256` type of argument specifying the amount of tokens to be minted
 - `destinationId`: `uint256` type of argument specifying the ID of the parent NFT to which to mint the child NFT
 
-The constraints of `mintNesting` are similar to the ones set out for `mint` function.
+The constraints of `nestMint` are similar to the ones set out for `mint` function.
 
 ##### `setEquippableAddress`
 
@@ -312,7 +314,7 @@ The `updateRoyaltyRecipient` function is used to update the royalty recipient an
 The deploy script for the simple `SplitEquippable` resides in the
 [`deploySplitEquippable.ts`](../../scripts/deploySplitEquippable.ts).
 
-The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `SimpleNestingExternalEquip`,
+The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `SimpleNestableExternalEquip`,
 `RMRKEquipRenderUtils` and `ContractTransaction` imports. We will also define the `pricePerMint` constant, which will be
 used to set the minting price of the tokens. The empty deploy script should look like this:
 
@@ -321,7 +323,7 @@ import { ethers } from "hardhat";
 import {
   SimpleBase,
   SimpleExternalEquip,
-  SimpleNestingExternalEquip,
+  SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
 import { ContractTransaction } from "ethers";
@@ -347,9 +349,9 @@ contracts are deployed, we will output their addresses. The function is defined 
 ````typescript
 async function deployContracts(): Promise<
   [
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
     SimpleBase,
     RMRKEquipRenderUtils
@@ -357,14 +359,14 @@ async function deployContracts(): Promise<
 > {
   const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
-  const nestingFactory = await ethers.getContractFactory(
-    "SimpleNestingExternalEquip"
+  const nestableFactory = await ethers.getContractFactory(
+    "SimpleNestableExternalEquip"
   );
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNesting: SimpleNestingExternalEquip =
-    await nestingFactory.deploy(
+  const nestableKanaria: SimpleNestableExternalEquip =
+    await nestableFactory.deploy(
       "Kanaria",
       "KAN",
       1000,
@@ -375,7 +377,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -388,30 +390,30 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNesting.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNesting.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNesting.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNesting.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
 
   const allTx = [
-    await kanariaNesting.setEquippableAddress(kanariaEquip.address),
-    await gemNesting.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNesting.address} (Kanaria Nesting) | ${kanariaEquip.address} (Kanaria Equip), ${gemNesting.address} (Gem Nesting) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 ````
 
@@ -439,7 +441,7 @@ npm run deploy-split-equippable
 > hardhat run scripts/deploySplitEquippable.ts
 
 Compiled 47 Solidity files successfully
-Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria Nesting) | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Kanaria Equip), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem Nesting) | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 (Gem Equip) and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9 (Base)
+Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria Nestable) | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Kanaria Equip), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem Nestable) | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 (Gem Equip) and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9 (Base)
 ````
 
 ### User journey
@@ -454,7 +456,7 @@ import { ethers } from "hardhat";
 import {
   SimpleBase,
   SimpleExternalEquip,
-  SimpleNestingExternalEquip,
+  SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
 import { ContractTransaction } from "ethers";
@@ -462,15 +464,15 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
     await deployContracts();
 }
 
 async function deployContracts(): Promise<
   [
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
     SimpleBase,
     RMRKEquipRenderUtils
@@ -478,14 +480,14 @@ async function deployContracts(): Promise<
 > {
   const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
-  const nestingFactory = await ethers.getContractFactory(
-    "SimpleNestingExternalEquip"
+  const nestableFactory = await ethers.getContractFactory(
+    "SimpleNestableExternalEquip"
   );
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNesting: SimpleNestingExternalEquip =
-    await nestingFactory.deploy(
+  const nestableKanaria: SimpleNestableExternalEquip =
+    await nestableFactory.deploy(
       "Kanaria",
       "KAN",
       1000,
@@ -496,7 +498,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -509,30 +511,30 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNesting.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNesting.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNesting.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNesting.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
 
   const allTx = [
-    await kanariaNesting.setEquippableAddress(kanariaEquip.address),
-    await gemNesting.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNesting.address} (Kanaria Nesting) | ${kanariaEquip.address} (Kanaria Equip), ${gemNesting.address} (Gem Nesting) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
   );
 
-  return [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
 main().catch((error) => {
@@ -688,17 +690,17 @@ statements:
 const totalBirds = 5;
 ````
 
-The `mintToken` function should accept two arguments (`SimpleNestingExternalEquip` of `Kanaria` and `Gem`). We will
+The `mintToken` function should accept two arguments (`SimpleNestableExternalEquip` of `Kanaria` and `Gem`). We will
 prepare a batch of transactions to mint the tokens and send them. Once the tokens are minted, we will output the total
 number of tokens minted. While the `Kanaria` tokens will be minted to the `owner` address, the `Gem` tokens will be
-minted using the [`mintNesting`](#mintnesting) method in order to be minted directly to the Kanaria tokens. We will
+minted using the [`nestMint`](#nestMint) method in order to be minted directly to the Kanaria tokens. We will
 mint three `Gem` tokens to each `Kanaria`. Since all of the nested tokens need to be approved, we will also build a
 batch of transaction to accept a single nest-minted `Gem` for each `Kanaria`:
 
 ````typescript
 async function mintTokens(
-  kanaria: SimpleNestingExternalEquip,
-  gem: SimpleNestingExternalEquip
+  kanaria: SimpleNestableExternalEquip,
+  gem: SimpleNestableExternalEquip
 ): Promise<void> {
   const [owner] = await ethers.getSigners();
 
@@ -709,217 +711,189 @@ async function mintTokens(
   await tx.wait();
   console.log(`Minted ${totalBirds} kanarias`);
 
-  // Mint 3 gems into each kanariaNesting
+  // Mint 3 gems into each nestableKanaria
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalBirds; i++) {
-    let tx = await gem.mintNesting(kanaria.address, 3, i, {
+    let tx = await gem.nestMint(kanaria.address, 3, i, {
       value: pricePerMint.mul(3),
     });
     allTx.push(tx);
   }
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log(`Minted 3 gems into each kanariaNesting`);
+  console.log(`Minted 3 gems into each nestableKanaria`);
 
-  // Accept 3 gems for each kanariaNesting
-  for (let i = 0; i < 3; i++) {
-    allTx = [];
-    for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
-      let tx = await kanaria.acceptChild(tokenId, 0);
-      allTx.push(tx);
-    }
-    await Promise.all(allTx.map((tx) => tx.wait()));
-    console.log(`Accepted 1 gemNesting for each kanariaNesting`);
+  // Accept 3 gems for each kanaria
+  console.log("Accepting Gems");
+  for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
+    allTx = [
+      await kanaria.acceptChild(tokenId, 2, gem.address, 3 * tokenId),
+      await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
+      await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
+    ];
   }
+  await Promise.all(allTx.map((tx) => tx.wait()));
+  console.log(`Accepted gems for each kanaria`);
 }
 ````
 
 In order for the `mintTokens` to be called, we have to add it to the `main` function:
 
 ````typescript
-  await mintTokens(kanariaNesting, gemNesting);
+  await mintTokens(nestableKanaria, nestableGem);
 ````
 
-Having minted both `Kanaria`s and `Gem`s, we can now add resources to them. The resources are added to the
-`SimpleExternalEquip` parts of them. We will add resources to the `Kanaria` using the `addKanariaResources` function.
-It accepts `Kanaria` and address of the `Base` smart contract. Resources will be added using the
-[`addResourceEntry`](#addresourceentry) method. We will add a default resource, which doesn't need a `baseAddress`
-value. The composed resource needs to have the `baseAddress`. We also specify the fixed parts IDs for background, head,
-body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the resource entires added,
+Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. The assets are added to the
+`SimpleExternalEquip` parts of them. We will add assets to the `Kanaria` using the `addKanariaAssets` function.
+It accepts `Kanaria` and address of the `Base` smart contract. Assets will be added using the
+[`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a `baseAddress`
+value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for background, head,
+body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the asset entires added,
 we can add them to a token and then accept them as well:
 
 ````typescript
-async function addKanariaResources(
+async function addKanariaAssets(
   kanaria: SimpleExternalEquip,
   baseAddress: string
 ): Promise<void> {
-  const resourceDefaultId = 1;
-  const resourceComposedId = 2;
+  const assetDefaultId = 1;
+  const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
-  let tx = await kanaria.addResourceEntry(
-    {
-      id: resourceDefaultId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
-      baseAddress: ethers.constants.AddressZero, // base is not needed here
-      metadataURI: "ipfs://default.png",
-    },
+  let allTx: ContractTransaction[] = [];
+  let tx = await kanaria.addAssetEntry(
+    0, // Only used for assets meant to equip into others
+    ethers.constants.AddressZero, // base is not needed here
+    "ipfs://default.png",
     [],
     []
   );
   allTx.push(tx);
 
-  tx = await kanaria.addResourceEntry(
-    {
-      id: resourceComposedId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
-      baseAddress: baseAddress, // Since we're using parts, we must define the base
-      metadataURI: "ipfs://meta1.json",
-    },
+  tx = await kanaria.addAssetEntry(
+    0, // Only used for assets meant to equip into others
+    baseAddress, // Since we're using parts, we must define the base
+    "ipfs://meta1.json",
     [1, 3, 5, 7], // We're using first background, head, body and wings
     [9, 10, 11] // We state that this can receive the 3 slot parts for gems
   );
   allTx.push(tx);
-  // Wait for both resources to be added
+  // Wait for both assets to be added
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 2 resource entries");
+  console.log("Added 2 asset entries");
 
-  // Add resources to token
+  // Add assets to token
   const tokenId = 1;
   allTx = [
-    await kanaria.addResourceToToken(tokenId, resourceDefaultId, 0),
-    await kanaria.addResourceToToken(tokenId, resourceComposedId, 0),
+    await kanaria.addAssetToToken(tokenId, assetDefaultId, 0),
+    await kanaria.addAssetToToken(tokenId, assetComposedId, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added resources to token 1");
+  console.log("Added assets to token 1");
 
-  // Accept both resources:
-  tx = await kanaria.acceptResource(tokenId, 0);
+  // Accept both assets:
+  tx = await kanaria.acceptAsset(tokenId, 0, assetDefaultId);
   await tx.wait();
-  tx = await kanaria.acceptResource(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0, assetComposedId);
   await tx.wait();
-  console.log("Resources accepted");
+  console.log("Assets accepted");
 }
 ````
 
-Adding resources to `Gem`s is done in the `addGemResources`. It accepts `SimpleExternalEquip` part of `Gem`, address of
+Adding assets to `Gem`s is done in the `addGemAssets`. It accepts `SimpleExternalEquip` part of `Gem`, address of
 the `SimpleExternalEquip` of `Kanaria` smart contract and the address of the `Base` smart contract. We will add 4
-resources for each gem; one full version and three that match each slot. Reference IDs are specified for easier
-reference from the child's perspective. The resources will be added one by one. Note how the full versions of gems
+assets for each gem; one full version and three that match each slot. Reference IDs are specified for easier
+reference from the child's perspective. The assets will be added one by one. Note how the full versions of gems
 don't have the `equippableRefId`.
 
-Having added the resource entries, we can now add the valid parent reference IDs using the
+Having added the asset entries, we can now add the valid parent reference IDs using the
 `setValidParentForEquippableGroup`. For example if we want to add a valid reference for the left gem, we need to pass
 the value of equippable reference ID of the left gem, parent smart contract address (in our case this is
 `SimpleExternalEquip` of `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9
 in the `Base` for the left gem).
 
-Last thing to do is to add resources to the tokens using [`addResourceToToken`](#addresourcetotoken). Resource of type
-A will be added to the gems 1 and 2, and the type B of the resource is added to gem 3. All of these should be accepted
-using `acceptResource`:
+Last thing to do is to add assets to the tokens using [`addAssetToToken`](#addassettotoken). Asset of type
+A will be added to the gems 1 and 2, and the type B of the asset is added to gem 3. All of these should be accepted
+using `acceptAsset`:
 
 ````typescript
-async function addGemResources(
+async function addGemAssets(
   gem: SimpleExternalEquip,
   kanariaAddress: string,
   baseAddress: string
 ): Promise<void> {
-  // We'll add 4 resources for each gemNesting, a full version and 3 versions matching each slot.
-  // We will have only 2 types of gems -> 4x2: 8 resources.
+  // We'll add 4 assets for each nestableGem, a full version and 3 versions matching each slot.
+  // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
   const gemVersions = 4;
 
-  // These refIds are used from the child's perspective, to group resources that can be equipped into a parent
-  // With it, we avoid the need to do set it resource by resource
+  // These refIds are used from the child's perspective, to group assets that can be equipped into a parent
+  // With it, we avoid the need to do set it asset by asset
   const equippableRefIdLeftGem = 1;
   const equippableRefIdMidGem = 2;
   const equippableRefIdRightGem = 3;
 
   // We can do a for loop, but this makes it clearer.
   let allTx = [
-    await gem.addResourceEntry(
-      // Full version for first type of gemNesting, no need of refId or base
-      {
-        id: 1,
-        equippableGroupId: 0,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/full.svg`,
-      },
+    await gem.addAssetEntry(
+      // Full version for first type of gem, no need of refId or base
+      0,
+      baseAddress,
+      `ipfs://gems/typeA/full.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for first type of gemNesting
-      {
-        id: 2,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/left.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for first type of gem
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeA/left.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into mid slot for first type of gemNesting
-      {
-        id: 3,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/mid.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into mid slot for first type of gem
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeA/mid.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for first type of gemNesting
-      {
-        id: 4,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/right.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for first type of gem
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeA/right.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Full version for second type of gemNesting, no need of refId or base
-      {
-        id: 5,
-        equippableGroupId: 0,
-        baseAddress: ethers.constants.AddressZero,
-        metadataURI: `ipfs://gems/typeB/full.svg`,
-      },
+    await gem.addAssetEntry(
+      // Full version for second type of gem, no need of refId or base
+      0,
+      ethers.constants.AddressZero,
+      `ipfs://gems/typeB/full.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for second type of gemNesting
-      {
-        id: 6,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/left.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for second type of gem
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeB/left.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into mid slot for second type of gemNesting
-      {
-        id: 7,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/mid.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into mid slot for second type of gem
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeB/mid.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into right slot for second type of gemNesting
-      {
-        id: 8,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/right.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into right slot for second type of gem
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeB/right.svg`,
       [],
       []
     ),
@@ -927,12 +901,12 @@ async function addGemResources(
 
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    "Added 8 gemNesting resources. 2 Types of gems with full, left, mid and right versions."
+    "Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gemNesting, which sets its equippableGroupId to equippableRefIdLeftGem
-  //      will be considered a valid equip into any kanariaNesting on slot 9 (left gemNesting).
+  // e.g. Any asset on nestableGem, which sets its equippableGroupId to equippableRefIdLeftGem
+  //      will be considered a valid equip into any nestableKanaria on slot 9 (left nestableGem).
   allTx = [
     await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
     await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
@@ -940,43 +914,50 @@ async function addGemResources(
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  // We add resources of type A to gemNesting 1 and 2, and type Bto gemNesting 3. Both are nested into the first kanariaNesting
-  // This means gems 1 and 2 will have the same resource, which is totally valid.
+  // We add assets of type A to nestableGem 1 and 2, and type Bto nestableGem 3. Both are nested into the first nestableKanaria
+  // This means gems 1 and 2 will have the same asset, which is totally valid.
   allTx = [
-    await gem.addResourceToToken(1, 1, 0),
-    await gem.addResourceToToken(1, 2, 0),
-    await gem.addResourceToToken(1, 3, 0),
-    await gem.addResourceToToken(1, 4, 0),
-    await gem.addResourceToToken(2, 1, 0),
-    await gem.addResourceToToken(2, 2, 0),
-    await gem.addResourceToToken(2, 3, 0),
-    await gem.addResourceToToken(2, 4, 0),
-    await gem.addResourceToToken(3, 5, 0),
-    await gem.addResourceToToken(3, 6, 0),
-    await gem.addResourceToToken(3, 7, 0),
-    await gem.addResourceToToken(3, 8, 0),
+    await gem.addAssetToToken(1, 1, 0),
+    await gem.addAssetToToken(1, 2, 0),
+    await gem.addAssetToToken(1, 3, 0),
+    await gem.addAssetToToken(1, 4, 0),
+    await gem.addAssetToToken(2, 1, 0),
+    await gem.addAssetToToken(2, 2, 0),
+    await gem.addAssetToToken(2, 3, 0),
+    await gem.addAssetToToken(2, 4, 0),
+    await gem.addAssetToToken(3, 5, 0),
+    await gem.addAssetToToken(3, 6, 0),
+    await gem.addAssetToToken(3, 7, 0),
+    await gem.addAssetToToken(3, 8, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 4 resources to each of 3 gems.");
+  console.log("Added 4 assets to each of 3 gems.");
 
-  // We accept each resource for both gems
-  for (let i = 0; i < gemVersions; i++) {
-    allTx = [
-      await gem.acceptResource(1, 0),
-      await gem.acceptResource(2, 0),
-      await gem.acceptResource(3, 0),
-    ];
-    await Promise.all(allTx.map((tx) => tx.wait()));
-  }
-  console.log("Accepted 4 resources to each of 3 gems.");
+  // We accept each asset for all gems
+  allTx = [
+    await gem.acceptAsset(1, 3, 4),
+    await gem.acceptAsset(1, 2, 3),
+    await gem.acceptAsset(1, 1, 2),
+    await gem.acceptAsset(1, 0, 1),
+    await gem.acceptAsset(2, 3, 4),
+    await gem.acceptAsset(2, 2, 3),
+    await gem.acceptAsset(2, 1, 2),
+    await gem.acceptAsset(2, 0, 1),
+    await gem.acceptAsset(3, 3, 8),
+    await gem.acceptAsset(3, 2, 7),
+    await gem.acceptAsset(3, 1, 6),
+    await gem.acceptAsset(3, 0, 5),
+  ];
+  await Promise.all(allTx.map((tx) => tx.wait()));
+  console.log("Accepted 4 assets to each of 3 gems.");
 }
 ````
 
-In order for the `addKanariaResources` and `addGemResources` to be called, we have to add them to the `main` function:
+In order for the `addKanariaAssets` and `addGemAssets` to be called, we have to add them to the `main` function:
 
 ````typescript
-  await addKanariaResources(kanariaEquip, base.address);
-  await addGemResources(gemEquip, kanariaEquip.address, base.address);
+  await addKanariaAssets(kanariaEquip, base.address);
+  await addGemAssets(gemEquip, kanariaEquip.address, base.address);
 ````
 
 With `Kanaria`s and `Gem`s ready, we can equip the gems to Kanarias using the `equipGems` function. We will build a
@@ -985,30 +966,30 @@ batch of `equip` transactions calling the `SimpleExternalEquip` of the `Kanaria`
 ````typescript
 async function equipGems(kanariaEquip: SimpleExternalEquip): Promise<void> {
   const allTx = [
-    await kanariaEquip.equip({
+    await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 0, // Gem 1 is on position 0
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 9, // left gemNesting slot
-      childResourceId: 2, // Resource id for child meant for the left gemNesting
+      childIndex: 2, // Gem 1 is on position 2
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 9, // left gem slot
+      childAssetId: 2, // Asset id for child meant for the left gem
     }),
-    await kanariaEquip.equip({
+    await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 10, // mid gemNesting slot
-      childResourceId: 3, // Resource id for child meant for the mid gemNesting
+      childIndex: 1, // Gem 2 is on position 1
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 10, // mid gem slot
+      childAssetId: 3, // Asset id for child meant for the mid gem
     }),
-    await kanariaEquip.equip({
+    await kanaria.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 1, // Gem 3 is on position 1
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 11, // right gemNesting slot
-      childResourceId: 8, // Resource id for child meant for the right gemNesting
+      childIndex: 0, // Gem 3 is on position 0
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 11, // right gem slot
+      childAssetId: 8, // Asset id for child meant for the right gem
     }),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Equipped 3 gems into first kanariaNesting");
+  console.log("Equipped 3 gems into first nestableKanaria");
 }
 ````
 
@@ -1027,10 +1008,10 @@ async function composeEquippables(
   kanariaAddress: string
 ): Promise<void> {
   const tokenId = 1;
-  const resourceId = 2;
+  const assetId = 2;
   console.log(
     "Composed: ",
-    await views.composeEquippables(kanariaAddress, tokenId, resourceId)
+    await views.composeEquippables(kanariaAddress, tokenId, assetId)
   );
 }
 ````
@@ -1059,17 +1040,17 @@ npm run user-journey-split-equippable
 Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0, 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 Base is set
 Minted 5 kanarias
-Minted 3 gems into each kanariaNesting
-Accepted 1 gemNesting for each kanariaNesting
-Accepted 1 gemNesting for each kanariaNesting
-Accepted 1 gemNesting for each kanariaNesting
-Added 2 resource entries
-Added resources to token 1
-Resources accepted
-Added 8 gemNesting resources. 2 Types of gems with full, left, mid and right versions.
-Added 4 resources to each of 3 gems.
-Accepted 4 resources to each of 3 gems.
-Equipped 3 gems into first kanariaNesting
+Minted 3 gems into each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
+Accepted 1 nestableGem for each nestableKanaria
+Added 2 asset entries
+Added assets to token 1
+Assets accepted
+Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions.
+Added 4 assets to each of 3 gems.
+Accepted 4 assets to each of 3 gems.
+Equipped 3 gems into first nestableKanaria
 Composed:  [
   [
     BigNumber { value: "2" },
@@ -1124,7 +1105,7 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "9" },
-      childResourceId: BigNumber { value: "2" },
+      childAssetId: BigNumber { value: "2" },
       z: 4,
       childTokenId: BigNumber { value: "1" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
@@ -1138,7 +1119,7 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "10" },
-      childResourceId: BigNumber { value: "3" },
+      childAssetId: BigNumber { value: "3" },
       z: 4,
       childTokenId: BigNumber { value: "2" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
@@ -1152,14 +1133,14 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "11" },
-      childResourceId: BigNumber { value: "8" },
+      childAssetId: BigNumber { value: "8" },
       z: 4,
       childTokenId: BigNumber { value: "3" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       metadataURI: ''
     ]
   ],
-  resource: [
+  asset: [
     BigNumber { value: "2" },
     BigNumber { value: "0" },
     '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
@@ -1212,7 +1193,7 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "9" },
-      childResourceId: BigNumber { value: "2" },
+      childAssetId: BigNumber { value: "2" },
       z: 4,
       childTokenId: BigNumber { value: "1" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
@@ -1226,7 +1207,7 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "10" },
-      childResourceId: BigNumber { value: "3" },
+      childAssetId: BigNumber { value: "3" },
       z: 4,
       childTokenId: BigNumber { value: "2" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
@@ -1240,7 +1221,7 @@ Composed:  [
       '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
       '',
       partId: BigNumber { value: "11" },
-      childResourceId: BigNumber { value: "8" },
+      childAssetId: BigNumber { value: "8" },
       z: 4,
       childTokenId: BigNumber { value: "3" },
       childAddress: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
@@ -1253,11 +1234,11 @@ Composed:  [
 This concludes our work on the simple Split equippable RMRK lego composite and we can now move on to examining the
 advanced implementation.
 
-## Advanced SplitEqiuppable
+## Advanced SplitEquippable
 
 The advanced `SplitEquippable` consists of three smart contracts. The
 [`AdvancedBase`](../MergedEquippable/README.md#advancedbase) is already examined in the `MergedEquippable`
-documentation. Let's first examine the `AdvancedExternalEquip` and then move on to the `AdvancedNestingExternalEquip`.
+documentation. Let's first examine the `AdvancedExternalEquip` and then move on to the `AdvancedNestableExternalEquip`.
 
 **NOTE: As the `AdvancedBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
 in the root `contracts/` directory.**
@@ -1265,35 +1246,35 @@ in the root `contracts/` directory.**
 ### AdvancedExternalEquip
 
 The [`AdvancedExternalEquip.sol`](./AdvancedExternalEquip.sol) smart contract represents the minimum required
-implementation in order for the smart contract to be compatible with the `MultiResource` and `Equippable` part of the
+implementation in order for the smart contract to be compatible with the `MultiAsset` and `Equippable` part of the
 `ExternalEquip` RMRK lego composite. It uses the
 [`RMRKExternalEquip`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKExternalEquip.sol) import
-to gain access to the `MultiResource` and `Equippable` part of the External equippable RMRK lego composite:
+to gain access to the `MultiAsset` and `Equippable` part of the External equippable RMRK lego composite:
 
 ````solidity
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol";
 ````
 
-We only need the `nestingAddress`, which is the address of the deployed `AdvancedNestingExternalEquip` smart contract,
+We only need the `nestableAddress`, which is the address of the deployed `AdvancedNestableExternalEquip` smart contract,
 in order to properly initialize it after the `AdvancedExternalEquip` inherits it:
 
 ````solidity
 contract AdvancedExternalEquip is RMRKExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
-        address nestingAddress
-        // Custom optional: additional parameters
+        address nestableAddress
     )
-        RMRKExternalEquip(nestingAddress)
+        RMRKExternalEquip(nestableAddress)
     {
         // Custom optional: constructor logic
     }
 }
 ````
 
-**NOTE: Passing `0x0` as the value of `nestingAddress` allows us to initialize the smart contract without having the
+**NOTE: Passing `0x0` as the value of `nestableAddress` allows us to initialize the smart contract without having the
 addeess of the deployed `AdvancedExternalEquip` and allows us to add it at a later point in time.**
 
-This is all that is required to get you started with implementing the `MultiResource` and `Equippable` parts of the
+This is all that is required to get you started with implementing the `MultiAsset` and `Equippable` parts of the
 external equippable RMRK lego composite.
 
 <details>
@@ -1309,11 +1290,11 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol
 /* import "hardhat/console.sol"; */
 
 contract AdvancedExternalEquip is RMRKExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
-        address nestingAddress
-        // Custom optional: additional parameters
+        address nestableAddress
     )
-        RMRKExternalEquip(nestingAddress)
+        RMRKExternalEquip(nestableAddress)
     {
         // Custom optional: constructor logic
     }
@@ -1322,61 +1303,61 @@ contract AdvancedExternalEquip is RMRKExternalEquip {
 
 </details>
 
-Using `RMRKExternalEquip` requires custom implementation of resource management logic. Available internal functions when writing it are:
+Using `RMRKExternalEquip` requires custom implementation of asset management logic. Available internal functions when writing it are:
 
-- `_setNestingAddress(address nestingAddress)`
-- `_addResourceEntry(ExtendedResource calldata resource, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
-- `_addResourceToToken(uint256 tokenId, uint64 resourceId, uint64 overwrites)`
+- `_setNestableAddress(address nestableAddress)`
+- `_addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
 - `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
-### AdvancedNestingExternalEquip
+### AdvancedNestableExternalEquip
 
-The [`AdvancedNestingExternalEquip`](./AdvancedNestingExternalEquip.sol) smart contracts represents the minimum required
-implementation in order for the smart contract to be compatible with the `Nesting` part of the `ExternalEquip` RMRK lego
+The [`AdvancedNestableExternalEquip`](./AdvancedNestableExternalEquip.sol) smart contracts represents the minimum required
+implementation in order for the smart contract to be compatible with the `Nestable` part of the `ExternalEquip` RMRK lego
 composite. It uses the
-[`RMRKNestingExternalEquip`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol)
-import to gain access to the `Nesting` part of the External equippable RMRK lego composite:
+[`RMRKNestableExternalEquip`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol)
+import to gain access to the `Nestable` part of the External equippable RMRK lego composite:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol";
 ````
 
 We only need the `name` and `symbol` of the NFT collection in order to properly initialize it after the
-`AdvancedNestingExternalEquip` inherits it:
+`AdvancedNestableExternalEquip` inherits it:
 
 ````solidity
-contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
+contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
-        RMRKNestingExternalEquip(name, symbol)
+        RMRKNestableExternalEquip(name, symbol)
     {
         // Custom optional: constructor logic
     }
 }
 ````
 
-This is all that is required to get you started with implementing the `Nesting` part of the external equippable RMRK lego composite.
+This is all that is required to get you started with implementing the `Nestable` part of the external equippable RMRK lego composite.
 
 <details>
-<summary>The minimal <strong><i>AdvancedNestingExternalEquip.sol</i></strong> should look like this:</summary>
+<summary>The minimal <strong><i>AdvancedNestableExternalEquip.sol</i></strong> should look like this:</summary>
 
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestingExternalEquip.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol";
 
-contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
+contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
-        // Custom optional: additional parameters
     )
-        RMRKNestingExternalEquip(name, symbol)
+        RMRKNestableExternalEquip(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -1385,7 +1366,7 @@ contract AdvancedNestingExternalEquip is RMRKNestingExternalEquip {
 
 </details>
 
-Using `RMRKNestingExternalEquip`requires custom implementation of minting logic. Available internal functions to use when writing it are:
+Using `RMRKNestableExternalEquip`requires custom implementation of minting logic. Available internal functions to use when writing it are:
 
 - `_mint(address to, uint256 tokenId)`
 - `_safeMint(address to, uint256 tokenId)`

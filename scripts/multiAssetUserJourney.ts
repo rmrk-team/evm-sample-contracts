@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { SimpleMultiResource } from "../typechain-types";
+import { SimpleMultiAsset } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 async function main() {
@@ -7,10 +7,8 @@ async function main() {
   const totalTokens = 5;
   const [owner] = await ethers.getSigners();
 
-  const contractFactory = await ethers.getContractFactory(
-    "SimpleMultiResource"
-  );
-  const token: SimpleMultiResource = await contractFactory.deploy(
+  const contractFactory = await ethers.getContractFactory("SimpleMultiAsset");
+  const token: SimpleMultiAsset = await contractFactory.deploy(
     1000,
     pricePerMint
   );
@@ -29,38 +27,35 @@ async function main() {
   console.log("Total tokens: %s", totalSupply);
 
   // Add entries and add to tokens
-  console.log("Adding resources");
+  console.log("Adding assets");
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalTokens; i++) {
-    let tx = await token.addResourceEntry(`ipfs://metadata/${i}.json`);
+    let tx = await token.addAssetEntry(`ipfs://metadata/${i}.json`);
     allTx.push(tx);
   }
-  console.log(`Added ${totalTokens} resources`);
+  console.log(`Added ${totalTokens} assets`);
 
   console.log("Awaiting for all tx to finish...");
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  const resourceIds = await token.getAllResources();
-  console.log("All resources: %s", resourceIds);
-
-  console.log("Adding resources to tokens");
+  console.log("Adding assets to tokens");
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
-    // We give each token a resource id with the same number. This is just a coincidence, not a restriction.
-    let tx = await token.addResourceToToken(i, i, 0);
+    // We give each token a asset id with the same number. This is just a coincidence, not a restriction.
+    let tx = await token.addAssetToToken(i, i, 0);
     allTx.push(tx);
-    console.log(`Added resource ${i} to token ${i}.`);
+    console.log(`Added asset ${i} to token ${i}.`);
   }
   console.log("Awaiting for all tx to finish...");
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  console.log("Accepting token resources");
+  console.log("Accepting token assets");
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
-    // Accept pending resource for each token (on index 0)
-    let tx = await token.acceptResource(i, 0);
+    // Accept pending asset for each token (on index 0)
+    let tx = await token.acceptAsset(i, 0, i);
     allTx.push(tx);
-    console.log(`Accepted first pending resource for token ${i}.`);
+    console.log(`Accepted first pending asset for token ${i}.`);
   }
   console.log("Awaiting for all tx to finish...");
   await Promise.all(allTx.map((tx) => tx.wait()));

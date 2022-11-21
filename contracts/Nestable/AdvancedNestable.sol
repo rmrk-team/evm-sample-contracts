@@ -2,16 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/nesting/RMRKNesting.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestable.sol";
 
-
-contract AdvancedNesting is RMRKNesting {
-    constructor(
-        string memory name,
-        string memory symbol
-        // Custom optional: additional parameters
-    )
-        RMRKNesting(name, symbol)
+contract AdvancedNestable is RMRKNestable {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
+    constructor(string memory name, string memory symbol)
+        RMRKNestable(name, symbol)
     {
         // Custom optional: constructor logic
     }
@@ -20,11 +16,11 @@ contract AdvancedNesting is RMRKNesting {
     // Available internal functions:
     //  _mint(address to, uint256 tokenId)
     //  _safeMint(address to, uint256 tokenId)
-    //  _safeMint(address to, uint256 tokenId, bytes memory data) 
+    //  _safeMint(address to, uint256 tokenId, bytes memory data)
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId) 
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:

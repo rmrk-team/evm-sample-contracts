@@ -4,8 +4,8 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.sol";
 
 contract SimpleBase is RMRKBaseStorageImpl {
-    constructor(
-        string memory symbol,
-        string memory type_
-    ) RMRKBaseStorageImpl(symbol, type_) {}
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
+    constructor(string memory symbol, string memory type_)
+        RMRKBaseStorageImpl(symbol, type_)
+    {}
 }

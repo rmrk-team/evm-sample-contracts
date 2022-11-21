@@ -1,19 +1,16 @@
 import { ethers } from "hardhat";
-import { SimpleMultiResource } from "../typechain-types";
+import { SimpleNestableMultiAsset } from "../typechain-types";
 import { ContractTransaction } from "ethers";
 
 async function main() {
-  const pricePerMint = ethers.utils.parseEther("0.0001");
+  const pricePerMint = ethers.utils.parseEther("0.0000000001");
   const totalTokens = 5;
   const [owner] = await ethers.getSigners();
 
   const contractFactory = await ethers.getContractFactory(
-    "SimpleMultiResource"
+    "SimpleNestableMultiAsset"
   );
-  const token: SimpleMultiResource = await contractFactory.deploy(
-    1000,
-    pricePerMint
-  );
+  const token: SimpleNestableMultiAsset = await contractFactory.deploy();
 
   await token.deployed();
   console.log(`Sample contract deployed to ${token.address}`);

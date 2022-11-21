@@ -1,8 +1,9 @@
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers";
 import {
   SimpleBase,
   SimpleExternalEquip,
-  SimpleNestingExternalEquip,
+  SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
 import { ContractTransaction } from "ethers";
@@ -11,24 +12,24 @@ const pricePerMint = ethers.utils.parseEther("0.0001");
 const totalBirds = 5;
 
 async function main() {
-  const [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
     await deployContracts();
 
   // Notice that most of these steps will happen at different points in time
   // Here we do all in one go to demonstrate how to use it.
   await setupBase(base, gemEquip.address);
-  await mintTokens(kanariaNesting, gemNesting);
-  await addKanariaResources(kanariaEquip, base.address);
-  await addGemResources(gemEquip, kanariaEquip.address, base.address);
+  await mintTokens(nestableKanaria, nestableGem);
+  await addKanariaAssets(kanariaEquip, base.address);
+  await addGemAssets(gemEquip, kanariaEquip.address, base.address);
   await equipGems(kanariaEquip);
   await composeEquippables(views, kanariaEquip.address);
 }
 
 async function deployContracts(): Promise<
   [
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleNestingExternalEquip,
+    SimpleNestableExternalEquip,
     SimpleExternalEquip,
     SimpleBase,
     RMRKEquipRenderUtils
@@ -36,14 +37,14 @@ async function deployContracts(): Promise<
 > {
   const [beneficiary] = await ethers.getSigners();
   const equipFactory = await ethers.getContractFactory("SimpleExternalEquip");
-  const nestingFactory = await ethers.getContractFactory(
-    "SimpleNestingExternalEquip"
+  const nestableFactory = await ethers.getContractFactory(
+    "SimpleNestableExternalEquip"
   );
   const baseFactory = await ethers.getContractFactory("SimpleBase");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
-  const kanariaNesting: SimpleNestingExternalEquip =
-    await nestingFactory.deploy(
+  const nestableKanaria: SimpleNestableExternalEquip =
+    await nestableFactory.deploy(
       "Kanaria",
       "KAN",
       1000,
@@ -54,7 +55,7 @@ async function deployContracts(): Promise<
       await beneficiary.getAddress(),
       10
     );
-  const gemNesting: SimpleNestingExternalEquip = await nestingFactory.deploy(
+  const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
     "Gem",
     "GM",
     3000,
@@ -67,31 +68,31 @@ async function deployContracts(): Promise<
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
-    kanariaNesting.address
+    nestableKanaria.address
   );
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
-    gemNesting.address
+    nestableGem.address
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
-  await kanariaNesting.deployed();
+  await nestableKanaria.deployed();
   await kanariaEquip.deployed();
-  await gemNesting.deployed();
+  await nestableGem.deployed();
   await gemEquip.deployed();
   await base.deployed();
   await views.deployed();
 
   const allTx = [
-    await kanariaNesting.setEquippableAddress(kanariaEquip.address),
-    await gemNesting.setEquippableAddress(gemEquip.address),
+    await nestableKanaria.setEquippableAddress(kanariaEquip.address),
+    await nestableGem.setEquippableAddress(gemEquip.address),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${kanariaNesting.address} | ${kanariaEquip.address}, ${gemNesting.address} | ${gemEquip.address} and ${base.address}`
+    `Sample contracts deployed to ${nestableKanaria.address} | ${kanariaEquip.address}, ${nestableGem.address} | ${gemEquip.address} and ${base.address}`
   );
 
-  return [kanariaNesting, kanariaEquip, gemNesting, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
 async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
@@ -214,8 +215,8 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
 }
 
 async function mintTokens(
-  kanaria: SimpleNestingExternalEquip,
-  gem: SimpleNestingExternalEquip
+  kanaria: SimpleNestableExternalEquip,
+  gem: SimpleNestableExternalEquip
 ): Promise<void> {
   const [owner] = await ethers.getSigners();
 
@@ -226,183 +227,160 @@ async function mintTokens(
   await tx.wait();
   console.log(`Minted ${totalBirds} kanarias`);
 
-  // Mint 3 gems into each kanariaNesting
+  // Mint 3 gems into each nestableKanaria
   let allTx: ContractTransaction[] = [];
   for (let i = 1; i <= totalBirds; i++) {
-    let tx = await gem.mintNesting(kanaria.address, 3, i, {
+    let tx = await gem.nestMint(kanaria.address, 3, i, {
       value: pricePerMint.mul(3),
     });
     allTx.push(tx);
   }
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log(`Minted 3 gems into each kanariaNesting`);
+  console.log(`Minted 3 gems into each nestableKanaria`);
 
-  // Accept 3 gems for each kanariaNesting
-  for (let i = 0; i < 3; i++) {
-    allTx = [];
-    for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
-      let tx = await kanaria.acceptChild(tokenId, 0);
-      allTx.push(tx);
-    }
-    await Promise.all(allTx.map((tx) => tx.wait()));
-    console.log(`Accepted 1 gemNesting for each kanariaNesting`);
+  // Accept 3 gems for each kanaria
+  console.log("Accepting Gems");
+
+  for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
+    allTx = [
+      await kanaria.acceptChild(
+        tokenId,
+        2,
+        gem.address,
+        3 * tokenId,
+      ),
+      await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
+      await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
+    ];
   }
+  await Promise.all(allTx.map((tx) => tx.wait()));
+  console.log(`Accepted gems for each kanaria`);
 }
 
-async function addKanariaResources(
+async function addKanariaAssets(
   kanaria: SimpleExternalEquip,
   baseAddress: string
 ): Promise<void> {
-  const resourceDefaultId = 1;
-  const resourceComposedId = 2;
+  const assetDefaultId = 1;
+  const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
-  let tx = await kanaria.addResourceEntry(
-    {
-      id: resourceDefaultId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
-      baseAddress: ethers.constants.AddressZero, // base is not needed here
-      metadataURI: "ipfs://default.png",
-    },
+  let tx = await kanaria.addAssetEntry(
+    0, // Only used for assets meant to equip into others
+    ethers.constants.AddressZero, // base is not needed here
+    "ipfs://default.png",
     [],
     []
   );
   allTx.push(tx);
 
-  tx = await kanaria.addResourceEntry(
-    {
-      id: resourceComposedId,
-      equippableGroupId: 0, // Only used for resources meant to equip into others
-      baseAddress: baseAddress, // Since we're using parts, we must define the base
-      metadataURI: "ipfs://meta1.json",
-    },
+  tx = await kanaria.addAssetEntry(
+    0, // Only used for assets meant to equip into others
+    baseAddress, // Since we're using parts, we must define the base
+    "ipfs://meta1.json",
     [1, 3, 5, 7], // We're using first background, head, body and wings
     [9, 10, 11] // We state that this can receive the 3 slot parts for gems
   );
   allTx.push(tx);
-  // Wait for both resources to be added
+  // Wait for both assets to be added
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 2 resource entries");
+  console.log("Added 2 asset entries");
 
-  // Add resources to token
+  // Add assets to token
   const tokenId = 1;
   allTx = [
-    await kanaria.addResourceToToken(tokenId, resourceDefaultId, 0),
-    await kanaria.addResourceToToken(tokenId, resourceComposedId, 0),
+    await kanaria.addAssetToToken(tokenId, assetDefaultId, 0),
+    await kanaria.addAssetToToken(tokenId, assetComposedId, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added resources to token 1");
+  console.log("Added assets to token 1");
 
-  // Accept both resources:
-  tx = await kanaria.acceptResource(tokenId, 0);
+  // Accept both assets:
+  tx = await kanaria.acceptAsset(tokenId, 0, assetDefaultId);
   await tx.wait();
-  tx = await kanaria.acceptResource(tokenId, 0);
+  tx = await kanaria.acceptAsset(tokenId, 0, assetComposedId);
   await tx.wait();
-  console.log("Resources accepted");
+  console.log("Assets accepted");
 }
 
-async function addGemResources(
+async function addGemAssets(
   gem: SimpleExternalEquip,
   kanariaAddress: string,
   baseAddress: string
 ): Promise<void> {
-  // We'll add 4 resources for each gemNesting, a full version and 3 versions matching each slot.
-  // We will have only 2 types of gems -> 4x2: 8 resources.
+  // We'll add 4 assets for each nestableGem, a full version and 3 versions matching each slot.
+  // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
   const gemVersions = 4;
 
-  // These refIds are used from the child's perspective, to group resources that can be equipped into a parent
-  // With it, we avoid the need to do set it resource by resource
+  // These refIds are used from the child's perspective, to group assets that can be equipped into a parent
+  // With it, we avoid the need to do set it asset by asset
   const equippableRefIdLeftGem = 1;
   const equippableRefIdMidGem = 2;
   const equippableRefIdRightGem = 3;
 
   // We can do a for loop, but this makes it clearer.
   let allTx = [
-    await gem.addResourceEntry(
-      // Full version for first type of gemNesting, no need of refId or base
-      {
-        id: 1,
-        equippableGroupId: 0,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/full.svg`,
-      },
+    await gem.addAssetEntry(
+      // Full version for first type of gem, no need of refId or base
+      0,
+      baseAddress,
+      `ipfs://gems/typeA/full.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for first type of gemNesting
-      {
-        id: 2,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/left.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for first type of gem
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeA/left.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into mid slot for first type of gemNesting
-      {
-        id: 3,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/mid.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into mid slot for first type of gem
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeA/mid.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for first type of gemNesting
-      {
-        id: 4,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeA/right.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for first type of gem
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeA/right.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Full version for second type of gemNesting, no need of refId or base
-      {
-        id: 5,
-        equippableGroupId: 0,
-        baseAddress: ethers.constants.AddressZero,
-        metadataURI: `ipfs://gems/typeB/full.svg`,
-      },
+    await gem.addAssetEntry(
+      // Full version for second type of gem, no need of refId or base
+      0,
+      ethers.constants.AddressZero,
+      `ipfs://gems/typeB/full.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into left slot for second type of gemNesting
-      {
-        id: 6,
-        equippableGroupId: equippableRefIdLeftGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/left.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into left slot for second type of gem
+      equippableRefIdLeftGem,
+      baseAddress,
+      `ipfs://gems/typeB/left.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into mid slot for second type of gemNesting
-      {
-        id: 7,
-        equippableGroupId: equippableRefIdMidGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/mid.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into mid slot for second type of gem
+      equippableRefIdMidGem,
+      baseAddress,
+      `ipfs://gems/typeB/mid.svg`,
       [],
       []
     ),
-    await gem.addResourceEntry(
-      // Equipped into right slot for second type of gemNesting
-      {
-        id: 8,
-        equippableGroupId: equippableRefIdRightGem,
-        baseAddress: baseAddress,
-        metadataURI: `ipfs://gems/typeB/right.svg`,
-      },
+    await gem.addAssetEntry(
+      // Equipped into right slot for second type of gem
+      equippableRefIdRightGem,
+      baseAddress,
+      `ipfs://gems/typeB/right.svg`,
       [],
       []
     ),
@@ -410,76 +388,95 @@ async function addGemResources(
 
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    "Added 8 gemNesting resources. 2 Types of gems with full, left, mid and right versions."
+    "Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
   // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
-  // e.g. Any resource on gemNesting, which sets its equippableGroupId to equippableRefIdLeftGem
-  //      will be considered a valid equip into any kanariaNesting on slot 9 (left gemNesting).
+  // e.g. Any asset on nestableGem, which sets its equippableGroupId to equippableRefIdLeftGem
+  //      will be considered a valid equip into any nestableKanaria on slot 9 (left nestableGem).
   allTx = [
-    await gem.setValidParentForEquippableGroup(equippableRefIdLeftGem, kanariaAddress, 9),
-    await gem.setValidParentForEquippableGroup(equippableRefIdMidGem, kanariaAddress, 10),
-    await gem.setValidParentForEquippableGroup(equippableRefIdRightGem, kanariaAddress, 11),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdLeftGem,
+      kanariaAddress,
+      9
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdMidGem,
+      kanariaAddress,
+      10
+    ),
+    await gem.setValidParentForEquippableGroup(
+      equippableRefIdRightGem,
+      kanariaAddress,
+      11
+    ),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
 
-  // We add resources of type A to gemNesting 1 and 2, and type Bto gemNesting 3. Both are nested into the first kanariaNesting
-  // This means gems 1 and 2 will have the same resource, which is totally valid.
+  // We add assets of type A to nestableGem 1 and 2, and type Bto nestableGem 3. Both are nested into the first nestableKanaria
+  // This means gems 1 and 2 will have the same asset, which is totally valid.
   allTx = [
-    await gem.addResourceToToken(1, 1, 0),
-    await gem.addResourceToToken(1, 2, 0),
-    await gem.addResourceToToken(1, 3, 0),
-    await gem.addResourceToToken(1, 4, 0),
-    await gem.addResourceToToken(2, 1, 0),
-    await gem.addResourceToToken(2, 2, 0),
-    await gem.addResourceToToken(2, 3, 0),
-    await gem.addResourceToToken(2, 4, 0),
-    await gem.addResourceToToken(3, 5, 0),
-    await gem.addResourceToToken(3, 6, 0),
-    await gem.addResourceToToken(3, 7, 0),
-    await gem.addResourceToToken(3, 8, 0),
+    await gem.addAssetToToken(1, 1, 0),
+    await gem.addAssetToToken(1, 2, 0),
+    await gem.addAssetToToken(1, 3, 0),
+    await gem.addAssetToToken(1, 4, 0),
+    await gem.addAssetToToken(2, 1, 0),
+    await gem.addAssetToToken(2, 2, 0),
+    await gem.addAssetToToken(2, 3, 0),
+    await gem.addAssetToToken(2, 4, 0),
+    await gem.addAssetToToken(3, 5, 0),
+    await gem.addAssetToToken(3, 6, 0),
+    await gem.addAssetToToken(3, 7, 0),
+    await gem.addAssetToToken(3, 8, 0),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Added 4 resources to each of 3 gems.");
+  console.log("Added 4 assets to each of 3 gems.");
 
-  // We accept each resource for both gems
-  for (let i = 0; i < gemVersions; i++) {
-    allTx = [
-      await gem.acceptResource(1, 0),
-      await gem.acceptResource(2, 0),
-      await gem.acceptResource(3, 0),
-    ];
-    await Promise.all(allTx.map((tx) => tx.wait()));
-  }
-  console.log("Accepted 4 resources to each of 3 gems.");
+  // We accept each asset for all gems
+  allTx = [
+    await gem.acceptAsset(1, 3, 4),
+    await gem.acceptAsset(1, 2, 3),
+    await gem.acceptAsset(1, 1, 2),
+    await gem.acceptAsset(1, 0, 1),
+    await gem.acceptAsset(2, 3, 4),
+    await gem.acceptAsset(2, 2, 3),
+    await gem.acceptAsset(2, 1, 2),
+    await gem.acceptAsset(2, 0, 1),
+    await gem.acceptAsset(3, 3, 8),
+    await gem.acceptAsset(3, 2, 7),
+    await gem.acceptAsset(3, 1, 6),
+    await gem.acceptAsset(3, 0, 5),
+  ];
+  await Promise.all(allTx.map((tx) => tx.wait()));
+  console.log("Accepted 4 assets to each of 3 gems.");
 }
 
 async function equipGems(kanariaEquip: SimpleExternalEquip): Promise<void> {
   const allTx = [
     await kanariaEquip.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 0, // Gem 1 is on position 0
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 9, // left gemNesting slot
-      childResourceId: 2, // Resource id for child meant for the left gemNesting
+      childIndex: 2, // Gem 1 is on position 2
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 9, // left gem slot
+      childAssetId: 2, // Asset id for child meant for the left gem
     }),
     await kanariaEquip.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 2, // Gem 2 is on position 2 (positions are shifted when accepting children)
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 10, // mid gemNesting slot
-      childResourceId: 3, // Resource id for child meant for the mid gemNesting
+      childIndex: 1, // Gem 2 is on position 1
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 10, // mid gem slot
+      childAssetId: 3, // Asset id for child meant for the mid gem
     }),
     await kanariaEquip.equip({
       tokenId: 1, // Kanaria 1
-      childIndex: 1, // Gem 3 is on position 1
-      resourceId: 2, // Resource for the kanariaNesting which is composable
-      slotPartId: 11, // right gemNesting slot
-      childResourceId: 8, // Resource id for child meant for the right gemNesting
+      childIndex: 0, // Gem 3 is on position 0
+      assetId: 2, // Asset for the kanaria which is composable
+      slotPartId: 11, // right gem slot
+      childAssetId: 8, // Asset id for child meant for the right gem
     }),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
-  console.log("Equipped 3 gems into first kanariaNesting");
+  console.log("Equipped 3 gems into first nestableKanaria");
 }
 
 async function composeEquippables(
@@ -487,10 +484,10 @@ async function composeEquippables(
   kanariaAddress: string
 ): Promise<void> {
   const tokenId = 1;
-  const resourceId = 2;
+  const assetId = 2;
   console.log(
     "Composed: ",
-    await views.composeEquippables(kanariaAddress, tokenId, resourceId)
+    await views.composeEquippables(kanariaAddress, tokenId, assetId)
   );
 }
 
