@@ -1232,7 +1232,7 @@ Composed:  [
 This concludes our work on the simple Split equippable RMRK lego composite and we can now move on to examining the
 advanced implementation.
 
-## Advanced SplitEqiuppable
+## Advanced SplitEquippable
 
 The advanced `SplitEquippable` consists of three smart contracts. The
 [`AdvancedBase`](../MergedEquippable/README.md#advancedbase) is already examined in the `MergedEquippable`
