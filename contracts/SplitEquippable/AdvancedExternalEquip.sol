@@ -7,6 +7,7 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol
 /* import "hardhat/console.sol"; */
 
 contract AdvancedExternalEquip is RMRKExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(address nestableAddress) RMRKExternalEquip(nestableAddress) {
         // Custom optional: constructor logic
     }

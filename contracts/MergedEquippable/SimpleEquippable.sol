@@ -6,6 +6,7 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.so
 import "@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol";
 
 contract SimpleEquippable is RMRKEquippableImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,

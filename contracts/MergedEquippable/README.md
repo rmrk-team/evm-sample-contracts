@@ -97,6 +97,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.sol";
 
 contract SimpleBase is RMRKBaseStorageImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
@@ -304,6 +305,7 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.so
 import "@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol";
 
 contract SimpleEquippable is RMRKEquippableImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,
@@ -1374,6 +1376,7 @@ We only need `symbol` and `type_` of the base in order to properly initialize it
 
 ````solidity
 contract AdvancedBase is RMRKBaseStorage {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
@@ -1398,6 +1401,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
 
 contract AdvancedBase is RMRKBaseStorage {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
@@ -1445,6 +1449,7 @@ inherits it:
 
 ````solidity
 contract AdvancedEquippable is RMRKEquippable {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
@@ -1469,6 +1474,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 
 contract AdvancedEquippable is RMRKEquippable {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol

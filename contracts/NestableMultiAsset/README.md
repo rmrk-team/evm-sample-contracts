@@ -80,6 +80,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableMultiAssetImpl.sol";
 
 contract SimpleNestableMultiAsset is RMRKNestableMultiAssetImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor()
     RMRKNestableMultiAssetImpl(
         "SimpleNestableMultiAsset",
@@ -446,6 +447,7 @@ inherits it:
 
 ````solidity
 contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
@@ -470,6 +472,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestableMultiAsset.sol";
 
 contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol

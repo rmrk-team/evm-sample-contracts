@@ -75,6 +75,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKExternalEquipImpl.sol";
 
 contract SimpleExternalEquip is RMRKExternalEquipImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         address nestableAddress
     ) RMRKExternalEquipImpl(nestableAddress) {}
@@ -217,6 +218,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalEquipImpl.sol";
 
 contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,
@@ -1258,6 +1260,7 @@ in order to properly initialize it after the `AdvancedExternalEquip` inherits it
 
 ````solidity
 contract AdvancedExternalEquip is RMRKExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         address nestableAddress
     )
@@ -1287,6 +1290,7 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol
 /* import "hardhat/console.sol"; */
 
 contract AdvancedExternalEquip is RMRKExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         address nestableAddress
     )
@@ -1323,6 +1327,7 @@ We only need the `name` and `symbol` of the NFT collection in order to properly 
 
 ````solidity
 contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
@@ -1347,6 +1352,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol";
 
 contract AdvancedNestableExternalEquip is RMRKNestableExternalEquip {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol

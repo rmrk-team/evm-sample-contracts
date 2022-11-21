@@ -103,6 +103,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableImpl.sol";
 
 contract SimpleNestable is RMRKNestableImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,
@@ -526,6 +527,7 @@ We only need `name` and `symbol` of the NFT in order to properly initialize it a
 
 ````solidity
 contract AdvancedNestable is RMRKNestable {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
@@ -551,6 +553,7 @@ import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestable.sol";
 
 
 contract AdvancedNestable is RMRKNestable {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol

@@ -92,6 +92,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKMultiAssetImpl.sol";
 
 contract SimpleMultiAsset is RMRKMultiAssetImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         uint256 maxSupply,
         uint256 pricePerMint
@@ -435,6 +436,7 @@ inherits it:
 
 ````solidity
 contract AdvancedMultiAsset is RMRKMultiAsset {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol
@@ -459,6 +461,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/multiasset/RMRKMultiAsset.sol";
 
 contract AdvancedMultiAsset is RMRKMultiAsset {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol

@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableImpl.sol";
 
 contract SimpleNestable is RMRKNestableImpl {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory name,
         string memory symbol,

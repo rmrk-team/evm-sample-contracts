@@ -5,6 +5,7 @@ pragma solidity ^0.8.16;
 import "@rmrk-team/evm-contracts/contracts/RMRK/multiasset/RMRKMultiAsset.sol";
 
 contract AdvancedMultiAsset is RMRKMultiAsset {
+    // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(string memory name, string memory symbol)
         RMRKMultiAsset(name, symbol)
     {
