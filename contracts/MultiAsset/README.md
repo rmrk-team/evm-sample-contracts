@@ -187,7 +187,7 @@ The `updateRoyaltyRecipient` function is used to update the royalty recipient an
 ### Deploy script
 
 The deploy script for the `SimpleMultiAsset` smart contract resides in the
-[`deployNestable.ts`](../../scripts/deployMultiAsset.ts).
+[`deployMultiAsset.ts`](../../scripts/deployMultiAsset.ts).
 
 The script uses the `ethers`, `SimpleMultiAsset` and `ContractTransaction` imports. The empty deploy script should look like
 this:
