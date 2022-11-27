@@ -5,7 +5,7 @@ import { ContractTransaction } from "ethers";
 async function main() {
   const pricePerMint = ethers.utils.parseEther("0.0000000001");
   const totalTokens = 5;
-  const [owner] = await ethers.getSigners();
+  const [ , owner] = await ethers.getSigners();
 
   const contractFactory = await ethers.getContractFactory(
     "SimpleNestableMultiAsset"
@@ -52,7 +52,7 @@ async function main() {
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
     // Accept pending asset for each token (on index 0)
-    let tx = await token.acceptAsset(i, 0, i);
+    let tx = await token.connect(owner).acceptAsset(i, 0, i);
     allTx.push(tx);
     console.log(`Accepted first pending asset for token ${i}.`);
   }
@@ -69,7 +69,7 @@ async function main() {
 
   // Transfer token 5 into token 1
   console.log("Nesting token with ID 5 into token with ID 1");
-  await token.nestTransfer(token.address, 5, 1);
+  await token.connect(owner).nestTransferFrom(owner.address, token.address, 5, 1, "0x");
   const parentId = await token.ownerOf(5);
   const rmrkParent = await token.directOwnerOf(5);
   console.log("Token's id 5 owner  is ", parentId);
