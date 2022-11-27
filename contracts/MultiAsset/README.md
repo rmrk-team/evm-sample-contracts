@@ -268,7 +268,7 @@ import { ContractTransaction } from "ethers";
 async function main() {
   const pricePerMint = ethers.utils.parseEther("0.0001");
   const totalTokens = 5;
-  const [owner] = await ethers.getSigners();
+  const [ , owner] = await ethers.getSigners();
 
   const contractFactory = await ethers.getContractFactory(
     "SimpleMultiAsset"
@@ -287,6 +287,9 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 ````
+
+**NOTE: We assign the `owner` the second available signer, so that the assets are not automatically accepted when added
+to the token. This happens when an account adding an asset to a token is also the owner of said token.**
 
 First thing that needs to be done after the smart contract is deployed it to mint the NFT. We will use the `totalTokens`
 constant to specify how many tokens to mint:
@@ -342,7 +345,7 @@ transactions for each of the tokens and send them at the end:
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
     // Accept pending asset for each token (on index 0)
-    let tx = await token.acceptAsset(i, 0, i);
+    let tx = await token.connect(owner).acceptAsset(i, 0, i);
     allTx.push(tx);
     console.log(`Accepted first pending asset for token ${i}.`);
   }
@@ -350,7 +353,8 @@ transactions for each of the tokens and send them at the end:
   await Promise.all(allTx.map((tx) => tx.wait()));
 ````
 
-**NOTE: Accepting assets is done in a array that gets elements, new assets, appended to the end of it. Once the asset is accepted, the asset that was added lats, takes its place. For exaple:
+**NOTE: Accepting assets is done in a array that gets elements, new assets, appended to the end of it. Once the asset is
+accepted, the asset that was added last, takes its place. For exaple:
 
 We have assets `A`, `B`, `C` and `D` in the pending array organised like this: [`A`, `B`, `C`, `D`].
 
