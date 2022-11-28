@@ -761,6 +761,7 @@ async function mintTokens(
   gem: SimpleEquippable
 ): Promise<void> {
   console.log("Minting tokens");
+  const [ , owner] = await ethers.getSigners();
   const [owner] = await ethers.getSigners();
 
   // Mint some kanarias
@@ -787,15 +788,18 @@ async function mintTokens(
   console.log("Accepting Gems");
   for (let tokenId = 1; tokenId <= totalBirds; tokenId++) {
     allTx = [
-      await kanaria.acceptChild(tokenId, 2, gem.address, 3 * tokenId),
-      await kanaria.acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
-      await kanaria.acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
+      await kanaria.connect(owner).acceptChild(tokenId, 2, gem.address, 3 * tokenId),
+      await kanaria.connect(owner).acceptChild(tokenId, 1, gem.address, 3 * tokenId - 1),
+      await kanaria.connect(owner).acceptChild(tokenId, 0, gem.address, 3 * tokenId - 2),
     ];
   }
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(`Accepted gems for each kanaria`);
 }
 ````
+
+**NOTE: We assign the `owner` the second available signer, so that the assets are not automatically accepted when added
+to the token. This happens when an account adding an asset to a token is also the owner of said token.**
 
 In order for the `mintTokens` to be called, we have to add it to the `main` function:
 
@@ -816,6 +820,7 @@ async function addKanariaAssets(
   baseAddress: string
 ): Promise<void> {
   console.log("Adding Kanaria assets");
+  const [ , owner] = await ethers.getSigners();
   const assetDefaultId = 1;
   const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
@@ -823,7 +828,6 @@ async function addKanariaAssets(
     0, // Only used for assets meant to equip into others
     ethers.constants.AddressZero, // base is not needed here
     "ipfs://default.png",
-    [],
     []
   );
   allTx.push(tx);
@@ -832,8 +836,7 @@ async function addKanariaAssets(
     0, // Only used for assets meant to equip into others
     baseAddress, // Since we're using parts, we must define the base
     "ipfs://meta1.json",
-    [1, 3, 5, 7], // We're using first background, head, body and wings
-    [9, 10, 11] // We state that this can receive the 3 slot parts for gems
+    [1, 3, 5, 7, 9, 10, 11] // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
   allTx.push(tx);
   // Wait for both assets to be added
@@ -850,9 +853,9 @@ async function addKanariaAssets(
   console.log("Added assets to token 1");
 
   // Accept both assets:
-  tx = await kanaria.acceptAsset(tokenId, 0, assetDefaultId);
+  tx = await kanaria.connect(owner).acceptAsset(tokenId, 0, assetDefaultId);
   await tx.wait();
-  tx = await kanaria.acceptAsset(tokenId, 0, assetComposedId);
+  tx = await kanaria.connect(owner).acceptAsset(tokenId, 0, assetComposedId);
   await tx.wait();
   console.log("Assets accepted");
 }
@@ -880,6 +883,7 @@ async function addGemAssets(
   baseAddress: string
 ): Promise<void> {
   console.log("Adding Gem assets");
+  const [ , owner] = await ethers.getSigners();
   // We'll add 4 assets for each gem, a full version and 3 versions matching each slot.
   // We will have only 2 types of gems -> 4x2: 8 assets.
   // This is not composed by others, so fixed and slot parts are never used.
@@ -894,12 +898,12 @@ async function addGemAssets(
   // We can do a for loop, but this makes it clearer.
   console.log("Adding asset entries");
   let allTx = [
+  let allTx = [
     await gem.addAssetEntry(
       // Full version for first type of gem, no need of refId or base
       0,
       baseAddress,
       `ipfs://gems/typeA/full.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -907,7 +911,6 @@ async function addGemAssets(
       equippableRefIdLeftGem,
       baseAddress,
       `ipfs://gems/typeA/left.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -915,7 +918,6 @@ async function addGemAssets(
       equippableRefIdMidGem,
       baseAddress,
       `ipfs://gems/typeA/mid.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -923,7 +925,6 @@ async function addGemAssets(
       equippableRefIdRightGem,
       baseAddress,
       `ipfs://gems/typeA/right.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -931,7 +932,6 @@ async function addGemAssets(
       0,
       ethers.constants.AddressZero,
       `ipfs://gems/typeB/full.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -939,7 +939,6 @@ async function addGemAssets(
       equippableRefIdLeftGem,
       baseAddress,
       `ipfs://gems/typeB/left.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -947,7 +946,6 @@ async function addGemAssets(
       equippableRefIdMidGem,
       baseAddress,
       `ipfs://gems/typeB/mid.svg`,
-      [],
       []
     ),
     await gem.addAssetEntry(
@@ -955,7 +953,6 @@ async function addGemAssets(
       equippableRefIdRightGem,
       baseAddress,
       `ipfs://gems/typeB/right.svg`,
-      [],
       []
     ),
   ];
@@ -998,18 +995,18 @@ async function addGemAssets(
 
 // We accept each asset for all gems
   allTx = [
-    await gem.acceptAsset(1, 3, 4),
-    await gem.acceptAsset(1, 2, 3),
-    await gem.acceptAsset(1, 1, 2),
-    await gem.acceptAsset(1, 0, 1),
-    await gem.acceptAsset(2, 3, 4),
-    await gem.acceptAsset(2, 2, 3),
-    await gem.acceptAsset(2, 1, 2),
-    await gem.acceptAsset(2, 0, 1),
-    await gem.acceptAsset(3, 3, 8),
-    await gem.acceptAsset(3, 2, 7),
-    await gem.acceptAsset(3, 1, 6),
-    await gem.acceptAsset(3, 0, 5),
+    await gem.connect(owner).acceptAsset(1, 3, 4),
+    await gem.connect(owner).acceptAsset(1, 2, 3),
+    await gem.connect(owner).acceptAsset(1, 1, 2),
+    await gem.connect(owner).acceptAsset(1, 0, 1),
+    await gem.connect(owner).acceptAsset(2, 3, 4),
+    await gem.connect(owner).acceptAsset(2, 2, 3),
+    await gem.connect(owner).acceptAsset(2, 1, 2),
+    await gem.connect(owner).acceptAsset(2, 0, 1),
+    await gem.connect(owner).acceptAsset(3, 3, 8),
+    await gem.connect(owner).acceptAsset(3, 2, 7),
+    await gem.connect(owner).acceptAsset(3, 1, 6),
+    await gem.connect(owner).acceptAsset(3, 0, 5),
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log("Accepted 4 assets to each of 3 gems.");
@@ -1029,22 +1026,23 @@ batch of `equip` transactions and then send them one after the other:
 ````typescript
 async function equipGems(kanaria: SimpleEquippable): Promise<void> {
   console.log("Equipping gems");
+  const [ , owner] = await ethers.getSigners();
   const allTx = [
-    await kanaria.equip({
+    await kanaria.connect(owner).equip({
       tokenId: 1, // Kanaria 1
       childIndex: 2, // Gem 1 is on position 2
       assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 9, // left gem slot
       childAssetId: 2, // Asset id for child meant for the left gem
     }),
-    await kanaria.equip({
+    await kanaria.connect(owner).equip({
       tokenId: 1, // Kanaria 1
       childIndex: 1, // Gem 2 is on position 1
       assetId: 2, // Asset for the kanaria which is composable
       slotPartId: 10, // mid gem slot
       childAssetId: 3, // Asset id for child meant for the mid gem
     }),
-    await kanaria.equip({
+    await kanaria.connect(owner).equip({
       tokenId: 1, // Kanaria 1
       childIndex: 0, // Gem 3 is on position 0
       assetId: 2, // Asset for the kanaria which is composable
