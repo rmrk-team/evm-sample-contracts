@@ -263,7 +263,7 @@ import { ContractTransaction } from "ethers";
 async function main() {
   const pricePerMint = ethers.utils.parseEther("0.0000000001");
   const totalTokens = 5;
-  const [owner] = await ethers.getSigners();
+  const [ , tokenOwner] = await ethers.getSigners();
 
   const contractFactory = await ethers.getContractFactory(
     "SimpleNestableMultiAsset"
@@ -280,12 +280,15 @@ main().catch((error) => {
 });
 ````
 
+**NOTE: We assign the `tokenOwner` the second available signer, so that the assets are not automatically accepted when added
+to the token. This happens when an account adding an asset to a token is also the owner of said token.**
+
 First thing that needs to be done after the smart contracts are deployed is to mint the NFTs. We will use the
 `totalTokens` constant in order to specify how many of the tokens to mint:
 
 ````typescript
   console.log("Minting NFTs");
-  let tx = await token.mint(owner.address, totalTokens, {
+  let tx = await token.mint(tokenOwner.address, totalTokens, {
     value: pricePerMint.mul(totalTokens),
   });
   await tx.wait();
@@ -334,7 +337,7 @@ transactions for each of the tokens and send them out one by one at the end:
   allTx = [];
   for (let i = 1; i <= totalTokens; i++) {
     // Accept pending asset for each token (on index 0)
-    let tx = await token.acceptAsset(i, 0, i);
+    let tx = await token.connect(tokenOwner).acceptAsset(i, 0, i);
     allTx.push(tx);
     console.log(`Accepted first pending asset for token ${i}.`);
   }
@@ -366,7 +369,7 @@ check their ownership to verify successful nesting:
 
 ````typescript
   console.log("Nesting token with ID 5 into token with ID 1");
-  await token.nestTransfer(token.address, 5, 1);
+  await token.connect(tokenOwner).nestTransferFrom(tokenOwner.address, token.address, 5, 1, "0x");
   const parentId = await token.ownerOf(5);
   const rmrkParent = await token.directOwnerOf(5);
   console.log("Token's id 5 owner  is ", parentId);

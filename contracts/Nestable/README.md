@@ -430,7 +430,7 @@ nestable ID of 0 from the parent NFT with ID 1:
 
 ````typescript
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, owner.address, 0, child.address, 1, false);
+  tx = await parent.transferChild(1, owner.address, 0, 0, child.address, 1, false, "0x");
   await tx.wait();
 ````
 

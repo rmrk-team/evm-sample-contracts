@@ -82,7 +82,7 @@ async function main() {
 
   // Send 1st child to owner:
   console.log("Removing the nested NFT from the parent token with the ID of 1");
-  tx = await parent.unnestChild(1, owner.address, 0, child.address, 1, false);
+  tx = await parent.transferChild(1, owner.address, 0, 0, child.address, 1, false, "0x");
   await tx.wait();
 
   parentId = await child.ownerOf(1);
