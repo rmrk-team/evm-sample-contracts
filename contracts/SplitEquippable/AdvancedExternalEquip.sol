@@ -18,11 +18,11 @@ contract AdvancedExternalEquip is RMRKExternalEquip {
 
     // Custom expected: external, optionally gated, function to add assets.
     // Available internal functions:
-    //  _addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)
+    //  _addAssetEntry(uint64 id, uint64 equippableGroupId, address baseAddress, string memory metadataURI, uint64[] calldata partIds)
 
     // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)
 
     // Custom expected: external, optionally gated, function to add set valid parent reference Id.
     // Available internal functions:

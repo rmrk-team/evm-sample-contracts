@@ -20,24 +20,24 @@ contract AdvancedEquippable is RMRKEquippable {
 
     // Custom expected: external, optionally gated, functions to nest mint.
     // Available internal functions:
-    //  _nestMint(address to, uint256 tokenId, uint256 destinationId)
+    //  _nestMint(address to, uint256 tokenId, uint256 destinationId, bytes memory data)
 
     // Custom expected: external gated function to burn.
     // Available internal functions:
-    //  _burn(uint256 tokenId)
+    //  _burn(uint256 tokenId, uint256 maxChildrenBurns)
 
     // Custom optional: utility functions to transfer and nest transfer from caller
     // Available public functions:
     //  transferFrom(address from, address to, uint256 tokenId)
-    //  nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)
+    //  nestTransferFrom(address from, address to, uint256 tokenId, uint256 destinationId, bytes memory data)
 
     // Custom expected: external, optionally gated, function to add assets.
     // Available internal functions:
-    //  _addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)
+    //  _addAssetEntry(uint64 id, uint64 equippableGroupId, address baseAddress, string memory metadataURI, uint64[] calldata partIds)
 
     // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)
 
     // Custom expected: external, optionally gated, function to add set valid parent reference Id.
     // Available internal functions:
