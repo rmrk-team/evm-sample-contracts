@@ -10,22 +10,16 @@ contract SimpleEquippable is RMRKEquippableImpl {
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
+        InitData memory data
     )
         RMRKEquippableImpl(
             name,
             symbol,
-            maxSupply,
-            pricePerMint,
             collectionMetadata,
             tokenURI,
-            royaltyRecipient,
-            royaltyPercentageBps
+            data
         )
     {}
 }

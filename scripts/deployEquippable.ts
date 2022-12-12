@@ -25,22 +25,30 @@ async function deployContracts(): Promise<
   const kanaria: SimpleEquippable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
-    3000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
