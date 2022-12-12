@@ -55,14 +55,24 @@ The `constructor` to initialize the `RMRKNestableImpl` accepts the following arg
 
 - `name_`: `string` argument that should represent the name of the NFT collection
 - `symbol_`: `string` argument that should represent the symbol of the NFT collection
-- `maxSupply_`: `uint256` argument that defines the maximum number of NFTs to be minted. This limits the total
-cummulative number of both parent and child NFTs
-- `pricePerMint_`: `uint256` argument that defines the price per the NFT mint. It is expressed in `wei` or minimum
-denomination of the native currency of the EVM to which the smart contract is deployed to
 - `collectionMetadata_`: `string` argument that defines the metadata URI of the whole collection
 - `tokenURI_`: `string` argument that defines the base URI of the token metadata
-- `royaltyRecipient`: `address` argument that defines the address of the beneficiary of royalties
-- `royaltyPercentageBps`: `uint256` argument that defines the royalty percentage in basis points
+- `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
+  being reverted due to passing too many parameters
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps, // Expressed in basis points
+    maxSupply,
+    pricePerMint
+]**
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -75,22 +85,18 @@ above, in the `constructor` and pass them to `RMRKNestableImpl`:
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKNestableImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKNestableImpl(
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 ````
 
 <details>
@@ -107,22 +113,18 @@ contract SimpleNestable is RMRKNestableImpl {
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKNestableImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKNestableImpl(
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 }
 ````
 
@@ -231,23 +233,32 @@ console:
   const parent: SimpleNestable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await owner.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
   const child: SimpleNestable = await contractFactory.deploy(
     "Chunky",
     "CHN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await owner.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
+
 
   await parent.deployed();
   await child.deployed();
@@ -298,22 +309,30 @@ async function main() {
   const parent: SimpleNestable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await owner.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
   const child: SimpleNestable = await contractFactory.deploy(
     "Chunky",
     "CHN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await owner.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
 
   await parent.deployed();

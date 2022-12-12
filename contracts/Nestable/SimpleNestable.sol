@@ -8,22 +8,16 @@ contract SimpleNestable is RMRKNestableImpl {
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
+        InitData memory data
     )
         RMRKNestableImpl(
             name,
             symbol,
-            maxSupply,
-            pricePerMint,
             collectionMetadata,
             tokenURI,
-            royaltyRecipient,
-            royaltyPercentageBps
+            data
         )
     {}
 }
