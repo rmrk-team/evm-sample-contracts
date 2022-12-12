@@ -166,16 +166,27 @@ sure to define your own, otherwise your smart contracts are at risk of unexpecte
 
 The `constructor` to initialize the `RMRKNestableExternalEquipImpl` accepts the following arguments:
 
-- `name_`: `string` type of argument specifying the name of the collection
-- `symbol_`: `string` type of argument specifying the symbol of the collection
-- `maxSupploy_`: `uint256` type of argument specifying the maximum amount of tokens in the collection
-- `pricePerMint_`: `uint256` type of argument representing the price per mint in wei or the lowest denomination of a
-native currency of the EVM to which the smart contract is deployed to
-- `equippableAddress_`: `address` type of argument specifying the address of the `SimpleExternalEquip` smart contract
-- `collectionMetadata_`: `string` type of argument specifying the metadata URI of the whole collection
-- `tokenURI_`: `string` type of argument specifying the base URI of the token metadata
-- `royaltyRecipient`: `address` type of argument specifying the address of the beneficiary of royalties
-- `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
+- `equippableAddress`: `address` type of argument specifying the address of the `SimpleExternalEquip` smart contract
+- `name`: `string` type of argument specifying the name of the collection
+- `symbol`: `string` type of argument specifying the symbol of the collection
+- `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
+- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
+- `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
+  being reverted due to passing too many parameters
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps, // Expressed in basis points
+    maxSupply,
+    pricePerMint
+]**
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -186,26 +197,22 @@ mentioned above, in the `constructor` and pass them to the `RMRKNestableExternal
 
 ````solidity
     constructor(
+        address equippableAddress,
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
-        address equippableAddress,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKNestableExternalEquipImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        equippableAddress,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKNestableExternalEquipImpl(
+            equippableAddress,
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 ````
 
 <details>
@@ -220,26 +227,22 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalE
 contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
+        address equippableAddress,
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
-        address equippableAddress,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKNestableExternalEquipImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        equippableAddress,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKNestableExternalEquipImpl(
+            equippableAddress,
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 }
 ````
 
@@ -367,26 +370,34 @@ async function deployContracts(): Promise<
 
   const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
+      ethers.constants.AddressZero,
       "Kanaria",
       "KAN",
-      1000,
-      pricePerMint,
-      ethers.constants.AddressZero,
       "ipfs://collectionMeta",
       "ipfs://tokenMeta",
-      await beneficiary.getAddress(),
-      10
+      {
+        erc20TokenAddress: ethers.constants.AddressZero,
+        tokenUriIsEnumerable: true,
+        royaltyRecipient: await beneficiary.getAddress(),
+        royaltyPercentageBps: 10,
+        maxSupply: 1000,
+        pricePerMint: pricePerMint
+      }
     );
   const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
+    ethers.constants.AddressZero,
     "Gem",
     "GM",
-    3000,
-    pricePerMint,
-    ethers.constants.AddressZero,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
@@ -488,26 +499,34 @@ async function deployContracts(): Promise<
 
   const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
+      ethers.constants.AddressZero,
       "Kanaria",
       "KAN",
-      1000,
-      pricePerMint,
-      ethers.constants.AddressZero,
       "ipfs://collectionMeta",
       "ipfs://tokenMeta",
-      await beneficiary.getAddress(),
-      10
+      {
+        erc20TokenAddress: ethers.constants.AddressZero,
+        tokenUriIsEnumerable: true,
+        royaltyRecipient: await beneficiary.getAddress(),
+        royaltyPercentageBps: 10,
+        maxSupply: 1000,
+        pricePerMint: pricePerMint
+      }
     );
   const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
+    ethers.constants.AddressZero,
     "Gem",
     "GM",
-    3000,
-    pricePerMint,
-    ethers.constants.AddressZero,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(

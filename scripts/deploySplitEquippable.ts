@@ -34,26 +34,34 @@ async function deployContracts(): Promise<
 
   const nestableKanaria: SimpleNestableExternalEquip =
     await nestableFactory.deploy(
+      ethers.constants.AddressZero,
       "Kanaria",
       "KAN",
-      1000,
-      pricePerMint,
-      ethers.constants.AddressZero,
       "ipfs://collectionMeta",
       "ipfs://tokenMeta",
-      await beneficiary.getAddress(),
-      10
+      {
+        erc20TokenAddress: ethers.constants.AddressZero,
+        tokenUriIsEnumerable: true,
+        royaltyRecipient: await beneficiary.getAddress(),
+        royaltyPercentageBps: 10,
+        maxSupply: 1000,
+        pricePerMint: pricePerMint
+      }
     );
   const nestableGem: SimpleNestableExternalEquip = await nestableFactory.deploy(
+    ethers.constants.AddressZero,
     "Gem",
     "GM",
-    3000,
-    pricePerMint,
-    ethers.constants.AddressZero,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
 
   const kanariaEquip: SimpleExternalEquip = await equipFactory.deploy(
