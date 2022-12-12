@@ -6,26 +6,20 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalE
 contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
+        address equippableAddress,
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
-        address equippableAddress,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
+        InitData memory data
     )
         RMRKNestableExternalEquipImpl(
+            equippableAddress,
             name,
             symbol,
-            maxSupply,
-            pricePerMint,
-            equippableAddress,
             collectionMetadata,
             tokenURI,
-            royaltyRecipient,
-            royaltyPercentageBps
+            data
         )
     {}
 }
