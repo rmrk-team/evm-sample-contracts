@@ -10,7 +10,16 @@ async function main() {
   const contractFactory = await ethers.getContractFactory(
     "SimpleNestableMultiAsset"
   );
-  const token: SimpleNestableMultiAsset = await contractFactory.deploy();
+  const token: SimpleNestableMultiAsset = await contractFactory.deploy(
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
+  );
 
   await token.deployed();
   console.log(`Sample contract deployed to ${token.address}`);
