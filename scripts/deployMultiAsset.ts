@@ -6,8 +6,14 @@ async function main() {
 
   const contractFactory = await ethers.getContractFactory("SimpleMultiAsset");
   const token: SimpleMultiAsset = await contractFactory.deploy(
-    1000,
-    pricePerMint
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: ethers.constants.AddressZero,
+      royaltyPercentageBps: 0,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint 
+    }
   );
 
   await token.deployed();

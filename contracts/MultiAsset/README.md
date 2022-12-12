@@ -44,9 +44,8 @@ contract SimpleMultiAsset is RMRKMultiAssetImpl {
 We won't be passing all of the required parameters, to intialize `RMRKMultiAssetImpl` contract, to the constructor,
 but will hardcode some of the values. The values that we will pass are:
 
-- `maxSupply`: uint256 type of argument denoting the maximum number of NFTs in the collection
-- `pricePerMint`: uint256 type of argument representing the price per mint in wei or the lowest denomination of a native
-currency of the EVM to which the smart contract is deployed to
+- `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
+  being reverted due to passing too many parameters
 
 The parameters that we will hardcode to the initialization of `RMRKMultiAssetImpl` are:
 
@@ -55,10 +54,20 @@ The parameters that we will hardcode to the initialization of `RMRKMultiAssetImp
 - `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
 - `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
-- `royaltyRecipient`: `address` type of argument representing the recipient of the royalty fees will be assigned
-`msg.sender` value
-- `royaltyPercentageBps`: `uint256` type of argument representing the royalty percentage in basis points will be set to
-`10`
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps, // Expressed in basis points
+    maxSupply,
+    pricePerMint
+]**
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -67,19 +76,15 @@ percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 So the constructor of the `SimpleMultiAsset` should look like this:
 
 ````solidity
-    constructor(
-        uint256 maxSupply,
-        uint256 pricePerMint
-    ) RMRKMultiAssetImpl(
-        "SimpleMultiAsset",
-        "SMA",
-        maxSupply,
-        pricePerMint,
-        "ipfs://meta",
-        "ipfs://tokenMeta",
-        msg.sender,
-        10
-    ) {}
+    constructor(InitData memory data)
+        RMRKMultiAssetImpl(
+            "SimpleMultiAsset",
+            "SMA",
+            "ipfs://meta",
+            "ipfs://tokenMeta",
+            data
+        )
+    {}
 ````
 
 <details>
@@ -225,8 +230,14 @@ Now that the constants are ready, we can deploy the smart contract and log the a
     "SimpleMultiAsset"
   );
   const token: SimpleMultiAsset = await contractFactory.deploy(
-    1000,
-    pricePerMint
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: ethers.constants.AddressZero,
+      royaltyPercentageBps: 0,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint 
+    }
   );
 
   await token.deployed();
@@ -274,8 +285,14 @@ async function main() {
     "SimpleMultiAsset"
   );
   const token: SimpleMultiAsset = await contractFactory.deploy(
-    1000,
-    pricePerMint
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: ethers.constants.AddressZero,
+      royaltyPercentageBps: 0,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint 
+    }
   );
 
   await token.deployed();
