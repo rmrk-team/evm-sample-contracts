@@ -257,13 +257,24 @@ The `constructor` to initialize the `RMRKEquippableImpl` accepts the following a
 
 - `name`: `string` type of argument specifying the name of the collection
 - `symbol`: `string` type of argument specifying the symbol of the collection
-- `maxSupply`: `uint256` type of argument specifying the maximum amount of tokens in the collection
-- `pricePerMint`: `uint256` type of argument specifying the price per the NFT mint. It is expressed in `wei` or minimum
-denomination of the native currency of the EVM to which the smart contract is deployed to
 - `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
 - `tokenURI`: `string` type of argument specifying the base URI of the token metadata
-- `royaltyRecipient`: `address` type of argument specifying the address of the beneficiary of royalties
-- `royaltyPercentageBps`: `uint256` type of argument specifying the royalty percentage in basis points
+- `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
+  being reverted due to passing too many parameters
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps, // Expressed in basis points
+    maxSupply,
+    pricePerMint
+]**
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -276,23 +287,33 @@ above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKEquippableImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKEquippableImpl(
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 ````
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps,
+    maxSupply,
+    pricePerMint
+]**
 
 <details>
 <summary>The <strong><i>SimpleEquippable.sol</i></strong> should look like this:</summary>
@@ -309,22 +330,18 @@ contract SimpleEquippable is RMRKEquippableImpl {
     constructor(
         string memory name,
         string memory symbol,
-        uint256 maxSupply,
-        uint256 pricePerMint,
         string memory collectionMetadata,
         string memory tokenURI,
-        address royaltyRecipient,
-        uint256 royaltyPercentageBps
-    ) RMRKEquippableImpl(
-        name,
-        symbol,
-        maxSupply,
-        pricePerMint,
-        collectionMetadata,
-        tokenURI,
-        royaltyRecipient,
-        royaltyPercentageBps
-    ) {}
+        InitData memory data
+    )
+        RMRKEquippableImpl(
+            name,
+            symbol,
+            collectionMetadata,
+            tokenURI,
+            data
+        )
+    {}
 }
 ````
 
@@ -467,22 +484,30 @@ async function deployContracts(): Promise<
   const kanaria: SimpleEquippable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
-    3000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
@@ -561,22 +586,30 @@ async function deployContracts(): Promise<
   const kanaria: SimpleEquippable = await contractFactory.deploy(
     "Kanaria",
     "KAN",
-    1000,
-    pricePerMint,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
   );
   const gem: SimpleEquippable = await contractFactory.deploy(
     "Gem",
     "GM",
-    3000,
-    ,
     "ipfs://collectionMeta",
     "ipfs://tokenMeta",
-    await beneficiary.getAddress(),
-    10
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await beneficiary.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 3000,
+      pricePerMint: pricePerMint
+    }
   );
   const base: SimpleBase = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
