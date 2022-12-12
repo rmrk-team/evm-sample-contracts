@@ -93,52 +93,38 @@ It uses the `RMRKExternalEquip` and `OwnableLock` smart contracts from `RMRK` st
 
 The following functions are available:
 
-##### `getFallbackURI`
-
-The `getFallbackURI` function is used to retrieve the fallback URI of the collection.
-
-##### `setFallbackURI`
-
-The `setFallbackURI` is used to set the fallback URI of the collection and accepts one argument:
-
-- `fallbackURI`: `string` type of argument specifying the URI to be used as the fallback URI of the collection
-
-##### `isTokenEnumeratedAsset`
-
-The `isTokenEnumeratedAsset` is used to check wether the asset ID passed to it represents an enumerated asset:
-
-- `assetId`: `uint64` type of argument representing the ID of the asset we are validating
-
-##### `setTokenEnumeratedAsset`
-
-The `setTokenEnumeratedAsset` is used to set a token enumerated asset ID to the passed boolean value and accepts
-two arguments:
-
-- `assetId`: `uint64` type of argument representing the ID of the asset we are setting
-- `state`: `bool` type of argument representing the validity of the asset
-
 ##### `addAssetToToken`
 
 The `addAssetToToken` is used to add a new asset to the token and accepts three arguments:
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
+- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
 
 ##### `addAssetEntry`
 
-The `addAssetEntry` is used to add a new URI for the new asset of the token and accepts one argument:
+The `addAssetEntry` is used to add an asset entry:
 
 - `metadataURI`: `string` type of argument specifying the metadata URI of a new asset
+- `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
+  can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
+  reference ID to be equipped into an NFT
+- `baseAddress`: `address` type of argument specifying the address of the Base smart contract
+- `metadataURI`: `string` type of argument specifying the URI of the asset
+- `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
-##### `setValidParentRefId`
+##### `setValidParentForEquippableGroup`
 
-The `setValidParentRefId` is used to declare which assets are equippable into the parent address at the given slot
+The `setValidParentForEquippableGroup` is used to declare which assets are equippable into the parent address at the given slot
 and accepts three arguments:
 
-- `referenceId`: `uint64` type of argument specifying the assets that can be equipped
+- `equippableGroupId`: `uint64` type of argument specifying the group of assets that can be equipped
 - `parentAddress`: `address` type of argument specifying the address into which the asset is equippable
 - `slotPartId`: `uint64` type of argument specifying the ID of the part it can be equipped to
+
+#### `totalAssets`
+
+The `totalAssets` is used to retrieve a total number of assets defined in the collection.
 
 ### SimpleNestableExternalEquip
 

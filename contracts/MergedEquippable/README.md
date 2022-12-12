@@ -394,21 +394,18 @@ The `addAssetToToken` is used to add a new asset to the token and accepts three 
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
+- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
 
 ##### `addAssetEntry`
 
 The `addAssetEntry` is used to add a new asset of the collection and accepts three arguments:
 
-- `asset`: `string` type of argument specifying the `ExtendedAsset` structure. It consists of:
-    - `id`: `uint64` type of argument specifying the ID of this asset
-    - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
-    can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
-    reference ID to be equipped into an NFT
-    - `baseAddress`: `address` type of argument specifying the address of the Base smart contract
-    - `metadataURI`: `string` type of argument specifying the URI of the asset
-- `fixedPartIds`: `uint64[]` type of argument specifying the fixed parts IDs for this asset
-- `slotPartIds`: `uint64[]` type of argument specifying the slot parts IDs for this asset
+- `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
+  can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
+  reference ID to be equipped into an NFT
+- `baseAddress`: `address` type of argument specifying the address of the Base smart contract
+- `metadataURI`: `string` type of argument specifying the URI of the asset
+- `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
 ##### `setValidParentForEquippableGroup`
 
@@ -422,12 +419,6 @@ address at the given slot and accepts three arguments:
 #### `totalAssets`
 
 The `totalAssets` is used to retrieve a total number of assets defined in the collection.
-
-#### `tokenURI`
-
-The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
-
-- `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
 
 #### `updateRoyaltyRecipient`
 
@@ -1524,18 +1515,18 @@ it are:
 - `_mint(address to, uint256 tokenId)`
 - `_safeMint(address to, uint256 tokenId)`
 - `_safeMint(address to, uint256 tokenId, bytes memory data)`
-- `_nestMint(address to, uint256 tokenId, uint256 destinationId)`
+- `_nestMint(address to, uint256 tokenId, uint256 destinationId, bytes memory data)`
 
 The latter is used to mint a child NFT directly into the parent NFT, so implement it if you forsee it applies to your use case. Additionally burning and transfer functions can be implemented using:
 
-- `_burn(uint256 tokenId)`
+- `_burn(uint256 tokenId, uint256 maxChildrenBurns)`
 - `transferFrom(address from, address to, uint256 tokenId)`
-- `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
+- `nestTransferFrom(address from, address to, uint256 tokenId, uint256 destinationId, bytes memory data)`
 
 Asset and reference management functions should also be implemented using:
 
-- `_addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
-- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
+- `_addAssetEntry(uint64 id, uint64 equippableGroupId, address baseAddress, string memory metadataURI, uint64[] calldata partIds)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)`
 - `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
