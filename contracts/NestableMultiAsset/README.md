@@ -37,18 +37,32 @@ alongside the classic NFT functionality.
 **WARNING: The `RMRKNestableMultiAssetImpl` only has minimal access control implemented. If you intend to use it, make
 sure to define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
-The `constructor` in this case accepts no arguments as all of the arguments required to properly initialize
+The `constructor` in this case accepts no arguments as most of the arguments required to properly initialize
 `RMRKNestableMultiAssetImpl` are hardcoded:
 
 - `RMRKNestableMultiAssetImpl`: represents the `name` argument and sets the name of the collection
 - `SNMA`: represents the `symbol` argument and sets the symbol of the collection
-- `1000`: represents the `maxSupply_` argument and sets the maximum amount of tokens in the collection
-- `100_000_000`: represents the `pricePerMint_` argument and sets the price of minting one token in wei or the lowest
-denomination of the native currency of the EVM to which the smart contract is deployed to
 - `ipfs://meta`: represents the `collectionMetadata_` argument and sets the URI of the collection metadata
 - `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the base URI of the token metadata
-- `msg.sender`: represents the `royaltyRecipient` argument and sets the address of the recipient of royalty fees
-- `10`: represents the `royaltyPercentageBps` argument and sets the value of royalty percentage in basis points
+
+The only available variable to pass to the `constructor` is:
+
+- `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
+  being reverted due to passing too many parameters
+
+**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+
+The `InitData` struct contains the following fields:
+
+[
+    erc20TokenAddress,
+    tokenUriIsEnumerable,
+    royaltyRecipient,
+    royaltyPercentageBps, // Expressed in basis points
+    maxSupply,
+    pricePerMint
+]**
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -57,17 +71,15 @@ percentage to 5%, the `royaltyPercentageBps` value should be 500.**
 With the arguments passed upon initialization defined, we can add our constructor:
 
 ````solidity
-    constructor()
-    RMRKNestableMultiAssetImpl(
-        "SimpleNestableMultiAsset",
-        "SNMA",
-        1000,
-        100_000_000,
-        "ipfs://meta",
-        "ipfs://tokenMeta",
-        msg.sender,
-        10
-    ) {}
+    constructor(InitData memory data)
+        RMRKNestableMultiAssetImpl(
+            "SimpleNestableMultiAsset",
+            "SNMA",
+            "ipfs://meta",
+            "ipfs://tokenMeta",
+            data
+        )
+    {}
 ````
 
 <details>
@@ -81,17 +93,15 @@ import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableMultiAsse
 
 contract SimpleNestableMultiAsset is RMRKNestableMultiAssetImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
-    constructor()
-    RMRKNestableMultiAssetImpl(
-        "SimpleNestableMultiAsset",
-        "SNMA",
-        1000,
-        100_000_000,
-        "ipfs://meta",
-        "ipfs://tokenMeta",
-        msg.sender,
-        10
-    ) {}
+    constructor(InitData memory data)
+        RMRKNestableMultiAssetImpl(
+            "SimpleNestableMultiAsset",
+            "SNMA",
+            "ipfs://meta",
+            "ipfs://tokenMeta",
+            data
+        )
+    {}
 }
 ````
 
@@ -223,7 +233,16 @@ console:
   const contractFactory = await ethers.getContractFactory(
     "SimpleNestableMultiAsset"
   );
-  const token: SimpleNestableMultiAsset = await contractFactory.deploy();
+  const token: SimpleNestableMultiAsset = await contractFactory.deploy(
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
+  );
 
   await token.deployed();
   console.log(`Sample contract deployed to ${token.address}`);
@@ -263,12 +282,21 @@ import { ContractTransaction } from "ethers";
 async function main() {
   const pricePerMint = ethers.utils.parseEther("0.0000000001");
   const totalTokens = 5;
-  const [ , tokenOwner] = await ethers.getSigners();
+  const [ owner, tokenOwner] = await ethers.getSigners();
 
   const contractFactory = await ethers.getContractFactory(
     "SimpleNestableMultiAsset"
   );
-  const token: SimpleNestableMultiAsset = await contractFactory.deploy();
+  const token: SimpleNestableMultiAsset = await contractFactory.deploy(
+    {
+      erc20TokenAddress: ethers.constants.AddressZero,
+      tokenUriIsEnumerable: true,
+      royaltyRecipient: await owner.getAddress(),
+      royaltyPercentageBps: 10,
+      maxSupply: 1000,
+      pricePerMint: pricePerMint
+    }
+  );
 
   await token.deployed();
   console.log(`Sample contract deployed to ${token.address}`);
@@ -280,8 +308,8 @@ main().catch((error) => {
 });
 ````
 
-**NOTE: We assign the `tokenOwner` the second available signer, so that the assets are not automatically accepted when added
-to the token. This happens when an account adding an asset to a token is also the owner of said token.**
+**NOTE: We assign the `tokenOwner` the second available signer, so that the assets are not automatically accepted when
+added to the token. This happens when an account adding an asset to a token is also the owner of said token.**
 
 First thing that needs to be done after the smart contracts are deployed is to mint the NFTs. We will use the
 `totalTokens` constant in order to specify how many of the tokens to mint:
