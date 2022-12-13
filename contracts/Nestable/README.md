@@ -30,14 +30,14 @@ Let's first examine the simple, minimal, implementation and then move on to the 
 ## SimpleNestable
 
 The `SimpleNestable` example uses the
-[`RMRKNestableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestableImpl.sol). It is used
-by importing it using the `import` statement below the `pragma` definition:
+[`RMRKNestableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestableImpl.sol). It is
+used by importing it using the `import` statement below the `pragma` definition:
 
 ````solidity
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableImpl.sol";
 ````
 
-Once the `RMRKNestableImpl.sol` is imported into our file, we can set the inheritace of our smart contract:
+Once the `RMRKNestableImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
 
 ````solidity
 contract SimpleNestable is RMRKNestableImpl {
@@ -61,10 +61,12 @@ The `constructor` to initialize the `RMRKNestableImpl` accepts the following arg
   being reverted due to passing too many parameters
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
-is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many
+arguments.**
 
-The `InitData` struct contains the following fields:
+**The `InitData` struct contains the following fields:**
 
+````solidity
 [
     erc20TokenAddress,
     tokenUriIsEnumerable,
@@ -72,7 +74,8 @@ The `InitData` struct contains the following fields:
     royaltyPercentageBps, // Expressed in basis points
     maxSupply,
     pricePerMint
-]**
+]
+````
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -157,7 +160,7 @@ The `mint` function is used to mint parent NFTs and accepts two arguments:
 There are a few constraints to this function:
 
 - after minting, the total number of tokens should not exceed the maximum allowed supply
-- attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
+- attempting to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 
 #### `nestMint`
@@ -386,7 +389,9 @@ send them once they are all ready:
   console.log("Total child tokens: %s", totalSupply);
 ````
 
-Once the child NFTs are minted, we can examine the difference between `ownerOf` and `directOwnerOf` functions. The former should return the address of the root owner (which should be the `owner`'s address in our case) and the latter should return the array of values related to intended parent. The array is structured like this:
+Once the child NFTs are minted, we can examine the difference between `ownerOf` and `directOwnerOf` functions. The
+former should return the address of the root owner (which should be the `owner`'s address in our case) and the latter
+should return the array of values related to intended parent. The array is structured like this:
 
 ````json
 [
@@ -399,7 +404,7 @@ Once the child NFTs are minted, we can examine the difference between `ownerOf` 
 In our case, the address of the owner should equal the parent token's smart contract, the ID should equal the parent
 NFT's ID and the boolean value of `isNft` should be set to `true`. If we would be calling the `directOwnerOf` one the
 parent NFT, the owner should be the same as the one returned from the `ownerOf`, ID should equal 0 and the `isNft` value
-should be set to `false`. The section covering these calls shoudl look like this:
+should be set to `false`. The section covering these calls should look like this:
 
 ````typescript
   console.log("Inspecting child NFT with the ID of 1");
@@ -418,13 +423,13 @@ For the nestable process to be completed, the `acceptChild` method should be cal
   await tx.wait();
 ````
 
-The section of the script above accepted the child NFT with the ID of `1` at the index `0` for the parent NFT with the ID of `1`
-in the parent NFT's smart contract.
+The section of the script above accepted the child NFT with the ID of `1` at the index `0` for the parent NFT with the
+ID of `1` in the parent NFT's smart contract.
 
-**NOTE: When accepting the nested NFTs, the index of the pending NFT represents its index in a FIFO like stack. So having 2
-NFTs in the pending stack, and accepting the one with the index of 0 will move the next one to this spot. Accepting the
-second NFT from the stack, after the first one was already accepted, should then be done by accepting the pending NFT
-with index of 0. So two identical calls in succession should accept both pending NFTs.**
+**NOTE: When accepting the nested NFTs, the index of the pending NFT represents its index in a FIFO like stack. So
+having 2 NFTs in the pending stack, and accepting the one with the index of 0 will move the next one to this spot.
+Accepting the second NFT from the stack, after the first one was already accepted, should then be done by accepting
+the pending NFT with index of 0. So two identical calls in succession should accept both pending NFTs.**
 
 The parent NFT with ID 1 now has one accepted and one pending child NFTs. We can examine both using the `childrenOf` and
 `pendingChildren` methods:
@@ -444,7 +449,7 @@ array contains two values:
 Once the NFT is nested, it can also be unnested. When doing so, the owner of the token should be specified, as they will
 be the ones owning the token from that point on (or until they nest or sell it). Additionally pending status has to be
 passed, as the procedure to unnest differs for the NFTs that have already been accepted from those that are still
-pending (passing `flase` indicates that the child NFT has already been nested). We will remove the nested NFT with
+pending (passing `false` indicates that the child NFT has already been nested). We will remove the nested NFT with
 nestable ID of 0 from the parent NFT with ID 1:
 
 ````typescript
@@ -453,7 +458,7 @@ nestable ID of 0 from the parent NFT with ID 1:
   await tx.wait();
 ````
 
-**NOTE: Unnestable the child NFT is done in the similar manner as accepting a pending child NFT. Once the nested NFT at
+**NOTE: Unnesting the child NFT is done in the similar manner as accepting a pending child NFT. Once the nested NFT at
 ID 0 has been unnested the following NFT's IDs are reduced by 1.**
 
 Finally, let's observe the child NFT that we just unnested. We will use the `ownerOf` and `directOwnerOf` methods to
@@ -586,8 +591,8 @@ contract AdvancedNestable is RMRKNestable {
 
 </details>
 
-Using `RMRKNestable` requires custom implementation of minting logic. Available internal functions to use when writing it
-are:
+Using `RMRKNestable` requires custom implementation of minting logic. Available internal functions to use when writing
+it are:
 
 - `_mint(address to, uint256 tokenId)`
 - `_safeMint(address to, uint256 tokenId)`
