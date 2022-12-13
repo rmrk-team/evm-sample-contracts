@@ -519,4 +519,4 @@ In addition to the minting functions, you should also implement the burning, tra
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
 
-Happy multiasseting! 🫧
+Happy multiassetting! 🫧
