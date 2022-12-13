@@ -13,9 +13,12 @@ Every RMRK NFT has zero or more assets. When it has zero assets, the metadata is
 added to this NFT will override the root metadata, making this NFT
 [revealable](https://docs.rmrk.app/usecases/revealable).
 
+**NOTE: To dig deeper into the MultiAsset RMRK lego, you can also refer to the
+[EIP-5773]([inheritance](https://eips.ethereum.org/EIPS/eip-5773)) that we published.**
+
 ## Abstract
 
-In this tutorial we will examine the MultiAsset RMRK block using two examples:
+In this example we will examine the MultiAsset RMRK block using two examples:
 
 - [SimpleMultiAsset](./SimpleMultiAsset.sol) is a minimal implementation of the MultiAsset RMRK block.
 - [AdvancedMultiAsset](./AdvancedMultiAsset.sol) is a more customizable implementation of the MultiAsset RMRK
@@ -33,7 +36,7 @@ It is used by importing it using the `import` statement below the `pragma` defin
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKMultiAssetImpl.sol";
 ````
 
-Once the `RMRKMultiAssetImpl.sol` is imported into our file, we can set the inheritace of our smart contract:
+Once the `RMRKMultiAssetImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
 
 ````solidity
 contract SimpleMultiAsset is RMRKMultiAssetImpl {
@@ -49,17 +52,18 @@ but will hardcode some of the values. The values that we will pass are:
 
 The parameters that we will hardcode to the initialization of `RMRKMultiAssetImpl` are:
 
-- `name`: `string` type of argument representing the name of te collection will be set to `SimpleMultiAsset`
+- `name`: `string` type of argument representing the name of the collection will be set to `SimpleMultiAsset`
 - `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMA`
 - `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
 - `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
-is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many arguments.**
 
-The `InitData` struct contains the following fields:
+**The `InitData` struct contains the following fields:**
 
+````solidity
 [
     erc20TokenAddress,
     tokenUriIsEnumerable,
@@ -67,7 +71,8 @@ The `InitData` struct contains the following fields:
     royaltyPercentageBps, // Expressed in basis points
     maxSupply,
     pricePerMint
-]**
+]
+````
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -165,7 +170,7 @@ The `addAssetToToken` is used to add a new asset to the token and accepts three 
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
+- `overwrites`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired asset
 
 #### `addAssetEntry`
 
@@ -179,7 +184,7 @@ The `totalAssets` is used to retrieve a total number of assets defined in the co
 
 #### `tokenURI`
 
-The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
+The `tokenURI` is used to retrieve the metadata URI of the desired token and accepts one argument:
 
 - `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
 
@@ -371,13 +376,13 @@ transactions for each of the tokens and send them at the end:
 ````
 
 **NOTE: Accepting assets is done in a array that gets elements, new assets, appended to the end of it. Once the asset is
-accepted, the asset that was added last, takes its place. For exaple:
+accepted, the asset that was added last, takes its place. For example:**
 
-We have assets `A`, `B`, `C` and `D` in the pending array organised like this: [`A`, `B`, `C`, `D`].
+**We have assets `A`, `B`, `C` and `D` in the pending array organised like this: [`A`, `B`, `C`, `D`].**
 
-Accepting the asset `A` updates the array to look like this: [`D`, `B`, `C`].
+**Accepting the asset `A` updates the array to look like this: [`D`, `B`, `C`].**
 
-Accepting the asset `B` updates the array to look like this: [`A`, `D`, `C`].**
+**Accepting the asset `B` updates the array to look like this: [`A`, `D`, `C`].**
 
 Finally we can check wether the URI are assigned as expected and output the values to the console:
 
@@ -438,7 +443,8 @@ Token 1 URI:  ipfs://metadata/1.json
 Token totalTokens URI:  ipfs://metadata/5.json
 ````
 
-This conclues our work on the [`SimpleMultiAsset.sol`](./SimpleMultiAsset.sol). We can now move on to examining the [`AdvancedMultiAsset.sol`](./AdvancedMultiAsset.sol).
+This concludes our work on the [`SimpleMultiAsset.sol`](./SimpleMultiAsset.sol). We can now move on to examining the
+[`AdvancedMultiAsset.sol`](./AdvancedMultiAsset.sol).
 
 ## AdvancedMultiAsset
 
@@ -513,4 +519,4 @@ In addition to the minting functions, you should also implement the burning, tra
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.
 
-Happy multiresourcing! 🫧
+Happy multiassetting! 🫧

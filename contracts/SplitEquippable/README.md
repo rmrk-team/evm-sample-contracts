@@ -89,7 +89,7 @@ contract SimpleExternalEquip is RMRKExternalEquipImpl {
 Let's take a moment to examine the core of this implementation, the `RMRKExternalEquipImpl`.
 
 It uses the `RMRKExternalEquip` and `OwnableLock` smart contracts from `RMRK` stack as well as `Strings` utility from
-`OpenZeppelin`. To dive deeper into their operation, please refer to their respecitve documentation.
+`OpenZeppelin`. To dive deeper into their operation, please refer to their respective documentation.
 
 The following functions are available:
 
@@ -99,7 +99,8 @@ The `addAssetToToken` is used to add a new asset to the token and accepts three 
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are owerwriting with the desired asset
+- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired
+  asset
 
 ##### `addAssetEntry`
 
@@ -115,8 +116,8 @@ The `addAssetEntry` is used to add an asset entry:
 
 ##### `setValidParentForEquippableGroup`
 
-The `setValidParentForEquippableGroup` is used to declare which assets are equippable into the parent address at the given slot
-and accepts three arguments:
+The `setValidParentForEquippableGroup` is used to declare which assets are equippable into the parent address at the
+given slot and accepts three arguments:
 
 - `equippableGroupId`: `uint64` type of argument specifying the group of assets that can be equipped
 - `parentAddress`: `address` type of argument specifying the address into which the asset is equippable
@@ -161,10 +162,12 @@ The `constructor` to initialize the `RMRKNestableExternalEquipImpl` accepts the 
   being reverted due to passing too many parameters
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
-is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many
+arguments.**
 
-The `InitData` struct contains the following fields:
+**The `InitData` struct contains the following fields:**
 
+````solidity
 [
     erc20TokenAddress,
     tokenUriIsEnumerable,
@@ -172,7 +175,8 @@ The `InitData` struct contains the following fields:
     royaltyPercentageBps, // Expressed in basis points
     maxSupply,
     pricePerMint
-]**
+]
+````
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -266,7 +270,7 @@ The `mint` function is used to mint parent NFTs and accepts two arguments:
 There are a few constraints to this function:
 
 - after minting, the total number of tokens should not exceed the maximum allowed supply
-- attempthing to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
+- attempting to mint 0 tokens is not allowed as it makes no sense to pay for the gas without any effect
 - value should accompany transaction equal to a price per mint multiplied by the `numToMint`
 
 ##### `nestMint`
@@ -288,7 +292,7 @@ accepts one argument:
 
 #### `tokenURI`
 
-The `tokenURI` is used to retreive the metadata URI of the desired token and accepts one argument:
+The `tokenURI` is used to retrieve the metadata URI of the desired token and accepts one argument:
 
 - `tokenId`: `uint256` type of argument representing the token ID of which we are retrieving the URI
 
@@ -1035,7 +1039,7 @@ running it easier:
     "user-journey-split-equippable": "hardhat run scripts/splitEquippableUserJourney.ts"
 ````
 
-Running it using `npm run user-journey-split-equippable` should return the following oputput:
+Running it using `npm run user-journey-split-equippable` should return the following output:
 
 ````shell
 npm run user-journey-split-equippable
@@ -1278,7 +1282,7 @@ contract AdvancedExternalEquip is RMRKExternalEquip {
 ````
 
 **NOTE: Passing `0x0` as the value of `nestableAddress` allows us to initialize the smart contract without having the
-addeess of the deployed `AdvancedExternalEquip` and allows us to add it at a later point in time.**
+address of the deployed `AdvancedExternalEquip` and allows us to add it at a later point in time.**
 
 This is all that is required to get you started with implementing the `MultiAsset` and `Equippable` parts of the
 external equippable RMRK lego composite.
