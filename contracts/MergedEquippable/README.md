@@ -20,7 +20,7 @@ are PNG, SVG, audio, video, even mixed.
 
 #### Equippable
 
-Equippables are NFTs that can be equipped in the before metioned slots. They have a set format and predefined space in
+Equippables are NFTs that can be equipped in the before mentioned slots. They have a set format and predefined space in
 the parent NFT.
 
 Assets that can be equipped into a slot each have a reference ID. The reference ID can be used to specify which
@@ -263,10 +263,12 @@ The `constructor` to initialize the `RMRKEquippableImpl` accepts the following a
   being reverted due to passing too many parameters
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
-is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
+is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many
+arguments.**
 
-The `InitData` struct contains the following fields:
+**The `InitData` struct contains the following fields:**
 
+````solidity
 [
     erc20TokenAddress,
     tokenUriIsEnumerable,
@@ -274,7 +276,8 @@ The `InitData` struct contains the following fields:
     royaltyPercentageBps, // Expressed in basis points
     maxSupply,
     pricePerMint
-]**
+]
+````
 
 **NOTE: Basis points are the smallest supported denomination of percent. In our case this is one hundreth of a percent.
 This means that 1 basis point equals 0.01% and 10000 basis points equal 100%. So for example, if you want to set royalty
@@ -300,20 +303,6 @@ above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
         )
     {}
 ````
-
-**NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
-is done so that the execution of the deploy transaction doesn't revert because we are trying to pass to many arguments.
-
-The `InitData` struct contains the following fields:
-
-[
-    erc20TokenAddress,
-    tokenUriIsEnumerable,
-    royaltyRecipient,
-    royaltyPercentageBps,
-    maxSupply,
-    pricePerMint
-]**
 
 <details>
 <summary>The <strong><i>SimpleEquippable.sol</i></strong> should look like this:</summary>
@@ -546,7 +535,7 @@ Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria
 
 With the deploy script ready, we can examine how the journey of a user using merged equippable would look like.
 
-The base of the user jourey script is the same as the deploy script, as we need to deploy the smart contract in order
+The base of the user journey script is the same as the deploy script, as we need to deploy the smart contract in order
 to interact with it:
 
 ````typescript
@@ -622,7 +611,7 @@ main().catch((error) => {
 ````
 
 **NOTE: The scripts in these examples are being run in the Hardhat's emulated network. In order to use another, please
-refer to (Hardhat's network documentation)[https://hardhat.org/hardhat-network/docs/overview#hardhat-network].**
+refer to [Hardhat's network documentation](https://hardhat.org/hardhat-network/docs/overview#hardhat-network).**
 
 Once the smart contracts are deployed, we can setup the Base. We will set it up have two fixed part options for
 background, head, body and wings. Additionally we will add three slot options for gems. All of these will be added 
@@ -891,9 +880,9 @@ added one by one. Note how the full versions of gems don't have the `equippableG
 
 Having added the asset entries, we can now add the valid parent reference IDs using the
 [`setValidParentForEquippableGroup`](#setvalidparentforequippablegroup). For example if we want to add a valid reference
-for the left gem, we need to pass the value ofequippable reference ID of the left gem, parent smart contract address (in
-our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9 in the
-`Base` for the left gem).
+for the left gem, we need to pass the value of equippable reference ID of the left gem, parent smart contract address
+(in our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9 in
+the `Base` for the left gem).
 
 Last thing to do is to add assets to the tokens using [`addAssetToToken`](#addassettotoken). Asset of type
 A will be added to the gems 1 and 2, and the type B of the asset is added to gem 3. All of these should be accepted
@@ -1378,7 +1367,7 @@ advanced implementation.
 ## Advanced MergedEquippable
 
 The `Advanced MergedEquippable` implementation uses the [`AdvancedBase`](../AdvancedBase.sol) and [`AdvancedEquippable`]
-./AdvancedEquippable.sol) and allows for more flexibility when implementing the Merged equippable RMRK lego composite.
+(./AdvancedEquippable.sol) and allows for more flexibility when implementing the Merged equippable RMRK lego composite.
 It implements the minimum required implementation in order to be compatible with RMRK merged equippable, but leaves more
 business logic implementation freedom to the developer.
 
@@ -1465,7 +1454,7 @@ gain access to the Merged equippable RMRK lego composite:
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 ````
 
-We only need `name` and `symbol` of the NFT collection in order to propely initialize it after the `AdvancedEquippable`
+We only need `name` and `symbol` of the NFT collection in order to properly initialize it after the `AdvancedEquippable`
 inherits it:
 
 ````solidity
