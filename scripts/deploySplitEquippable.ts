@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleExternalEquip,
   SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
@@ -20,7 +20,7 @@ async function deployContracts(): Promise<
     SimpleExternalEquip,
     SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleBase,
+    SimpleCatalog,
     RMRKEquipRenderUtils
   ]
 > {
@@ -29,7 +29,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -70,7 +70,7 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
@@ -86,7 +86,7 @@ async function deployContracts(): Promise<
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Catalog)`
   );
 
   return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];

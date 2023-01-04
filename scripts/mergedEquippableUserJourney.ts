@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleEquippable,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
@@ -10,7 +10,7 @@ const pricePerMint = ethers.utils.parseEther("0.0001");
 const totalBirds = 5;
 const deployedKanariaAddress = "";
 const deployedGemAddress = "";
-const deployedBaseAddress = "";
+const deployedCatalogAddress = "";
 const deployedViewsAddress = "";
 
 async function main() {
@@ -19,7 +19,7 @@ async function main() {
 
   // Notice that most of these steps will happen at different points in time
   // Here we do all in one go to demonstrate how to use it.
-  await setupBase(base, gem.address);
+  await setupCatalog(base, gem.address);
   await mintTokens(kanaria, gem);
   await addKanariaAssets(kanaria, base.address);
   await addGemAssets(gem, kanaria.address, base.address);
@@ -28,17 +28,17 @@ async function main() {
 }
 
 async function retrieveContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = contractFactory.attach(
     deployedKanariaAddress
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
-  const base: SimpleBase = baseFactory.attach(deployedBaseAddress);
+  const base: SimpleCatalog = baseFactory.attach(deployedCatalogAddress);
   const views: RMRKEquipRenderUtils = await viewsFactory.attach(
     deployedViewsAddress
   );
@@ -47,11 +47,11 @@ async function retrieveContracts(): Promise<
 }
 
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -82,7 +82,7 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
@@ -96,8 +96,8 @@ async function deployContracts(): Promise<
   return [kanaria, gem, base, views];
 }
 
-async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
-  console.log("Setting up Base");
+async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<void> {
+  console.log("Setting up Catalog");
   // Setup base with 2 fixed part options for background, head, body and wings.
   // Also 3 slot options for gems
   const tx = await base.addPartList([
@@ -213,7 +213,7 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
     },
   ]);
   await tx.wait();
-  console.log("Base is set");
+  console.log("Catalog is set");
 }
 
 async function mintTokens(

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleEquippable,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
@@ -13,13 +13,13 @@ async function main() {
 }
 
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   console.log("Deploying smart contracts");
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -50,7 +50,7 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
@@ -58,7 +58,7 @@ async function deployContracts(): Promise<
   await base.deployed();
   await views.deployed();
   console.log(
-    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${base.address} (Base)`
+    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${base.address} (Catalog)`
   );
 
   return [kanaria, gem, base, views];

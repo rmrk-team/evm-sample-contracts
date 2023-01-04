@@ -2,7 +2,7 @@
 
 The `ExternalEquippable` composite of RMRK legos uses the [`Nestable`](../Nestable/README.md),
 [`MultiAsset`](../MultiAsset/README.md), [`Equippable`](../MergedEquippable/README.md#equippable) and
-[`Base`](../MergedEquippable/README.md#base) RMRK legos. Unlike [`MergedEquippable`](../MergedEquippable/README.md) RMRK
+[`Catalog`](../MergedEquippable/README.md#catalog) RMRK legos. Unlike [`MergedEquippable`](../MergedEquippable/README.md) RMRK
 lego composite, the external equippable splits `Nestable` apart from `MultiAsset` and `Equippable` in order to provide
 more space for custom business logic implementation.
 
@@ -11,21 +11,21 @@ more space for custom business logic implementation.
 In this tutorial we will examine the SplitEquippable composite of RMRK blocks:
 
 - [`SimpleNestableExternalEquip`](./SimpleNestableExternalEquip.sol), [`SimpleExternalEquip`](./SimpleExternalEquip.sol)
-and [SimpleBase](../SimpleBase.sol) work together to showcase the minimal implementation of SplitEquippable RMRK lego
+and [SimpleCatalog](../SimpleCatalog.sol) work together to showcase the minimal implementation of SplitEquippable RMRK lego
 composite.
 - [`AdvancedNestableExternalEquip`](./AdvancedNestableExternalEquip.sol),
-[`AdvancedExternalEquip`](./AdvancedExternalEquip.sol) and [`AdvancedBase`](../AdvancedBase.sol) work together to
+[`AdvancedExternalEquip`](./AdvancedExternalEquip.sol) and [`AdvancedCatalog`](../AdvancedCatalog.sol) work together to
 showcase a more customizable implementation of the SplitEquippable RMRK lego composite.
 
 Let's first examine the simple, minimal, implementation and then move on to the advanced one.
 
 ## Simple SplitEquippable
 
-The simple `SplitEquippable` consists of three smart contracts. The [`SimpleBase`](../MergedEquippable/README.md#base)
+The simple `SplitEquippable` consists of three smart contracts. The [`SimpleCatalog`](../MergedEquippable/README.md#catalog)
 is already examined in the `MergedEquippable` documentation. Let's first examine the `SimpleExternalEquip` and then move
 on to the `SimpleNestableExternalEquip`.
 
-**NOTE: As the `SimpleBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
+**NOTE: As the `SimpleCatalog` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
 in the root `contracts/` directory.**
 
 ### SimpleExternalEquip
@@ -110,7 +110,7 @@ The `addAssetEntry` is used to add an asset entry:
 - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
   can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
   reference ID to be equipped into an NFT
-- `baseAddress`: `address` type of argument specifying the address of the Base smart contract
+- `baseAddress`: `address` type of argument specifying the address of the Catalog smart contract
 - `metadataURI`: `string` type of argument specifying the URI of the asset
 - `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
@@ -157,7 +157,7 @@ The `constructor` to initialize the `RMRKNestableExternalEquipImpl` accepts the 
 - `name`: `string` type of argument specifying the name of the collection
 - `symbol`: `string` type of argument specifying the symbol of the collection
 - `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
-- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
+- `tokenURI`: `string` type of argument specifying the catalog URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
@@ -307,14 +307,14 @@ The `updateRoyaltyRecipient` function is used to update the royalty recipient an
 The deploy script for the simple `SplitEquippable` resides in the
 [`deploySplitEquippable.ts`](../../scripts/deploySplitEquippable.ts).
 
-The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `SimpleNestableExternalEquip`,
+The deploy script uses the `ethers`, `SimpleCatalog`, `SimpleEquippable`, `SimpleNestableExternalEquip`,
 `RMRKEquipRenderUtils` and `ContractTransaction` imports. We will also define the `pricePerMint` constant, which will be
 used to set the minting price of the tokens. The empty deploy script should look like this:
 
 ````typescript
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleExternalEquip,
   SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
@@ -335,7 +335,7 @@ main().catch((error) => {
 
 Since we will expand upon this deploy script in the [user journey](#user-journey), we will add a `deployContracts`
 function. In it we will deploy one `SimpleExternalEquip` and one `SimpleExternalEquip` smart contract per example (we
-will use `Kanaria` and `Gem` examples). In addition to that, we will also deploy the `SimpleBase` and the
+will use `Kanaria` and `Gem` examples). In addition to that, we will also deploy the `SimpleCatalog` and the
 `RMRKEquipRenderUtils` which we will use to piece together the final product of the user journey. Once the smart
 contracts are deployed, we will output their addresses. The function is defined below the `main` function definition:
 
@@ -346,7 +346,7 @@ async function deployContracts(): Promise<
     SimpleExternalEquip,
     SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleBase,
+    SimpleCatalog,
     RMRKEquipRenderUtils
   ]
 > {
@@ -355,7 +355,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -396,14 +396,14 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
   await kanariaEquip.deployed();
   await nestableGem.deployed();
   await gemEquip.deployed();
-  await base.deployed();
+  await catalog.deployed();
 
   const allTx = [
     await nestableKanaria.setEquippableAddress(kanariaEquip.address),
@@ -411,10 +411,10 @@ async function deployContracts(): Promise<
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${catalog.address} (Catalog)`
   );
 
-  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, catalog, views];
 }
 ````
 
@@ -422,7 +422,7 @@ In order for the `deployContracts` to be called when running the deploy script, 
 function:
 
 ````typescript
-  const [kanaria, gem, base, views] = await deployContracts();
+  const [kanaria, gem, catalog, views] = await deployContracts();
 ````
 
 A custom script added to [`package.json`](../../package.json) allows us to easily run the script:
@@ -442,20 +442,20 @@ npm run deploy-split-equippable
 > hardhat run scripts/deploySplitEquippable.ts
 
 Compiled 47 Solidity files successfully
-Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria Nestable) | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Kanaria Equip), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem Nestable) | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 (Gem Equip) and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9 (Base)
+Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria Nestable) | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Kanaria Equip), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem Nestable) | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 (Gem Equip) and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9 (Catalog)
 ````
 
 ### User journey
 
 With the deploy script ready, we can examine how the journey of a user using split equippable would look like.
 
-The base of the user jourey script is the same as the deploy script, as we need to deploy the smart contract in order
+The catalog of the user jourey script is the same as the deploy script, as we need to deploy the smart contract in order
 to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleExternalEquip,
   SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
@@ -465,7 +465,7 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views] =
+  const [nestableKanaria, kanariaEquip, nestableGem, gemEquip, catalog, views] =
     await deployContracts();
 }
 
@@ -475,7 +475,7 @@ async function deployContracts(): Promise<
     SimpleExternalEquip,
     SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleBase,
+    SimpleCatalog,
     RMRKEquipRenderUtils
   ]
 > {
@@ -484,7 +484,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -525,14 +525,14 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
   await kanariaEquip.deployed();
   await nestableGem.deployed();
   await gemEquip.deployed();
-  await base.deployed();
+  await catalog.deployed();
 
   const allTx = [
     await nestableKanaria.setEquippableAddress(kanariaEquip.address),
@@ -540,10 +540,10 @@ async function deployContracts(): Promise<
   ];
   await Promise.all(allTx.map((tx) => tx.wait()));
   console.log(
-    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${base.address} (Base)`
+    `Sample contracts deployed to ${nestableKanaria.address} (Kanaria Nestable) | ${kanariaEquip.address} (Kanaria Equip), ${nestableGem.address} (Gem Nestable) | ${gemEquip.address} (Gem Equip) and ${catalog.address} (Catalog)`
   );
 
-  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
+  return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, catalog, views];
 }
 
 main().catch((error) => {
@@ -552,16 +552,16 @@ main().catch((error) => {
 });
 ````
 
-Once the smart contracts are deployed, we can setup the Base. We will set it up have two fixed part options for
+Once the smart contracts are deployed, we can setup the Catalog. We will set it up have two fixed part options for
 background, head, body and wings. Additionally we will add three slot options for gems. All of these will be added 
-sing the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupBase` function should look
+sing the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupCatalog` function should look
 like this:
 
 ````typescript
-async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
-  // Setup base with 2 fixed part options for background, head, body and wings.
+async function setupCatalog(catalog: SimpleCatalog, gemAddress: string): Promise<void> {
+  // Setup catalog with 2 fixed part options for background, head, body and wings.
   // Also 3 slot options for gems
-  const tx = await base.addPartList([
+  const tx = await catalog.addPartList([
     {
       // Background option 1
       partId: 1,
@@ -674,7 +674,7 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
     },
   ]);
   await tx.wait();
-  console.log("Base is set");
+  console.log("Catalog is set");
 }
 ````
 
@@ -683,15 +683,15 @@ the `Slot` type of fixed items is `2` and that of equippable items is `1`. Addit
 left blank for the equippables, but has to be set for the fixed items. The `equippable` values have to be set to the
 gem smart contracts for the equippable items.
 
-In order for the `setupBase` to be called, we have to add it to the `main` function:
+In order for the `setupCatalog` to be called, we have to add it to the `main` function:
 
 ````typescript
-  await setupBase(base, gemEquip.address);
+  await setupCatalog(catalog, gemEquip.address);
 ````
 
-**NOTE: The address of the `SimpleExternalEquip` part of `Gem` should be passed to the `setupBase`.**
+**NOTE: The address of the `SimpleExternalEquip` part of `Gem` should be passed to the `setupCatalog`.**
 
-With the Base set up, the tokens should now be minted. Both `Kanaria` and `Gem` tokens will be minted in the
+With the Catalog set up, the tokens should now be minted. Both `Kanaria` and `Gem` tokens will be minted in the
 `mintTokens`. To define how many tokens should be minted, `totalBirds` constant will be added below the `import`
 statements:
 
@@ -761,7 +761,7 @@ In order for the `mintTokens` to be called, we have to add it to the `main` func
 
 Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. The assets are added to the
 `SimpleExternalEquip` parts of them. We will add assets to the `Kanaria` using the `addKanariaAssets` function.
-It accepts `Kanaria` and address of the `Base` smart contract. Assets will be added using the
+It accepts `Kanaria` and address of the `Catalog` smart contract. Assets will be added using the
 [`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a `baseAddress`
 value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for background, head,
 body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the asset entires added,
@@ -779,7 +779,7 @@ async function addKanariaAssets(
   let allTx: ContractTransaction[] = [];
   let tx = await kanaria.addAssetEntry(
     0, // Only used for assets meant to equip into others
-    ethers.constants.AddressZero, // base is not needed here
+    ethers.constants.AddressZero, // catalog is not needed here
     "ipfs://default.png",
     []
   );
@@ -787,7 +787,7 @@ async function addKanariaAssets(
 
   tx = await kanaria.addAssetEntry(
     0, // Only used for assets meant to equip into others
-    baseAddress, // Since we're using parts, we must define the base
+    baseAddress, // Since we're using parts, we must define the catalog
     "ipfs://meta1.json",
     [1, 3, 5, 7, 9, 10, 11], // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
@@ -815,7 +815,7 @@ async function addKanariaAssets(
 ````
 
 Adding assets to `Gem`s is done in the `addGemAssets`. It accepts `SimpleExternalEquip` part of `Gem`, address of
-the `SimpleExternalEquip` of `Kanaria` smart contract and the address of the `Base` smart contract. We will add 4
+the `SimpleExternalEquip` of `Kanaria` smart contract and the address of the `Catalog` smart contract. We will add 4
 assets for each gem; one full version and three that match each slot. Reference IDs are specified for easier
 reference from the child's perspective. The assets will be added one by one. Note how the full versions of gems
 don't have the `equippableRefId`.
@@ -823,8 +823,8 @@ don't have the `equippableRefId`.
 Having added the asset entries, we can now add the valid parent reference IDs using the
 `setValidParentForEquippableGroup`. For example if we want to add a valid reference for the left gem, we need to pass
 the value of equippable reference ID of the left gem, parent smart contract address (in our case this is
-`SimpleExternalEquip` of `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9
-in the `Base` for the left gem).
+`SimpleExternalEquip` of `Kanaria` smart contract) and ID of the slot which was defined in `Catalog` (this is ID number 9
+in the `Catalog` for the left gem).
 
 Last thing to do is to add assets to the tokens using [`addAssetToToken`](#addassettotoken). Asset of type
 A will be added to the gems 1 and 2, and the type B of the asset is added to gem 3. All of these should be accepted
@@ -851,7 +851,7 @@ async function addGemAssets(
   // We can do a for loop, but this makes it clearer.
   let allTx = [
     await gem.addAssetEntry(
-      // Full version for first type of gem, no need of refId or base
+      // Full version for first type of gem, no need of refId or catalog
       0,
       baseAddress,
       `ipfs://gems/typeA/full.svg`,
@@ -879,7 +879,7 @@ async function addGemAssets(
       []
     ),
     await gem.addAssetEntry(
-      // Full version for second type of gem, no need of refId or base
+      // Full version for second type of gem, no need of refId or catalog
       0,
       ethers.constants.AddressZero,
       `ipfs://gems/typeB/full.svg`,
@@ -913,7 +913,7 @@ async function addGemAssets(
     "Added 8 nestableGem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
-  // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
+  // 9, 10 and 11 are the slot part ids for the gems, defined on the catalog.
   // e.g. Any asset on nestableGem, which sets its equippableGroupId to equippableRefIdLeftGem
   //      will be considered a valid equip into any nestableKanaria on slot 9 (left nestableGem).
   allTx = [
@@ -965,8 +965,8 @@ async function addGemAssets(
 In order for the `addKanariaAssets` and `addGemAssets` to be called, we have to add them to the `main` function:
 
 ````typescript
-  await addKanariaAssets(kanariaEquip, base.address);
-  await addGemAssets(gemEquip, kanariaEquip.address, base.address);
+  await addKanariaAssets(kanariaEquip, catalog.address);
+  await addGemAssets(gemEquip, kanariaEquip.address, catalog.address);
 ````
 
 With `Kanaria`s and `Gem`s ready, we can equip the gems to Kanarias using the `equipGems` function. We will build a
@@ -1048,7 +1048,7 @@ npm run user-journey-split-equippable
 > hardhat run scripts/splitEquippableUserJourney.ts
 
 Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 | 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0, 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 | 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 and 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
-Base is set
+Catalog is set
 Minted 5 kanarias
 Minted 3 gems into each nestableKanaria
 Accepted 1 nestableGem for each nestableKanaria
@@ -1247,10 +1247,10 @@ advanced implementation.
 ## Advanced SplitEquippable
 
 The advanced `SplitEquippable` consists of three smart contracts. The
-[`AdvancedBase`](../MergedEquippable/README.md#advancedbase) is already examined in the `MergedEquippable`
+[`AdvancedCatalog`](../MergedEquippable/README.md#advancedbase) is already examined in the `MergedEquippable`
 documentation. Let's first examine the `AdvancedExternalEquip` and then move on to the `AdvancedNestableExternalEquip`.
 
-**NOTE: As the `AdvancedBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
+**NOTE: As the `AdvancedCatalog` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
 in the root `contracts/` directory.**
 
 ### AdvancedExternalEquip

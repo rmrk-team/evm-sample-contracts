@@ -15,11 +15,11 @@ Nestable and MultiAsset RMRK blocks operating together.
 ## SimpleNestableMultiAsset
 
 The `SimpleNestableMultiasset` example uses the
-[`RMRKNestableMultiAssetImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestableMultiAssetImpl.sol).
+[`RMRKNestableMultiAssetImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/nativeTokenPay/RMRKNestableMultiAssetImpl.sol).
 It is used by using the `import` statement below the `pragma` definition:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableMultiAssetImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableMultiAssetImpl.sol";
 ````
 
 Once the `RMRKNestableMultiAsset.sol` is imported into our file, we can set the inheritance of our smart contract:
@@ -43,7 +43,7 @@ The `constructor` in this case accepts no arguments as most of the arguments req
 - `RMRKNestableMultiAssetImpl`: represents the `name` argument and sets the name of the collection
 - `SNMA`: represents the `symbol` argument and sets the symbol of the collection
 - `ipfs://meta`: represents the `collectionMetadata_` argument and sets the URI of the collection metadata
-- `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the base URI of the token metadata
+- `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the catalog URI of the token metadata
 
 The only available variable to pass to the `constructor` is:
 
@@ -92,7 +92,7 @@ With the arguments passed upon initialization defined, we can add our constructo
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableMultiAssetImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableMultiAssetImpl.sol";
 
 contract SimpleNestableMultiAsset is RMRKNestableMultiAssetImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
@@ -275,7 +275,7 @@ Sample contract deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3
 With the deploy script ready, we can examine how the journey of a user using nestable with multi asset would look like
 using this smart contract.
 
-The base of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
+The catalog of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";

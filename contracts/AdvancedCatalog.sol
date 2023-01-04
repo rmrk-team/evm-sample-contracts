@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/catalog/RMRKCatalog.sol";
 
-contract AdvancedBase is RMRKBaseStorage {
+contract AdvancedCatalog is RMRKCatalog {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(string memory symbol, string memory type_)
-        RMRKBaseStorage(symbol, type_)
+        RMRKCatalog(symbol, type_)
     {
         // Custom optional: constructor logic
     }

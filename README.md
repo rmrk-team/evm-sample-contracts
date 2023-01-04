@@ -15,7 +15,7 @@ There are various possibilities on how to combine these legos, all of which are 
     - Only uses the Nestable RMRK lego
 3. Nestable with MultiAsset
     - Uses both Nestable and MultiAsset RMRK legos
-4. Equippable MultiAsset with Nestable and Base
+4. Equippable MultiAsset with Nestable and Catalog
     - Merged equippable is a more compact RMRK lego composite that uses less smart contracts, but has less space for
     custom logic implementation
     - Split equippable is a more customizable RMRK lego composite that uses more smart contracts, but has more space for
@@ -23,8 +23,8 @@ There are various possibilities on how to combine these legos, all of which are 
 
 The first 3 use cases have stand alone versions with both minimal and ready to use implementations. The latter two, due
 to Solidity contract size constraints, MultiAsset and Equippable logic are included in a simgle smart contract, while
-Nestable and ownership are handled by either the same smart contract or a separate one. Base is also a separate smart
-contract for practical reasons, since one Base can be used by multiple tokens.
+Nestable and ownership are handled by either the same smart contract or a separate one. Catalog is also a separate smart
+contract for practical reasons, since one Catalog can be used by multiple tokens.
 
 ![RMRK Legos infographic](./RMRKLegoInfographics.png)
 

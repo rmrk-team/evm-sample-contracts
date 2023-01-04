@@ -29,11 +29,11 @@ Let's first examine the simple, minimal, implementation and then move on to the 
 ## SimpleMultiAsset
 
 The `SimpleMultiAsset` example uses the
-[`RMRKMultiAssetImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKMultiAssetImpl.sol).
+[`RMRKMultiAssetImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/nativeTokenPay/RMRKMultiAssetImpl.sol).
 It is used by importing it using the `import` statement below the `pragma` definition:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKMultiAssetImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKMultiAssetImpl.sol";
 ````
 
 Once the `RMRKMultiAssetImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
@@ -56,7 +56,7 @@ The parameters that we will hardcode to the initialization of `RMRKMultiAssetImp
 - `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMA`
 - `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
-- `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
+- `tokenURI_`: `string` type of argument representing the catalog metadata URI of tokens will be set to `ipfs://tokenMeta`
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
 is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many arguments.**
@@ -99,7 +99,7 @@ So the constructor of the `SimpleMultiAsset` should look like this:
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKMultiAssetImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKMultiAssetImpl.sol";
 
 contract SimpleMultiAsset is RMRKMultiAssetImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
@@ -274,7 +274,7 @@ Sample contract deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3
 With the deploy script ready, we can examine how the journey of a user using multi asset would look like using this
 smart contract.
 
-The base of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
+The catalog of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
