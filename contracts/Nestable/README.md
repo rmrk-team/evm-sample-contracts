@@ -30,11 +30,11 @@ Let's first examine the simple, minimal, implementation and then move on to the 
 ## SimpleNestable
 
 The `SimpleNestable` example uses the
-[`RMRKNestableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKNestableImpl.sol). It is
+[`RMRKNestableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/nativeTokenPay/RMRKNestableImpl.sol). It is
 used by importing it using the `import` statement below the `pragma` definition:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableImpl.sol";
 ````
 
 Once the `RMRKNestableImpl.sol` is imported into our file, we can set the inheritance of our smart contract:
@@ -56,7 +56,7 @@ The `constructor` to initialize the `RMRKNestableImpl` accepts the following arg
 - `name_`: `string` argument that should represent the name of the NFT collection
 - `symbol_`: `string` argument that should represent the symbol of the NFT collection
 - `collectionMetadata_`: `string` argument that defines the metadata URI of the whole collection
-- `tokenURI_`: `string` argument that defines the base URI of the token metadata
+- `tokenURI_`: `string` argument that defines the catalog URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
@@ -109,7 +109,7 @@ above, in the `constructor` and pass them to `RMRKNestableImpl`:
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableImpl.sol";
 
 contract SimpleNestable is RMRKNestableImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
@@ -295,7 +295,7 @@ Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 and 0xe7
 With the deploy script ready, we can examine how the journey of a user using nestable would look like using these two
 smart contracts.
 
-The base of it is the same as the deploy script, as we need to deploy the smart contracts in order to interact with
+The catalog of it is the same as the deploy script, as we need to deploy the smart contracts in order to interact with
 them:
 
 ````typescript

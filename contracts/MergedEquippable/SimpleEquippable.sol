@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKEquippableImpl.sol";
 // We import it just so it's included on typechain. We'll need it to compose NFTs
 import "@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol";
 

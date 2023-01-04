@@ -2,20 +2,20 @@
 
 The `MergedEquippable` composite of RMRK legos uses both the [`Nestable`](../Nestable/README.md) and
 [`MultiAsset`](../MultiAsset/README.md) RMRK legos as well as the `Equippable` lego. In addition to these three
-RMRK legos, it also requires the `Base` RMRK lego. Let's first examine the `Base` RMRK lego and then the `Equippable`
+RMRK legos, it also requires the `Catalog` RMRK lego. Let's first examine the `Catalog` RMRK lego and then the `Equippable`
 one.
 
-#### Base
+#### Catalog
 
-A *Base* can be considered a catalogue of parts from which an NFT can be composed. Parts can be either of the slot type
+A *Catalog* can be considered a catalogue of parts from which an NFT can be composed. Parts can be either of the slot type
 or fixed type. Slots are intended for equippables.
 
-**NOTE: Bases are used through assets. Assets can cherry pick from the list of parts within the base, they can
+**NOTE: Catalogs are used through assets. Assets can cherry pick from the list of parts within the catalog, they can
 also define the slots they are allowed to receive.**
 
-Bases can be of different media types.
+Catalogs can be of different media types.
 
-The base's type indicates what the final output of an NFT will be when this asset is being rendered. Supported types
+The catalog's type indicates what the final output of an NFT will be when this asset is being rendered. Supported types
 are PNG, SVG, audio, video, even mixed.
 
 #### Equippable
@@ -33,102 +33,102 @@ Each slot of the NFT can have a predefined collection of allowed NFT collections
 
 In this tutorial we will examine the MergedEquippable composite of RMRK blocks:
 
-- [SimpleEquippable](./SimpleEquippable.sol) and [SimpleBase](../SimpleBase.sol) work together to showcase the minimal
+- [SimpleEquippable](./SimpleEquippable.sol) and [SimpleCatalog](../SimpleCatalog.sol) work together to showcase the minimal
 implementation of the MergedEquippable RMRK lego composite.
-- [AdvancedEquippable](./AdvancedEquippable.sol) and [AdvancedBase](../AdvancedBase.sol) work together to showcase a more
+- [AdvancedEquippable](./AdvancedEquippable.sol) and [AdvancedCatalog](../AdvancedCatalog.sol) work together to showcase a more
 customizable implementation of the MergedEquippable RMRK lego composite.
 
 Let's first examine the simple, minimal, implementation and then move on to the advanced one.
 
 ## Simple MergedEquippable
 
-The simple `MergedEquippable` consists of two smart contracts. Let's first examine the `SimpleBase` smart contract and
+The simple `MergedEquippable` consists of two smart contracts. Let's first examine the `SimpleCatalog` smart contract and
 then move on to the `SimpleEquippable`.
 
-### SimpleBase
+### SimpleCatalog
 
-**NOTE: As the `SimpleBase` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
+**NOTE: As the `SimpleCatalog` smart contract is used by both `MergedEquippable` as well as `SplitEquippable` it resides
 in the root `contracts/` directory.**
 
-The `SimpleBase` example uses the
-[`RMRKBaseStorageImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKBaseStorageImpl.sol). It
+The `SimpleCatalog` example uses the
+[`RMRKCatalogImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKCatalogImpl.sol). It
 is used by importing it using the `import` statement below the `pragma` definition:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/RMRKCatalogImpl.sol";
 ````
 
-Once the `RMRKBaseStorageImpl.sol` is imported into out file, we can set the inheritance of our smart contract:
+Once the `RMRKCatalogImpl.sol` is imported into out file, we can set the inheritance of our smart contract:
 
 ````solidity
-contract SimpleBase is RMRKBaseStorageImpl {
+contract SimpleCatalog is RMRKCatalogImpl {
 
 }
 ````
 
-The `RMRKBaseStorageImpl` implements all of the required functionality of the Base RMRK lego. It implements adding of
+The `RMRKCatalogImpl` implements all of the required functionality of the Catalog RMRK lego. It implements adding of
 parts and equippable addresses as well as managing the equippables.
 
-**WARNING: The `RMRKBaseStorageImpl` only has minimal access control implemented. If you intend to use it, make sure to
+**WARNING: The `RMRKCatalogImpl` only has minimal access control implemented. If you intend to use it, make sure to
 define your own, otherwise your smart contracts are at risk of unexpected behaviour.**
 
-The `constructor` to initialize the `RMRKBaseStorageImpl` accepts the following arguments:
+The `constructor` to initialize the `RMRKCatalogImpl` accepts the following arguments:
 
-- `symbol_`: `string` type of argument representing the symbol if the base lego
-- `type_`: `string` type of argument representing the type of the base lego
+- `symbol_`: `string` type of argument representing the symbol if the catalog lego
+- `type_`: `string` type of argument representing the type of the catalog lego
 
 In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments, mentioned
-above, in the `constructor` and pass them to `RMRKBaseStorageImpl`:
+above, in the `constructor` and pass them to `RMRKCatalogImpl`:
 
 ````solidity
     constructor(
         string memory symbol,
         string memory type_
-    ) RMRKBaseStorageImpl(symbol, type_) {}
+    ) RMRKCatalogImpl(symbol, type_) {}
 ````
 
 <details>
-<summary>The <strong><i>SimpleBase.sol</i></strong> should look like this:</summary>
+<summary>The <strong><i>SimpleCatalog.sol</i></strong> should look like this:</summary>
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKBaseStorageImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/RMRKCatalogImpl.sol";
 
-contract SimpleBase is RMRKBaseStorageImpl {
+contract SimpleCatalog is RMRKCatalogImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
-    ) RMRKBaseStorageImpl(symbol, type_) {}
+    ) RMRKCatalogImpl(symbol, type_) {}
 }
 ````
 
 </details>
 
-#### RMRKBaseStorageImpl
+#### RMRKCatalogImpl
 
-Let's take a moment to examine the core of this implementation, the `RMRKBaseStorageImpl`.
+Let's take a moment to examine the core of this implementation, the `RMRKCatalogImpl`.
 
-It uses the `RMRKBaseStorage` and `OwnableLock` smart contracts from `RMRK` stack. To dive deeper into their operation,
+It uses the `RMRKCatalog` and `OwnableLock` smart contracts from `RMRK` stack. To dive deeper into their operation,
 please refer to their respective documentation.
 
 The following functions are available:
 
 ##### `addPart`
 
-The `addPart` function is used to add a single base item entry and accept one argument:
+The `addPart` function is used to add a single catalog item entry and accept one argument:
 
-- `intakeStruct`: `struct` type of argument used to pass the values of the part to be base item entry to be added. It
+- `intakeStruct`: `struct` type of argument used to pass the values of the part to be catalog item entry to be added. It
 consists of:
     - `partId`: `uint64` type of argument specifying the ID of the entry we want to add
-    - `part`: `struct` type of argument defining the RMRK base item. It consists of:
+    - `part`: `struct` type of argument defining the RMRK catalog item. It consists of:
         - `itemType`: `enum` type of argument defining the type of the item. The possible values are:
             - `None`
             - `Slot`
             - `Fixed`
-        - `z`: `uint8` type of argument specifying the layer the visual should appear in on the SVG base
+        - `z`: `uint8` type of argument specifying the layer the visual should appear in on the SVG catalog
         - `equippable`: `address[]` type of argument specifying the addresses of the collections that can equip this
         part
         - `metadataURI`: `string` type of argument specifying the metadata URI of the part
@@ -153,7 +153,7 @@ The `intakeStruct` should look something like this:
 
 ##### `addPartList`
 
-The `addPartList` function is used to add a batch of base items entries and accepts an array of `IntakeStruct`s
+The `addPartList` function is used to add a batch of catalog items entries and accepts an array of `IntakeStruct`s
 described above. So an example of two IntakeStructs that would be passed to the function is:
 
 ````json
@@ -189,8 +189,8 @@ described above. So an example of two IntakeStructs that would be passed to the 
 
 ##### `addEquippableAddresses`
 
-The `addEquippableAddresses` function is used to add a number of equippable addresses to a single base entry. These
-define the collections that are allowed to be equipped in place of the base entry. It accepts two arguments:
+The `addEquippableAddresses` function is used to add a number of equippable addresses to a single catalog entry. These
+define the collections that are allowed to be equipped in place of the catalog entry. It accepts two arguments:
 
 - `partId`: `uint64` type of argument specifying the ID of the part that we are adding the equippable addresses to.
 Only parts of slot type are valid.
@@ -199,7 +199,7 @@ equip this part
 
 ##### `setEquippableAddresses`
 
-The `setEquippableAddreses` function is used to update the equippable addresses of a single base entry. 
+The `setEquippableAddreses` function is used to update the equippable addresses of a single catalog entry. 
 Using it overwrites the currently set equippable addresses. It accepts two arguments:
 
 - `partId`: `uint64` type of argument specifying the ID of the part that we are setting the equippable addresses for.
@@ -212,7 +212,7 @@ equip this part
 The `setEquippableToAll` function is used to set the desired entry as equippable to any collection and accepts one
 argument:
 
-- `partId`: `uint64` type of argument specifying which base entry we want to set as being equippable to any collection
+- `partId`: `uint64` type of argument specifying which catalog entry we want to set as being equippable to any collection
 
 ##### `resetEquippableAddresses`
 
@@ -225,11 +225,11 @@ parts of slot type are valid.
 ### SimpleEquippable
 
 The `SimpleEquippable` example uses the
-[`RMRKEquippableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/RMRKEquippableImpl.sol). It
+[`RMRKEquippableImpl`](https://github.com/rmrk-team/evm/blob/dev/contracts/implementations/nativeTokenPay/RMRKEquippableImpl.sol). It
 is used by importing it using the `import` statement below the `pragma` definition: 
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKEquippableImpl.sol";
 ````
 
 The [`RMRKEquipRenderUtils`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/utils/RMRKEquipRenderUtils.sol) is
@@ -258,7 +258,7 @@ The `constructor` to initialize the `RMRKEquippableImpl` accepts the following a
 - `name`: `string` type of argument specifying the name of the collection
 - `symbol`: `string` type of argument specifying the symbol of the collection
 - `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
-- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
+- `tokenURI`: `string` type of argument specifying the catalog URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
@@ -311,7 +311,7 @@ above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKEquippableImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKEquippableImpl.sol";
 import "@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol";
 
 contract SimpleEquippable is RMRKEquippableImpl {
@@ -392,7 +392,7 @@ The `addAssetEntry` is used to add a new asset of the collection and accepts thr
 - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
   can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
   reference ID to be equipped into an NFT
-- `baseAddress`: `address` type of argument specifying the address of the Base smart contract
+- `baseAddress`: `address` type of argument specifying the address of the Catalog smart contract
 - `metadataURI`: `string` type of argument specifying the URI of the asset
 - `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
@@ -420,14 +420,14 @@ The `updateRoyaltyRecipient` function is used to update the royalty recipient an
 The deploy script for the simple `MergedEquippable` resides in the
 [`deployEquippable.ts`](../../scripts/deployEquippable.ts).
 
-The deploy script uses the `ethers`, `SimpleBase`, `SimpleEquippable`, `RMRKEquipRenderUtils` and `ContractTransaction`
+The deploy script uses the `ethers`, `SimpleCatalog`, `SimpleEquippable`, `RMRKEquipRenderUtils` and `ContractTransaction`
 imports. We will also define the `pricePerMint` constant, which will be used to set the minting price of the tokens.
 The empty deploy script should look like this:
 
 ````typescript
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleEquippable,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
@@ -446,19 +446,19 @@ main().catch((error) => {
 ````
 
 Since we will expand upon this deploy script in the [user journey](#user-journey), we will add a `deployContracts`
-function. In it we will deploy two `SimpleEquippable` smart contracts, one `SimpleBase` smart contract and a
+function. In it we will deploy two `SimpleEquippable` smart contracts, one `SimpleCatalog` smart contract and a
 `RMRKEquipRenderUtils` smart contract. Once the smart contracts are deployed, we will output their addresses. The
 function is defined below the `main` function definition:
 
 ````typescript
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   console.log("Deploying smart contracts");
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -489,18 +489,18 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
   await gem.deployed();
-  await base.deployed();
+  await catalog.deployed();
   await views.deployed();
   console.log(
-    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${base.address} (Base)`
+    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${catalog.address} (Catalog)`
   );
 
-  return [kanaria, gem, base, views];
+  return [kanaria, gem, catalog, views];
 }
 ````
 
@@ -508,7 +508,7 @@ In order for the `deployContracts` to be called when running the deploy script, 
 function:
 
 ````typescript
-  const [kanaria, gem, base, views] = await deployContracts();
+  const [kanaria, gem, catalog, views] = await deployContracts();
 ````
 
 A custom script added to [`package.json`](../../package.json) allows us to easily run the script:
@@ -528,20 +528,20 @@ npm run deploy-equippable
 > hardhat run scripts/deployEquippable.ts
 
 Deploying smart contracts
-Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem) and 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Base)
+Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria), 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 (Gem) and 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 (Catalog)
 ````
 
 ### User journey
 
 With the deploy script ready, we can examine how the journey of a user using merged equippable would look like.
 
-The base of the user journey script is the same as the deploy script, as we need to deploy the smart contract in order
+The catalog of the user journey script is the same as the deploy script, as we need to deploy the smart contract in order
 to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleEquippable,
   RMRKEquipRenderUtils,
 } from "../typechain-types";
@@ -550,17 +550,17 @@ import { ContractTransaction } from "ethers";
 const pricePerMint = ethers.utils.parseEther("0.0001");
 
 async function main() {
-  const [kanaria, gem, base, views] = await deployContracts();
+  const [kanaria, gem, catalog, views] = await deployContracts();
 }
 
 async function deployContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   console.log("Deploying smart contracts");
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -591,17 +591,17 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
   await gem.deployed();
-  await base.deployed();
+  await catalog.deployed();
   console.log(
-    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${base.address} (Base)`
+    `Sample contracts deployed to ${kanaria.address} (Kanaria), ${gem.address} (Gem) and ${catalog.address} (Catalog)`
   );
 
-  return [kanaria, gem, base, views];
+  return [kanaria, gem, catalog, views];
 }
 
 main().catch((error) => {
@@ -613,17 +613,17 @@ main().catch((error) => {
 **NOTE: The scripts in these examples are being run in the Hardhat's emulated network. In order to use another, please
 refer to [Hardhat's network documentation](https://hardhat.org/hardhat-network/docs/overview#hardhat-network).**
 
-Once the smart contracts are deployed, we can setup the Base. We will set it up have two fixed part options for
+Once the smart contracts are deployed, we can setup the Catalog. We will set it up have two fixed part options for
 background, head, body and wings. Additionally we will add three slot options for gems. All of these will be added 
-using the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupBase` function should look
+using the [`addPartList`](#addpartlist) method. The call together with encapsulating `setupCatalog` function should look
 like this:
 
 ````typescript
-async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
-  console.log("Setting up Base");
-  // Setup base with 2 fixed part options for background, head, body and wings.
+async function setupCatalog(catalog: SimpleCatalog, gemAddress: string): Promise<void> {
+  console.log("Setting up Catalog");
+  // Setup catalog with 2 fixed part options for background, head, body and wings.
   // Also 3 slot options for gems
-  const tx = await base.addPartList([
+  const tx = await catalog.addPartList([
     {
       // Background option 1
       partId: 1,
@@ -736,7 +736,7 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
     },
   ]);
   await tx.wait();
-  console.log("Base is set");
+  console.log("Catalog is set");
 }
 ````
 
@@ -747,13 +747,13 @@ the `Slot` type of fixed items is `2` and that of equippable items is `1`. Addit
 left blank for the equippables, but has to be set for the fixed items. The `equippable` values have to be set to the
 gem smart contracts for the equippable items.
 
-In order for the `setupBase` to be called, we have to add it to the `main` function:
+In order for the `setupCatalog` to be called, we have to add it to the `main` function:
 
 ````typescript
-  await setupBase(base, gem.address);
+  await setupCatalog(catalog, gem.address);
 ````
 
-With the Base set up, the tokens should now be minted. Both `Kanaria` and `Gem` tokens will be minted in the
+With the Catalog set up, the tokens should now be minted. Both `Kanaria` and `Gem` tokens will be minted in the
 `mintTokens`. To define how many tokens should be minted, `totalBirds` constant will be added below the `import`
 statements:
 
@@ -820,7 +820,7 @@ In order for the `mintTokens` to be called, we have to add it to the `main` func
 ````
 
 Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. We will add assets to the `Kanaria`
-using the `addKanariaAssets` function. It accepts `Kanaria` and address of the `Base` smart contract. Assets will
+using the `addKanariaAssets` function. It accepts `Kanaria` and address of the `Catalog` smart contract. Assets will
 be added using the [`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a
 `baseAddress` value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for
 background, head, body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the
@@ -838,7 +838,7 @@ async function addKanariaAssets(
   let allTx: ContractTransaction[] = [];
   let tx = await kanaria.addAssetEntry(
     0, // Only used for assets meant to equip into others
-    ethers.constants.AddressZero, // base is not needed here
+    ethers.constants.AddressZero, // catalog is not needed here
     "ipfs://default.png",
     []
   );
@@ -846,7 +846,7 @@ async function addKanariaAssets(
 
   tx = await kanaria.addAssetEntry(
     0, // Only used for assets meant to equip into others
-    baseAddress, // Since we're using parts, we must define the base
+    baseAddress, // Since we're using parts, we must define the catalog
     "ipfs://meta1.json",
     [1, 3, 5, 7, 9, 10, 11] // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
@@ -874,15 +874,15 @@ async function addKanariaAssets(
 ````
 
 Adding assets to `Gem`s is done in the `addGemAssets`. It accepts `Gem`, address of the `Kanaria` smart contract
-and the address of the `Base` smart contract. We will add 4 assets for each gem; one full version and three that
+and the address of the `Catalog` smart contract. We will add 4 assets for each gem; one full version and three that
 match each slot. Reference IDs are specified for easier reference from the child's perspective. The assets will be
 added one by one. Note how the full versions of gems don't have the `equippableGroupId`.
 
 Having added the asset entries, we can now add the valid parent reference IDs using the
 [`setValidParentForEquippableGroup`](#setvalidparentforequippablegroup). For example if we want to add a valid reference
 for the left gem, we need to pass the value of equippable reference ID of the left gem, parent smart contract address
-(in our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Base` (this is ID number 9 in
-the `Base` for the left gem).
+(in our case this is `Kanaria` smart contract) and ID of the slot which was defined in `Catalog` (this is ID number 9 in
+the `Catalog` for the left gem).
 
 Last thing to do is to add assets to the tokens using [`addAssetToToken`](#addassettotoken). Asset of type
 A will be added to the gems 1 and 2, and the type B of the asset is added to gem 3. All of these should be accepted
@@ -912,7 +912,7 @@ async function addGemAssets(
   let allTx = [
   let allTx = [
     await gem.addAssetEntry(
-      // Full version for first type of gem, no need of refId or base
+      // Full version for first type of gem, no need of refId or catalog
       0,
       baseAddress,
       `ipfs://gems/typeA/full.svg`,
@@ -940,7 +940,7 @@ async function addGemAssets(
       []
     ),
     await gem.addAssetEntry(
-      // Full version for second type of gem, no need of refId or base
+      // Full version for second type of gem, no need of refId or catalog
       0,
       ethers.constants.AddressZero,
       `ipfs://gems/typeB/full.svg`,
@@ -974,7 +974,7 @@ async function addGemAssets(
     "Added 8 gem assets. 2 Types of gems with full, left, mid and right versions."
   );
 
-  // 9, 10 and 11 are the slot part ids for the gems, defined on the base.
+  // 9, 10 and 11 are the slot part ids for the gems, defined on the catalog.
   // e.g. Any asset on gem, which sets its equippableRefId to equippableRefIdLeftGem
   //      will be considered a valid equip into any kanaria on slot 9 (left gem).
   console.log("Setting valid parent reference IDs");
@@ -1028,8 +1028,8 @@ async function addGemAssets(
 In order for the `addKanariaAssets` and `addGemAssets` to be called, we have to add them to the `main` function:
 
 ````typescript
-  await addKanariaAssets(kanaria, base.address);
-  await addGemAssets(gem, kanaria.address, base.address);
+  await addKanariaAssets(kanaria, catalog.address);
+  await addGemAssets(gem, kanaria.address, catalog.address);
 ````
 
 With `Kanaria`s and `Gem`s ready, we can equip the gems to Kanarias using the `equipGems` function. We will build a
@@ -1107,7 +1107,7 @@ below the `import` statements:
 ````typescript
 const deployedKanariaAddress = "";
 const deployedGemAddress = "";
-const deployedBaseAddress = "";
+const deployedCatalogAddress = "";
 const deployedViewsAddress = "";
 ````
 
@@ -1118,22 +1118,22 @@ attaches them to the already deployed smart contracts:
 
 ````typescript
 async function retrieveContracts(): Promise<
-  [SimpleEquippable, SimpleEquippable, SimpleBase, RMRKEquipRenderUtils]
+  [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = contractFactory.attach(
     deployedKanariaAddress
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
-  const base: SimpleBase = baseFactory.attach(deployedBaseAddress);
+  const catalog: SimpleCatalog = baseFactory.attach(deployedCatalogAddress);
   const views: RMRKEquipRenderUtils = await viewsFactory.attach(
     deployedViewsAddress
   );
 
-  return [kanaria, gem, base, views];
+  return [kanaria, gem, catalog, views];
 }
 ````
 
@@ -1156,8 +1156,8 @@ npm run user-journey-merged-equippable
 > hardhat run scripts/mergedEquippableUserJourney.ts
 
 Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3, 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 and 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
-Setting up Base
-Base is set
+Setting up Catalog
+Catalog is set
 Minting tokens
 Minting Kanaria tokens
 Minted 5 kanarias
@@ -1366,57 +1366,57 @@ advanced implementation.
 
 ## Advanced MergedEquippable
 
-The `Advanced MergedEquippable` implementation uses the [`AdvancedBase`](../AdvancedBase.sol) and [`AdvancedEquippable`]
+The `Advanced MergedEquippable` implementation uses the [`AdvancedCatalog`](../AdvancedCatalog.sol) and [`AdvancedEquippable`]
 (./AdvancedEquippable.sol) and allows for more flexibility when implementing the Merged equippable RMRK lego composite.
 It implements the minimum required implementation in order to be compatible with RMRK merged equippable, but leaves more
 business logic implementation freedom to the developer.
 
-### AdvancedBase
+### AdvancedCatalog
 
-The [`AdvancedBase`](../AdvancedBase.sol) smart contract represents the minimum required implementation in order for the
-smart contract to be compatible with the `Base` RMRK lego. It uses the
-[`RMRKBaseStorage.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/base/RMRKBaseStorage.sol) import to
-gain access to the Base lego:
+The [`AdvancedCatalog`](../AdvancedCatalog.sol) smart contract represents the minimum required implementation in order for the
+smart contract to be compatible with the `Catalog` RMRK lego. It uses the
+[`RMRKCatalog.sol`](https://github.com/rmrk-team/evm/blob/dev/contracts/RMRK/catalog/RMRKCatalog.sol) import to
+gain access to the Catalog lego:
 
 ````solidity
-import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/catalog/RMRKCatalog.sol";
 ````
 
-We only need `symbol` and `type_` of the base in order to properly initialize it after the `AdvancedBase` inherits it:
+We only need `symbol` and `type_` of the catalog in order to properly initialize it after the `AdvancedCatalog` inherits it:
 
 ````solidity
-contract AdvancedBase is RMRKBaseStorage {
+contract AdvancedCatalog is RMRKCatalog {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
     )
-        RMRKBaseStorage(symbol, type_)
+        RMRKCatalog(symbol, type_)
     {
         // Custom optional: constructor logic
     }
 }
 ````
 
-This is all that is required to get you started with implementing the Base RMRK lego.
+This is all that is required to get you started with implementing the Catalog RMRK lego.
 
 <details>
-<summary>The minimal <strong><i>AdvancedBase.sol</i></strong> should look like this:</summary>
+<summary>The minimal <strong><i>AdvancedCatalog.sol</i></strong> should look like this:</summary>
 
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/RMRK/base/RMRKBaseStorage.sol";
+import "@rmrk-team/evm-contracts/contracts/RMRK/catalog/RMRKCatalog.sol";
 
-contract AdvancedBase is RMRKBaseStorage {
+contract AdvancedCatalog is RMRKCatalog {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
     constructor(
         string memory symbol,
         string memory type_
     )
-        RMRKBaseStorage(symbol, type_)
+        RMRKCatalog(symbol, type_)
     {
         // Custom optional: constructor logic
     }
@@ -1425,7 +1425,7 @@ contract AdvancedBase is RMRKBaseStorage {
 
 </details>
 
-Using `RMRKBaseStorage` requires custom implementation of part management. Available internal functions to use when
+Using `RMRKCatalog` requires custom implementation of part management. Available internal functions to use when
 writing it are:
 
 - `_addPart(IntakeStruct memory intakeStruct)`
@@ -1439,7 +1439,7 @@ following internal ones available:
 - `_setEquippableToAll(uint64 partId)`
 - `_resetEquippableAddresses(uint64 partId)`
 
-Any additional functions supporting your NFT use case and utility related to the Base NFT lego can also be added.
+Any additional functions supporting your NFT use case and utility related to the Catalog NFT lego can also be added.
 Remember to thoroughly test your smart contracts with extensive test suites and define strict access control rules for
 the functions that you implement.
 

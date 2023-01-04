@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 import {
-  SimpleBase,
+  SimpleCatalog,
   SimpleExternalEquip,
   SimpleNestableExternalEquip,
   RMRKEquipRenderUtils,
@@ -17,7 +17,7 @@ async function main() {
 
   // Notice that most of these steps will happen at different points in time
   // Here we do all in one go to demonstrate how to use it.
-  await setupBase(base, gemEquip.address);
+  await setupCatalog(base, gemEquip.address);
   await mintTokens(nestableKanaria, nestableGem);
   await addKanariaAssets(kanariaEquip, base.address);
   await addGemAssets(gemEquip, kanariaEquip.address, base.address);
@@ -31,7 +31,7 @@ async function deployContracts(): Promise<
     SimpleExternalEquip,
     SimpleNestableExternalEquip,
     SimpleExternalEquip,
-    SimpleBase,
+    SimpleCatalog,
     RMRKEquipRenderUtils
   ]
 > {
@@ -40,7 +40,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleBase");
+  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -81,7 +81,7 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const base: SimpleBase = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
@@ -103,7 +103,7 @@ async function deployContracts(): Promise<
   return [nestableKanaria, kanariaEquip, nestableGem, gemEquip, base, views];
 }
 
-async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
+async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<void> {
   // Setup base with 2 fixed part options for background, head, body and wings.
   // Also 3 slot options for gems
   const tx = await base.addPartList([
@@ -219,7 +219,7 @@ async function setupBase(base: SimpleBase, gemAddress: string): Promise<void> {
     },
   ]);
   await tx.wait();
-  console.log("Base is set");
+  console.log("Catalog is set");
 }
 
 async function mintTokens(

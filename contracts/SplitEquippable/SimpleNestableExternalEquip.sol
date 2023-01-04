@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.16;
 
-import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalEquipImpl.sol";
+import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableExternalEquipImpl.sol";
 
 contract SimpleNestableExternalEquip is RMRKNestableExternalEquipImpl {
     // NOTE: Additional custom arguments can be added to the constructor based on your needs.
