@@ -273,7 +273,7 @@ async function addKanariaAssets(
   const assetDefaultId = 1;
   const assetComposedId = 2;
   let allTx: ContractTransaction[] = [];
-  let tx = await kanaria.addAssetEntry(
+  let tx = await kanaria.addEquippableAssetEntry(
     0, // Only used for assets meant to equip into others
     ethers.constants.AddressZero, // base is not needed here
     "ipfs://default.png",
@@ -281,7 +281,7 @@ async function addKanariaAssets(
   );
   allTx.push(tx);
 
-  tx = await kanaria.addAssetEntry(
+  tx = await kanaria.addEquippableAssetEntry(
     0, // Only used for assets meant to equip into others
     baseAddress, // Since we're using parts, we must define the base
     "ipfs://meta1.json",
@@ -328,56 +328,56 @@ async function addGemAssets(
 
   // We can do a for loop, but this makes it clearer.
   let allTx = [
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Full version for first type of gem, no need of refId or base
       0,
       baseAddress,
       `ipfs://gems/typeA/full.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdLeftGem,
       baseAddress,
       `ipfs://gems/typeA/left.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into mid slot for first type of gem
       equippableRefIdMidGem,
       baseAddress,
       `ipfs://gems/typeA/mid.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdRightGem,
       baseAddress,
       `ipfs://gems/typeA/right.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Full version for second type of gem, no need of refId or base
       0,
       ethers.constants.AddressZero,
       `ipfs://gems/typeB/full.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into left slot for second type of gem
       equippableRefIdLeftGem,
       baseAddress,
       `ipfs://gems/typeB/left.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into mid slot for second type of gem
       equippableRefIdMidGem,
       baseAddress,
       `ipfs://gems/typeB/mid.svg`,
       []
     ),
-    await gem.addAssetEntry(
+    await gem.addEquippableAssetEntry(
       // Equipped into right slot for second type of gem
       equippableRefIdRightGem,
       baseAddress,
