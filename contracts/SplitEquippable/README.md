@@ -157,7 +157,7 @@ The `constructor` to initialize the `RMRKNestableExternalEquipImpl` accepts the 
 - `name`: `string` type of argument specifying the name of the collection
 - `symbol`: `string` type of argument specifying the symbol of the collection
 - `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
-- `tokenURI`: `string` type of argument specifying the catalog URI of the token metadata
+- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
