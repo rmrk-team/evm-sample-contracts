@@ -56,7 +56,7 @@ The parameters that we will hardcode to the initialization of `RMRKMultiAssetImp
 - `symbol`: `string` type od argument representing the symbol of the collection will be set to `SMA`
 - `collectionMetadata_`: `string` type of argument representing the metadata URI of the collection will be set to
 `ipfs://meta`
-- `tokenURI_`: `string` type of argument representing the catalog metadata URI of tokens will be set to `ipfs://tokenMeta`
+- `tokenURI_`: `string` type of argument representing the base metadata URI of tokens will be set to `ipfs://tokenMeta`
 
 **NOTE: The `InitData` struct is used to pass the initialization parameters to the implementation smart contract. This
 is done so that the execution of the deploy transaction doesn't revert because we are trying to pass too many arguments.**
