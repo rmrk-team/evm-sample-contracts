@@ -43,7 +43,7 @@ The `constructor` in this case accepts no arguments as most of the arguments req
 - `RMRKNestableMultiAssetImpl`: represents the `name` argument and sets the name of the collection
 - `SNMA`: represents the `symbol` argument and sets the symbol of the collection
 - `ipfs://meta`: represents the `collectionMetadata_` argument and sets the URI of the collection metadata
-- `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the catalog URI of the token metadata
+- `ipfs://tokenMeta`: represents the `tokenURI_` argument and sets the base URI of the token metadata
 
 The only available variable to pass to the `constructor` is:
 
