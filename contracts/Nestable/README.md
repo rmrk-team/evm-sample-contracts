@@ -56,7 +56,7 @@ The `constructor` to initialize the `RMRKNestableImpl` accepts the following arg
 - `name_`: `string` argument that should represent the name of the NFT collection
 - `symbol_`: `string` argument that should represent the symbol of the NFT collection
 - `collectionMetadata_`: `string` argument that defines the metadata URI of the whole collection
-- `tokenURI_`: `string` argument that defines the catalog URI of the token metadata
+- `tokenURI_`: `string` argument that defines the base URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
