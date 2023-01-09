@@ -110,7 +110,7 @@ The `addAssetEntry` is used to add an asset entry:
 - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
   can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
   reference ID to be equipped into an NFT
-- `baseAddress`: `address` type of argument specifying the address of the Catalog smart contract
+- `catalogAddress`: `address` type of argument specifying the address of the Catalog smart contract
 - `metadataURI`: `string` type of argument specifying the URI of the asset
 - `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
@@ -355,7 +355,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -396,7 +396,7 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
@@ -484,7 +484,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -525,7 +525,7 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
@@ -762,8 +762,8 @@ In order for the `mintTokens` to be called, we have to add it to the `main` func
 Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. The assets are added to the
 `SimpleExternalEquip` parts of them. We will add assets to the `Kanaria` using the `addKanariaAssets` function.
 It accepts `Kanaria` and address of the `Catalog` smart contract. Assets will be added using the
-[`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a `baseAddress`
-value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for background, head,
+[`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a `catalogAddress`
+value. The composed asset needs to have the `catalogAddress`. We also specify the fixed parts IDs for background, head,
 body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the asset entires added,
 we can add them to a token and then accept them as well:
 
@@ -771,7 +771,7 @@ we can add them to a token and then accept them as well:
 async function addKanariaAssets(
   const [ , tokenOwner] = await ethers.getSigners();
   kanaria: SimpleExternalEquip,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   const assetDefaultId = 1;
   const assetComposedId = 2;
@@ -787,7 +787,7 @@ async function addKanariaAssets(
 
   tx = await kanaria.addEquippableAssetEntry(
     0, // Only used for assets meant to equip into others
-    baseAddress, // Since we're using parts, we must define the catalog
+    catalogAddress, // Since we're using parts, we must define the catalog
     "ipfs://meta1.json",
     [1, 3, 5, 7, 9, 10, 11], // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
@@ -834,7 +834,7 @@ using `acceptAsset`:
 async function addGemAssets(
   gem: SimpleExternalEquip,
   kanariaAddress: string,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   const [ , tokenOwner] = await ethers.getSigners();
   // We'll add 4 assets for each nestableGem, a full version and 3 versions matching each slot.
@@ -853,28 +853,28 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Full version for first type of gem, no need of refId or catalog
       0,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/full.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for first type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/right.svg`,
       []
     ),
@@ -888,21 +888,21 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for second type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for second type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into right slot for second type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/right.svg`,
       []
     ),
@@ -1069,7 +1069,7 @@ Composed:  [
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
     equippableGroupId: BigNumber { value: "0" },
-    baseAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
+    catalogAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     metadataURI: 'ipfs://meta1.json'
   ],
   [
@@ -1157,7 +1157,7 @@ Composed:  [
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
     equippableGroupId: BigNumber { value: "0" },
-    baseAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
+    catalogAddress: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
     metadataURI: 'ipfs://meta1.json'
   ],
   fixedParts: [
@@ -1317,7 +1317,7 @@ Using `RMRKExternalEquip` requires custom implementation of asset management log
 
 - `_setNestableAddress(address nestableAddress)`
 - `_addAssetEntry(ExtendedAsset calldata asset, uint64[] calldata fixedPartIds, uint64[] calldata slotPartIds)`
-- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)`
 - `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
 ### AdvancedNestableExternalEquip

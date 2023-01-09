@@ -40,7 +40,7 @@ async function deployContracts(): Promise<
   const nestableFactory = await ethers.getContractFactory(
     "SimpleNestableExternalEquip"
   );
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const nestableKanaria: SimpleNestableExternalEquip =
@@ -81,7 +81,7 @@ async function deployContracts(): Promise<
   const gemEquip: SimpleExternalEquip = await equipFactory.deploy(
     nestableGem.address
   );
-  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await nestableKanaria.deployed();
@@ -267,7 +267,7 @@ async function mintTokens(
 
 async function addKanariaAssets(
   kanaria: SimpleExternalEquip,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   const [ , tokenOwner] = await ethers.getSigners();
   const assetDefaultId = 1;
@@ -283,7 +283,7 @@ async function addKanariaAssets(
 
   tx = await kanaria.addEquippableAssetEntry(
     0, // Only used for assets meant to equip into others
-    baseAddress, // Since we're using parts, we must define the base
+    catalogAddress, // Since we're using parts, we must define the base
     "ipfs://meta1.json",
     [1, 3, 5, 7, 9, 10, 11], // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
@@ -312,7 +312,7 @@ async function addKanariaAssets(
 async function addGemAssets(
   gem: SimpleExternalEquip,
   kanariaAddress: string,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   const [ , tokenOwner] = await ethers.getSigners();
   // We'll add 4 assets for each nestableGem, a full version and 3 versions matching each slot.
@@ -331,28 +331,28 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Full version for first type of gem, no need of refId or base
       0,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/full.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for first type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/right.svg`,
       []
     ),
@@ -366,21 +366,21 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for second type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for second type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into right slot for second type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/right.svg`,
       []
     ),

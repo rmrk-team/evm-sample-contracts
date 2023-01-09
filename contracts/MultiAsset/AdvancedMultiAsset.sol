@@ -28,7 +28,7 @@ contract AdvancedMultiAsset is RMRKMultiAsset {
 
     // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)
 
     // Custom optional: utility functions to transfer from caller
     // Available public functions:

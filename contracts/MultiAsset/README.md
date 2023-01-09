@@ -2,11 +2,11 @@
 
 An *asset* is a type of output for an NFT, usually a media file.
 
-A asset can be an image, a movie, a PDF file, device config file... A multi-asset NFT is one that can output a different asset
-based on specific contextual information, e.g. load a PDF if loaded into a PDF reader, vs. loading an image in a virtual
-gallery, vs. loading hardware configuration in an IoT control hub.
+An asset can be an image, a movie, a PDF file, device config file... A multi-asset NFT is one that can output a
+different asset based on specific contextual information, e.g. load a PDF if loaded into a PDF reader, vs. loading an
+image in a virtual gallery, vs. loading hardware configuration in an IoT control hub.
 
-A asset is NOT an NFT or a standalone entity you can reference. It is part of an NFT - one of several outputs it can
+An asset is NOT an NFT or a standalone entity you can reference. It is part of an NFT - one of several outputs it can
 have.
 
 Every RMRK NFT has zero or more assets. When it has zero assets, the metadata is "root level". Any new asset
@@ -170,7 +170,7 @@ The `addAssetToToken` is used to add a new asset to the token and accepts three 
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired asset
+- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired asset
 
 #### `addAssetEntry`
 
@@ -274,7 +274,7 @@ Sample contract deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3
 With the deploy script ready, we can examine how the journey of a user using multi asset would look like using this
 smart contract.
 
-The catalog of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
+The base of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
@@ -513,7 +513,7 @@ In addition to the minting functions, you should also implement the burning, tra
 
 - `_burn(uint256 tokenId)`
 - `_addAssetEntry(uint64 id, string memory metadataURI)`
-- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)`
 - `transferFrom(address from, address to, uint256 tokenId)`
 
 Any additional functions supporting your NFT use case and utility can also be added. Remember to thoroughly test your
