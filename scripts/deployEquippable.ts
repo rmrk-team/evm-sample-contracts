@@ -19,7 +19,7 @@ async function deployContracts(): Promise<
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -50,7 +50,7 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const base: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const base: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();

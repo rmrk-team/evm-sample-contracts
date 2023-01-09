@@ -33,7 +33,7 @@ contract AdvancedEquippable is RMRKEquippable {
 
     // Custom expected: external, optionally gated, function to add assets.
     // Available internal functions:
-    //  _addAssetEntry(uint64 id, uint64 equippableGroupId, address baseAddress, string memory metadataURI, uint64[] calldata partIds)
+    //  _addAssetEntry(uint64 id, uint64 equippableGroupId, address catalogAddress, string memory metadataURI, uint64[] calldata partIds)
 
     // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:

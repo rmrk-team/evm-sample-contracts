@@ -37,5 +37,5 @@ contract AdvancedNestableMultiAsset is RMRKNestableMultiAsset {
 
     // Custom expected: external, optionally gated, function to add assets to tokens.
     // Available internal functions:
-    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)
+    //  _addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)
 }

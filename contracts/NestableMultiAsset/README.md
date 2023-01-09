@@ -156,7 +156,7 @@ The `addAssetToToken` is used to add a new asset to the token and accepts three 
 
 - `tokenId`: `uint256` type of argument specifying the ID of the token we are adding asset to
 - `assetId`: `uint64` type of argument specifying the ID of the asset we are adding to the token
-- `overwrites`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired asset
+- `replacesAssetWithId`: `uint64` type of argument specifying the ID of the asset we are overwriting with the desired asset
 
 #### `addAssetEntry`
 
@@ -275,7 +275,7 @@ Sample contract deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3
 With the deploy script ready, we can examine how the journey of a user using nestable with multi asset would look like
 using this smart contract.
 
-The catalog of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
+The base of it is the same as the deploy script, as we need to deploy the smart contract in order to interact with it:
 
 ````typescript
 import { ethers } from "hardhat";
@@ -537,7 +537,7 @@ In addition to the minting functions, you should also implement the burning, tra
 - `transferFrom(address from, address to, uint256 tokenId)`
 - `nestTransfer(address from, address to, uint256 tokenId, uint256 destinationId)`
 - `_addAssetEntry(uint64 id, string memory metadataURI)`
-- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 overwrites)`
+- `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)`
 
 Any additional function supporting your NFT use case and utility can also be added. Remember to thoroughly test your
 smart contracts with extensive test suites and define strict access control rules for the functions that you implement.

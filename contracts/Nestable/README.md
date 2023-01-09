@@ -295,7 +295,7 @@ Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 and 0xe7
 With the deploy script ready, we can examine how the journey of a user using nestable would look like using these two
 smart contracts.
 
-The catalog of it is the same as the deploy script, as we need to deploy the smart contracts in order to interact with
+The base of it is the same as the deploy script, as we need to deploy the smart contracts in order to interact with
 them:
 
 ````typescript

@@ -74,7 +74,7 @@ define your own, otherwise your smart contracts are at risk of unexpected behavi
 
 The `constructor` to initialize the `RMRKCatalogImpl` accepts the following arguments:
 
-- `symbol_`: `string` type of argument representing the symbol if the catalog lego
+- `symbol_`: `string` type of argument representing the symbol of the catalog lego
 - `type_`: `string` type of argument representing the type of the catalog lego
 
 In order to properly initialize the inherited smart contract, our smart contract needs to accept the arguments, mentioned
@@ -153,7 +153,7 @@ The `intakeStruct` should look something like this:
 
 ##### `addPartList`
 
-The `addPartList` function is used to add a batch of catalog items entries and accepts an array of `IntakeStruct`s
+The `addPartList` function is used to add a batch of catalog item entries and accepts an array of `IntakeStruct`s
 described above. So an example of two IntakeStructs that would be passed to the function is:
 
 ````json
@@ -258,7 +258,7 @@ The `constructor` to initialize the `RMRKEquippableImpl` accepts the following a
 - `name`: `string` type of argument specifying the name of the collection
 - `symbol`: `string` type of argument specifying the symbol of the collection
 - `collectionMetadata`: `string` type of argument specifying the metadata URI of the whole collection
-- `tokenURI`: `string` type of argument specifying the catalog URI of the token metadata
+- `tokenURI`: `string` type of argument specifying the base URI of the token metadata
 - `data`: struct type of argument providing a number of initialization values, used to avoid initialization transaction
   being reverted due to passing too many parameters
 
@@ -392,7 +392,7 @@ The `addAssetEntry` is used to add a new asset of the collection and accepts thr
 - `equippableGroupId`: `uint64` type of argument specifying the ID of the group this asset belongs to. This ID
   can then be referenced in the `setValidParentRefId` in order to allow every asset with this equippable
   reference ID to be equipped into an NFT
-- `baseAddress`: `address` type of argument specifying the address of the Catalog smart contract
+- `catalogAddress`: `address` type of argument specifying the address of the Catalog smart contract
 - `metadataURI`: `string` type of argument specifying the URI of the asset
 - `partIds`: `uint64[]` type of argument specifying the fixed and slot parts IDs for this asset
 
@@ -458,7 +458,7 @@ async function deployContracts(): Promise<
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -489,7 +489,7 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
@@ -535,7 +535,7 @@ Sample contracts deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3 (Kanaria
 
 With the deploy script ready, we can examine how the journey of a user using merged equippable would look like.
 
-The catalog of the user journey script is the same as the deploy script, as we need to deploy the smart contract in order
+The base of the user journey script is the same as the deploy script, as we need to deploy the smart contract in order
 to interact with it:
 
 ````typescript
@@ -560,7 +560,7 @@ async function deployContracts(): Promise<
 
   const [beneficiary] = await ethers.getSigners();
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = await contractFactory.deploy(
@@ -591,7 +591,7 @@ async function deployContracts(): Promise<
       pricePerMint: pricePerMint
     }
   );
-  const catalog: SimpleCatalog = await baseFactory.deploy("KB", "svg");
+  const catalog: SimpleCatalog = await catalogFactory.deploy("KB", "svg");
   const views: RMRKEquipRenderUtils = await viewsFactory.deploy();
 
   await kanaria.deployed();
@@ -822,14 +822,14 @@ In order for the `mintTokens` to be called, we have to add it to the `main` func
 Having minted both `Kanaria`s and `Gem`s, we can now add assets to them. We will add assets to the `Kanaria`
 using the `addKanariaAssets` function. It accepts `Kanaria` and address of the `Catalog` smart contract. Assets will
 be added using the [`addAssetEntry`](#addassetentry) method. We will add a default asset, which doesn't need a
-`baseAddress` value. The composed asset needs to have the `baseAddress`. We also specify the fixed parts IDs for
+`catalogAddress` value. The composed asset needs to have the `catalogAddress`. We also specify the fixed parts IDs for
 background, head, body and wings. Additionally we allow the gems to be equipped in the slot parts IDs. With the
 asset entires added, we can add them to a token and then accept them as well:
 
 ````typescript
 async function addKanariaAssets(
   kanaria: SimpleEquippable,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   console.log("Adding Kanaria assets");
   const [ , tokenOwner] = await ethers.getSigners();
@@ -846,7 +846,7 @@ async function addKanariaAssets(
 
   tx = await kanaria.addEquippableAssetEntry(
     0, // Only used for assets meant to equip into others
-    baseAddress, // Since we're using parts, we must define the catalog
+    catalogAddress, // Since we're using parts, we must define the catalog
     "ipfs://meta1.json",
     [1, 3, 5, 7, 9, 10, 11] // We're using first background, head, body and wings and state that this can receive the 3 slot parts for gems
   );
@@ -892,7 +892,7 @@ using `acceptAsset`:
 async function addGemAssets(
   gem: SimpleEquippable,
   kanariaAddress: string,
-  baseAddress: string
+  catalogAddress: string
 ): Promise<void> {
   console.log("Adding Gem assets");
   const [ , tokenOwner] = await ethers.getSigners();
@@ -914,28 +914,28 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Full version for first type of gem, no need of refId or catalog
       0,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/full.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for first type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeA/right.svg`,
       []
     ),
@@ -949,21 +949,21 @@ async function addGemAssets(
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for second type of gem
       equippableRefIdLeftGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/left.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for second type of gem
       equippableRefIdMidGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/mid.svg`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into right slot for second type of gem
       equippableRefIdRightGem,
-      baseAddress,
+      catalogAddress,
       `ipfs://gems/typeB/right.svg`,
       []
     ),
@@ -1121,14 +1121,14 @@ async function retrieveContracts(): Promise<
   [SimpleEquippable, SimpleEquippable, SimpleCatalog, RMRKEquipRenderUtils]
 > {
   const contractFactory = await ethers.getContractFactory("SimpleEquippable");
-  const baseFactory = await ethers.getContractFactory("SimpleCatalog");
+  const catalogFactory = await ethers.getContractFactory("SimpleCatalog");
   const viewsFactory = await ethers.getContractFactory("RMRKEquipRenderUtils");
 
   const kanaria: SimpleEquippable = contractFactory.attach(
     deployedKanariaAddress
   );
   const gem: SimpleEquippable = contractFactory.attach(deployedGemAddress);
-  const catalog: SimpleCatalog = baseFactory.attach(deployedCatalogAddress);
+  const catalog: SimpleCatalog = catalogFactory.attach(deployedCatalogAddress);
   const views: RMRKEquipRenderUtils = await viewsFactory.attach(
     deployedViewsAddress
   );
@@ -1189,7 +1189,7 @@ Composed:  [
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
     equippableGroupId: BigNumber { value: "0" },
-    baseAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    catalogAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     metadataURI: 'ipfs://meta1.json'
   ],
   [
@@ -1277,7 +1277,7 @@ Composed:  [
     'ipfs://meta1.json',
     id: BigNumber { value: "2" },
     equippableGroupId: BigNumber { value: "0" },
-    baseAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    catalogAddress: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     metadataURI: 'ipfs://meta1.json'
   ],
   fixedParts: [
@@ -1506,7 +1506,8 @@ it are:
 - `_safeMint(address to, uint256 tokenId, bytes memory data)`
 - `_nestMint(address to, uint256 tokenId, uint256 destinationId, bytes memory data)`
 
-The latter is used to mint a child NFT directly into the parent NFT, so implement it if you forsee it applies to your use case. Additionally burning and transfer functions can be implemented using:
+The latter is used to mint a child NFT directly into the parent NFT, so implement it if you foresee it applies to your
+use case. Additionally burning and transfer functions can be implemented using:
 
 - `_burn(uint256 tokenId, uint256 maxChildrenBurns)`
 - `transferFrom(address from, address to, uint256 tokenId)`
@@ -1514,7 +1515,7 @@ The latter is used to mint a child NFT directly into the parent NFT, so implemen
 
 Asset and reference management functions should also be implemented using:
 
-- `_addAssetEntry(uint64 id, uint64 equippableGroupId, address baseAddress, string memory metadataURI, uint64[] calldata partIds)`
+- `_addAssetEntry(uint64 id, uint64 equippableGroupId, address catalogAddress, string memory metadataURI, uint64[] calldata partIds)`
 - `_addAssetToToken(uint256 tokenId, uint64 assetId, uint64 replacesAssetWithId)`
 - `_setValidParentForEquippableGroup(uint64 equippableGroupId, address parentAddress, uint64 slotPartId)`
 
