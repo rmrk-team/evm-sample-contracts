@@ -1,5 +1,7 @@
 # Nestable with MultiAsset
 
+![Nestable RMRK lego with MultiAsset RMRK lego](../../img/6.jpg)
+
 [Nestable](../Nestable/README.md) and [MultiAsset](../MultiAsset/README.md) RMRK legos can be used together to
 provide more utility to the NFT. To examine each separately, please refer to their respective examples.
 
