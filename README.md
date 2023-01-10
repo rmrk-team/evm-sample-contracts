@@ -26,8 +26,7 @@ to Solidity contract size constraints, MultiAsset and Equippable logic are inclu
 Nestable and ownership are handled by either the same smart contract or a separate one. Catalog is also a separate smart
 contract for practical reasons, since one Catalog can be used by multiple tokens.
 
-![RMRK Legos infographic](./RMRKLegoInfographics.png)
-
+![RMRK Legos infographic](img/RMRKLegoInfographics.png)
 
 ## Installation
 

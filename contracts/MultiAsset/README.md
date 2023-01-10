@@ -1,5 +1,7 @@
 # MultiAsset
 
+![MultiAsset RMRK lego](../../img/4.jpg)
+
 An *asset* is a type of output for an NFT, usually a media file.
 
 An asset can be an image, a movie, a PDF file, device config file... A multi-asset NFT is one that can output a

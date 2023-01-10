@@ -1,5 +1,7 @@
 # SplitEquippable
 
+![Split Equippable RMRK lego composite](../../img/9.jpg)
+
 The `ExternalEquippable` composite of RMRK legos uses the [`Nestable`](../Nestable/README.md),
 [`MultiAsset`](../MultiAsset/README.md), [`Equippable`](../MergedEquippable/README.md#equippable) and
 [`Catalog`](../MergedEquippable/README.md#catalog) RMRK legos. Unlike [`MergedEquippable`](../MergedEquippable/README.md) RMRK

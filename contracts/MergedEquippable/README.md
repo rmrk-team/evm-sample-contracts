@@ -1,5 +1,7 @@
 # MergedEquippable
 
+![Merged Equippable RMRK lego composite](../../img/8.jpg)
+
 The `MergedEquippable` composite of RMRK legos uses both the [`Nestable`](../Nestable/README.md) and
 [`MultiAsset`](../MultiAsset/README.md) RMRK legos as well as the `Equippable` lego. In addition to these three
 RMRK legos, it also requires the `Catalog` RMRK lego. Let's first examine the `Catalog` RMRK lego and then the `Equippable`
