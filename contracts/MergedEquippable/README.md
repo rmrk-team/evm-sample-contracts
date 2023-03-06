@@ -94,7 +94,7 @@ above, in the `constructor` and pass them to `RMRKCatalogImpl`:
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKCatalogImpl.sol";
 
@@ -311,7 +311,7 @@ above, in the `constructor` and pass them to the `RMRKEquippableImpl`:
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKEquippableImpl.sol";
 import "@rmrk-team/evm-contracts/contracts/RMRK/utils/RMRKEquipRenderUtils.sol";
@@ -1408,7 +1408,7 @@ This is all that is required to get you started with implementing the Catalog RM
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/catalog/RMRKCatalog.sol";
 
@@ -1481,7 +1481,7 @@ This is all that is required to get you started with implementing the Merged equ
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKEquippable.sol";
 

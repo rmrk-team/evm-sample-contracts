@@ -72,7 +72,7 @@ In order to properly initiate the inherited smart contract, our smart contract n
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKExternalEquipImpl.sol";
 
@@ -212,7 +212,7 @@ mentioned above, in the `constructor` and pass them to the `RMRKNestableExternal
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/RMRKNestableExternalEquipImpl.sol";
 
@@ -1295,7 +1295,7 @@ external equippable RMRK lego composite.
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKExternalEquip.sol";
 
@@ -1359,7 +1359,7 @@ This is all that is required to get you started with implementing the `Nestable`
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/equippable/RMRKNestableExternalEquip.sol";
 
