@@ -109,7 +109,7 @@ above, in the `constructor` and pass them to `RMRKNestableImpl`:
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKNestableImpl.sol";
 
@@ -573,7 +573,7 @@ This is all that is required in order to get you started with implementing the N
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/nestable/RMRKNestable.sol";
 

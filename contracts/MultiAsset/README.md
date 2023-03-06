@@ -99,7 +99,7 @@ So the constructor of the `SimpleMultiAsset` should look like this:
 
 ````solidity
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/implementations/nativeTokenPay/RMRKMultiAssetImpl.sol";
 
@@ -485,7 +485,7 @@ This is all that is required to get you started with implementing the Multi asse
 ````solidity
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "@rmrk-team/evm-contracts/contracts/RMRK/multiasset/RMRKMultiAsset.sol";
 
