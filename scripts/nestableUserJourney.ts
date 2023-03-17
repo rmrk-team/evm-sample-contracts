@@ -49,7 +49,7 @@ async function main() {
     value: pricePerMint.mul(totalTokens),
   });
   await tx.wait();
-  console.log("Minted totalTokens tokens");
+  console.log(`Minted ${totalTokens} tokens`);
   let totalSupply = await parent.totalSupply();
   console.log("Total parent tokens: %s", totalSupply);
 
