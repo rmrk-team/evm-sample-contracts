@@ -108,7 +108,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 0,
         equippable: [],
-        metadataURI: "ipfs://backgrounds/1.svg",
+        metadataURI: "ipfs://backgrounds/1.json",
       },
     },
     {
@@ -118,7 +118,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 0,
         equippable: [],
-        metadataURI: "ipfs://backgrounds/2.svg",
+        metadataURI: "ipfs://backgrounds/2.json",
       },
     },
     {
@@ -128,7 +128,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 3,
         equippable: [],
-        metadataURI: "ipfs://heads/1.svg",
+        metadataURI: "ipfs://heads/1.json",
       },
     },
     {
@@ -138,7 +138,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 3,
         equippable: [],
-        metadataURI: "ipfs://heads/2.svg",
+        metadataURI: "ipfs://heads/2.json",
       },
     },
     {
@@ -148,7 +148,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 2,
         equippable: [],
-        metadataURI: "ipfs://body/1.svg",
+        metadataURI: "ipfs://body/1.json",
       },
     },
     {
@@ -158,7 +158,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 2,
         equippable: [],
-        metadataURI: "ipfs://body/2.svg",
+        metadataURI: "ipfs://body/2.json",
       },
     },
     {
@@ -168,7 +168,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 1,
         equippable: [],
-        metadataURI: "ipfs://wings/1.svg",
+        metadataURI: "ipfs://wings/1.json",
       },
     },
     {
@@ -178,7 +178,7 @@ async function setupCatalog(base: SimpleCatalog, gemAddress: string): Promise<vo
         itemType: 2, // Fixed
         z: 1,
         equippable: [],
-        metadataURI: "ipfs://wings/2.svg",
+        metadataURI: "ipfs://wings/2.json",
       },
     },
     {
@@ -326,56 +326,56 @@ async function addGemAssets(
       // Full version for first type of gem, no need of refId or base
       0,
       catalogAddress,
-      `ipfs://gems/typeA/full.svg`,
+      `ipfs://gems/typeA/full.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdLeftGem,
       catalogAddress,
-      `ipfs://gems/typeA/left.svg`,
+      `ipfs://gems/typeA/left.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for first type of gem
       equippableRefIdMidGem,
       catalogAddress,
-      `ipfs://gems/typeA/mid.svg`,
+      `ipfs://gems/typeA/mid.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for first type of gem
       equippableRefIdRightGem,
       catalogAddress,
-      `ipfs://gems/typeA/right.svg`,
+      `ipfs://gems/typeA/right.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Full version for second type of gem, no need of refId or base
       0,
       ethers.constants.AddressZero,
-      `ipfs://gems/typeB/full.svg`,
+      `ipfs://gems/typeB/full.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into left slot for second type of gem
       equippableRefIdLeftGem,
       catalogAddress,
-      `ipfs://gems/typeB/left.svg`,
+      `ipfs://gems/typeB/left.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into mid slot for second type of gem
       equippableRefIdMidGem,
       catalogAddress,
-      `ipfs://gems/typeB/mid.svg`,
+      `ipfs://gems/typeB/mid.json`,
       []
     ),
     await gem.addEquippableAssetEntry(
       // Equipped into right slot for second type of gem
       equippableRefIdRightGem,
       catalogAddress,
-      `ipfs://gems/typeB/right.svg`,
+      `ipfs://gems/typeB/right.json`,
       []
     ),
   ];
